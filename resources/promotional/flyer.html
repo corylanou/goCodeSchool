@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programming Club - Cadott High School</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #1a1a1a;
+            overflow: hidden;
+            height: 100vh;
+            cursor: none;
+        }
+
+        /* Matrix Rain Background */
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.3;
+        }
+
+        /* Main Container */
+        .presentation-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(26, 26, 26, 0.9);
+        }
+
+        /* Slide Container */
+        .slides-container {
+            width: 90%;
+            max-width: 1200px;
+            height: 90%;
+            position: relative;
+            overflow: hidden;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(255, 215, 0, 0.3);
+            border: 2px solid rgba(255, 215, 0, 0.2);
+        }
+
+        /* Individual Slides */
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 60px;
+            background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 50%, #0d0d0d 100%);
+            opacity: 0;
+            transform: scale(0.8) rotateY(90deg);
+            transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: scale(1) rotateY(0deg);
+        }
+
+        .slide.next {
+            transform: scale(0.8) rotateY(-90deg);
+        }
+
+        /* Typography */
+        .slide h1 {
+            font-size: 4rem;
+            color: #ffd700;
+            text-shadow: 0 0 20px #ffd700;
+            margin-bottom: 30px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        .slide h2 {
+            font-size: 2.5rem;
+            color: #ffed4a;
+            margin-bottom: 25px;
+            text-shadow: 0 0 15px #ffed4a;
+        }
+
+        .slide h3 {
+            font-size: 2rem;
+            color: #ffffff;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+
+        .slide p, .slide li {
+            font-size: 1.8rem;
+            color: #f5f5f5;
+            line-height: 1.7;
+            margin-bottom: 20px;
+            text-shadow: 0 0 8px rgba(255,255,255,0.4);
+            font-weight: 500;
+        }
+
+        .slide ul {
+            text-align: left;
+            max-width: 800px;
+        }
+
+        .slide li {
+            margin-bottom: 25px;
+            padding-left: 35px;
+            position: relative;
+        }
+
+        .slide li::before {
+            content: "▶";
+            position: absolute;
+            left: 0;
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 1.4rem;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        /* Emojis and Icons */
+        .emoji {
+            font-size: 3rem;
+            display: inline-block;
+            margin: 0 10px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        /* Call to Action */
+        .cta {
+            background: linear-gradient(45deg, #ffd700, #ffed4a);
+            color: #1a1a1a;
+            padding: 20px 40px;
+            font-size: 1.8rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            margin-top: 30px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+            z-index: 20;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffd700, #ffed4a);
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        /* Navigation Dots */
+        .nav-dots {
+            position: fixed;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 20;
+        }
+
+        .nav-dot {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-dot.active {
+            background: #ffd700;
+            box-shadow: 0 0 15px #ffd700;
+        }
+
+        /* Control Panel */
+        .controls {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            display: flex;
+            gap: 15px;
+            z-index: 20;
+        }
+
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+            color: #ffd700;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: #ffd700;
+            color: #1a1a1a;
+            box-shadow: 0 0 20px #ffd700;
+        }
+
+        /* Animations */
+        @keyframes glow {
+            from { text-shadow: 0 0 20px #ffd700; }
+            to { text-shadow: 0 0 30px #ffd700, 0 0 40px #ffd700; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Hornet Takeover Effect */
+        .hornet-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .hornet-overlay.active {
+            opacity: 1;
+        }
+
+        .hornet-logo {
+            width: 300px;
+            height: 300px;
+            background: url('../logo.png') center/contain no-repeat;
+            animation: hornetTakeover 3s ease-in-out;
+            filter: drop-shadow(0 0 30px #ffff00) drop-shadow(0 0 60px #ff4500);
+        }
+
+        .explosion-effect {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, 
+                rgba(255, 255, 0, 0.8) 0%, 
+                rgba(255, 69, 0, 0.6) 30%, 
+                rgba(255, 0, 0, 0.4) 60%, 
+                transparent 100%);
+            animation: explode 0.8s ease-out;
+            opacity: 0;
+        }
+
+        .explosion-effect.active {
+            opacity: 1;
+        }
+
+        @keyframes hornetTakeover {
+            0% {
+                transform: scale(0.1) rotate(-360deg);
+                opacity: 0;
+            }
+            40% {
+                transform: scale(1.2) rotate(0deg);
+                opacity: 1;
+            }
+            70% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+            90% {
+                transform: scale(1.1) rotate(5deg);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        @keyframes explode {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(2);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        .glitch-effect {
+            animation: glitch 0.3s ease-in-out;
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            10% { transform: translate(-2px, 2px); }
+            20% { transform: translate(2px, -2px); }
+            30% { transform: translate(-2px, -2px); }
+            40% { transform: translate(2px, 2px); }
+            50% { transform: translate(-2px, 2px); }
+            60% { transform: translate(2px, -2px); }
+            70% { transform: translate(-2px, -2px); }
+            80% { transform: translate(2px, 2px); }
+            90% { transform: translate(-2px, 2px); }
+        }
+
+        /* Claude Slide Specific Styles */
+        .claude-slide {
+            background: linear-gradient(135deg, #2a1810 0%, #1a1a1a 50%, #0d0d0d 100%) !important;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .claude-slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 30% 20%, rgba(193, 95, 60, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 80%, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .claude-logo-container {
+            position: relative;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .claude-logo {
+            width: 120px;
+            height: 120px;
+            position: relative;
+            margin: 0 auto 20px;
+        }
+
+        .claude-logo::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 80px;
+            height: 80px;
+            background: conic-gradient(from 0deg, #C15F3C, #ff8c5a, #C15F3C, #ff6b2b, #C15F3C);
+            border-radius: 50%;
+            transform: translate(-50%, -50%) rotate(0deg);
+            animation: claudeRotate 4s linear infinite;
+            box-shadow: 0 0 30px rgba(193, 95, 60, 0.5);
+        }
+
+        .claude-logo::after {
+            content: '⚡';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            color: #fff;
+            z-index: 1;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .code-particles {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        .code-particles::before,
+        .code-particles::after {
+            content: '</>';
+            position: absolute;
+            color: #C15F3C;
+            font-family: monospace;
+            font-size: 1.5rem;
+            opacity: 0.6;
+            animation: orbit 6s linear infinite;
+        }
+
+        .code-particles::before {
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .code-particles::after {
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%) rotate(180deg);
+            animation-delay: -3s;
+        }
+
+        .claude-title {
+            background: linear-gradient(45deg, #C15F3C, #ffd700, #C15F3C);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease-in-out infinite;
+            margin-bottom: 20px !important;
+        }
+
+        .claude-brand {
+            font-size: 3.5rem !important;
+            background: linear-gradient(45deg, #C15F3C, #ff8c5a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 15px 0 !important;
+            text-shadow: none !important;
+            position: relative;
+        }
+
+        .claude-brand::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #C15F3C, transparent);
+            animation: underlineGlow 2s ease-in-out infinite;
+        }
+
+        .tech-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            background: rgba(193, 95, 60, 0.1);
+            border: 1px solid rgba(193, 95, 60, 0.3);
+            padding: 15px 25px;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            color: #fff;
+            box-shadow: 0 5px 15px rgba(193, 95, 60, 0.2);
+            animation: statFloat 3s ease-in-out infinite;
+        }
+
+        .stat:nth-child(2) {
+            animation-delay: -1s;
+        }
+
+        .stat:nth-child(3) {
+            animation-delay: -2s;
+        }
+
+        .claude-tagline {
+            font-size: 1.4rem !important;
+            color: #C15F3C !important;
+            font-style: italic;
+            margin: 20px 0 !important;
+        }
+
+        .powered-by {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 20px;
+            font-weight: 300;
+        }
+
+        /* Claude Animations */
+        @keyframes claudeRotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        @keyframes orbit {
+            0% { transform: translateX(-50%) rotate(0deg) translateY(-100px) rotate(0deg); }
+            100% { transform: translateX(-50%) rotate(360deg) translateY(-100px) rotate(-360deg); }
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes underlineGlow {
+            0%, 100% { opacity: 0.5; transform: translateX(-50%) scaleX(1); }
+            50% { opacity: 1; transform: translateX(-50%) scaleX(1.2); }
+        }
+
+        @keyframes statFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .slide h1 { font-size: 2.5rem; }
+            .slide h2 { font-size: 1.8rem; }
+            .slide h3 { font-size: 1.5rem; }
+            .slide p, .slide li { font-size: 1.4rem; }
+            .slide { padding: 30px; }
+            .cta { font-size: 1.4rem; padding: 15px 30px; }
+        }
+
+        @media (max-width: 480px) {
+            .slide h1 { font-size: 2rem; }
+            .slide h2 { font-size: 1.5rem; }
+            .slide h3 { font-size: 1.3rem; }
+            .slide p, .slide li { font-size: 1.2rem; }
+            .slide { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Matrix Rain Background -->
+    <canvas id="matrix-canvas"></canvas>
+
+    <!-- Hornet Takeover Overlay -->
+    <div class="hornet-overlay" id="hornet-overlay">
+        <div class="hornet-logo" id="hornet-logo"></div>
+        <div class="explosion-effect" id="explosion-effect"></div>
+    </div>
+
+    <!-- Main Presentation Container -->
+    <div class="presentation-container">
+        <div class="slides-container">
+            <!-- Slide 1: Welcome -->
+            <div class="slide active">
+                <h1>🚀 Programming Club 🚀</h1>
+                <h2>Cadott High School</h2>
+                <p class="emoji">🎉 ⚡ 💻 🌟 ⚡ 🎉</p>
+                <h3>Ready to Build the Future?</h3>
+                <p>Join the most exciting club in school!</p>
+                <button class="cta">Get Started!</button>
+            </div>
+
+            <!-- Slide 2: Who Can Join -->
+            <div class="slide">
+                <h1>Who Can Join? 🤔</h1>
+                <div class="emoji">👥</div>
+                <h2>Grades 6-12 Welcome!</h2>
+                <ul>
+                    <li>🆕 Complete beginners - no experience needed!</li>
+                    <li>🤖 Curious about AI and technology</li>
+                    <li>🎮 Want to create games and apps</li>
+                    <li>🌐 Interested in websites and coding</li>
+                    <li>🚀 Ready for something more than TikTok!</li>
+                </ul>
+            </div>
+
+            <!-- Slide 3: AI Power -->
+            <div class="slide">
+                <h1>🤖 AI-Powered Learning</h1>
+                <div class="emoji">⚡ 🧠 ⚡</div>
+                <h2>Next-Level Technology!</h2>
+                <ul>
+                    <li>🔥 Use latest AI tools to supercharge your coding</li>
+                    <li>🤖 Create intelligent apps that think and respond</li>
+                    <li>⚡ Debug code faster with AI assistants</li>
+                    <li>🚀 Stay at the cutting edge of technology</li>
+                    <li>🌟 This isn't your typical programming class!</li>
+                </ul>
+            </div>
+
+            <!-- Slide 4: What You'll Learn -->
+            <div class="slide">
+                <h1>💻 What You'll Learn</h1>
+                <div class="emoji">🛠️ 📚 🛠️</div>
+                <h2>Real Programming Skills!</h2>
+                <ul>
+                    <li>🌐 Go, HTML, JavaScript, and CSS</li>
+                    <li>📱 Build apps and websites that actually work</li>
+                    <li>🎮 Create games and interactive projects</li>
+                    <li>☁️ Deploy your creations to the web</li>
+                    <li>🔧 Industry tools like GitHub and version control</li>
+                </ul>
+            </div>
+
+            <!-- Slide 5: Problem Solving -->
+            <div class="slide">
+                <h1>🧩 Puzzle Solving Fun</h1>
+                <div class="emoji">🎯 🧠 🎯</div>
+                <h2>Boost Your Brain Power!</h2>
+                <ul>
+                    <li>🔍 Solve real-world coding challenges</li>
+                    <li>⚡ Think creatively and find solutions</li>
+                    <li>🚀 Create something from nothing</li>
+                    <li>🎮 Gamified learning experience</li>
+                    <li>🏆 Build problem-solving skills for life</li>
+                </ul>
+            </div>
+
+            <!-- Slide 6: Teamwork -->
+            <div class="slide">
+                <h1>🤝 Team Up & Build</h1>
+                <div class="emoji">👥 🚀 👥</div>
+                <h2>Collaboration Skills!</h2>
+                <ul>
+                    <li>👫 Work with friends on amazing projects</li>
+                    <li>🌐 Create websites that make a difference</li>
+                    <li>📱 Design apps together</li>
+                    <li>🎓 Great for college applications</li>
+                    <li>💼 Learn teamwork skills employers love</li>
+                </ul>
+            </div>
+
+            <!-- Slide 7: Real Skills -->
+            <div class="slide">
+                <h1>🛠 Real-World Skills</h1>
+                <div class="emoji">💼 🎓 💼</div>
+                <h2>Stand Out to Colleges & Employers!</h2>
+                <ul>
+                    <li>🎓 Highly valued skills for college apps</li>
+                    <li>💰 High-demand career opportunities</li>
+                    <li>☁️ Learn industry practices and tools</li>
+                    <li>🔗 GitHub portfolio for your resume</li>
+                    <li>🌍 Skills needed in today's tech world</li>
+                </ul>
+            </div>
+
+            <!-- Slide 8: Cool Projects -->
+            <div class="slide">
+                <h1>✨ Make Cool Stuff!</h1>
+                <div class="emoji">🎨 💫 🎨</div>
+                <h2>Actually Working Applications!</h2>
+                <ul>
+                    <li>🌐 Deploy real websites to the internet</li>
+                    <li>📱 Apps that run on your phone</li>
+                    <li>🎮 Interactive games and tools</li>
+                    <li>🤖 AI-powered applications</li>
+                    <li>😎 Impress everyone with your creations!</li>
+                </ul>
+            </div>
+
+            <!-- Slide 9: The Vibe -->
+            <div class="slide">
+                <h1>🎉 What's the Vibe?</h1>
+                <div class="emoji">😄 🍕 😄</div>
+                <h2>Fun Learning Environment!</h2>
+                <ul>
+                    <li>🚫 No boring lectures!</li>
+                    <li>🖥️ Hands-on coding in the computer lab</li>
+                    <li>🍕 Snacks while you code</li>
+                    <li>🧪 Learning through experimenting</li>
+                    <li>🎈 Making friends who love tech</li>
+                </ul>
+            </div>
+
+            <!-- Slide 10: Claude Code Showcase -->
+            <div class="slide claude-slide">
+                <div class="claude-logo-container">
+                    <div class="claude-logo"></div>
+                    <div class="code-particles"></div>
+                </div>
+                <h1 class="claude-title">✨ BUILT WITH AI MAGIC ✨</h1>
+                <h2>This entire slideshow was created with</h2>
+                <h1 class="claude-brand">Claude Code</h1>
+                <h3>The Leading AI Coding Agent</h3>
+                <div class="tech-stats">
+                    <div class="stat">⚡ Generated in minutes</div>
+                    <div class="stat">🎨 Custom animations</div>
+                    <div class="stat">🤖 AI-powered design</div>
+                </div>
+                <p class="claude-tagline">Experience the future of coding today!</p>
+                <div class="powered-by">Powered by Anthropic</div>
+            </div>
+
+            <!-- Slide 11: Call to Action -->
+            <div class="slide">
+                <h1>🚀 Ready to Join?</h1>
+                <div class="emoji">⚡ 🌟 ⚡</div>
+                <h2>All Skill Levels Welcome!</h2>
+                <p>Whether you're the next tech genius or just curious...</p>
+                <h3>🤖 The Future is AI-Powered</h3>
+                <h3>🛠️ And YOU Can Build It!</h3>
+                <button class="cta">JOIN NOW! 🚀</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar">
+        <div class="progress-fill"></div>
+    </div>
+
+    <!-- Navigation Dots -->
+    <div class="nav-dots">
+        <div class="nav-dot active" data-slide="0"></div>
+        <div class="nav-dot" data-slide="1"></div>
+        <div class="nav-dot" data-slide="2"></div>
+        <div class="nav-dot" data-slide="3"></div>
+        <div class="nav-dot" data-slide="4"></div>
+        <div class="nav-dot" data-slide="5"></div>
+        <div class="nav-dot" data-slide="6"></div>
+        <div class="nav-dot" data-slide="7"></div>
+        <div class="nav-dot" data-slide="8"></div>
+        <div class="nav-dot" data-slide="9"></div>
+        <div class="nav-dot" data-slide="10"></div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+        <button class="control-btn" id="prevBtn">←</button>
+        <button class="control-btn" id="playPauseBtn">⏸</button>
+        <button class="control-btn" id="nextBtn">→</button>
+    </div>
+
+    <script>
+        // Matrix Rain Effect
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set canvas size
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Matrix characters
+        const matrixChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*(){}[]<>?/+=_-~`';
+        const charArray = matrixChars.split('');
+
+        // Drops array
+        const drops = [];
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+
+        // Initialize drops
+        for (let i = 0; i < columns; i++) {
+            drops[i] = Math.random() * canvas.height / fontSize;
+        }
+
+        // Draw matrix rain
+        function drawMatrix() {
+            // Fade effect
+            ctx.fillStyle = 'rgba(26, 26, 26, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Matrix text
+            ctx.fillStyle = '#ffd700';
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = charArray[Math.floor(Math.random() * charArray.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                // Reset drop
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        // Animate matrix
+        setInterval(drawMatrix, 35);
+
+        // Slideshow Logic
+        const slides = document.querySelectorAll('.slide');
+        const navDots = document.querySelectorAll('.nav-dot');
+        const progressFill = document.querySelector('.progress-fill');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+
+        let currentSlide = 0;
+        let isPlaying = true;
+        let slideInterval;
+        let progressInterval;
+        const slideDuration = 6000; // 6 seconds per slide
+
+        // Show specific slide
+        function showSlide(index) {
+            // Remove active class from all slides and dots
+            slides.forEach(slide => slide.classList.remove('active', 'next'));
+            navDots.forEach(dot => dot.classList.remove('active'));
+
+            // Add active class to current slide and dot
+            slides[index].classList.add('active');
+            navDots[index].classList.add('active');
+
+            // Add next class to previous slide
+            if (index > 0) {
+                slides[index - 1].classList.add('next');
+            } else {
+                slides[slides.length - 1].classList.add('next');
+            }
+
+            currentSlide = index;
+            resetProgress();
+        }
+
+        // Next slide
+        function nextSlide() {
+            const next = (currentSlide + 1) % slides.length;
+            showSlide(next);
+        }
+
+        // Previous slide
+        function prevSlide() {
+            const prev = (currentSlide - 1 + slides.length) % slides.length;
+            showSlide(prev);
+        }
+
+        // Progress bar animation
+        function animateProgress() {
+            let progress = 0;
+            progressInterval = setInterval(() => {
+                progress += 100 / (slideDuration / 100);
+                progressFill.style.width = progress + '%';
+                
+                if (progress >= 100) {
+                    clearInterval(progressInterval);
+                }
+            }, 100);
+        }
+
+        // Reset progress
+        function resetProgress() {
+            clearInterval(progressInterval);
+            progressFill.style.width = '0%';
+            if (isPlaying) {
+                animateProgress();
+            }
+        }
+
+        // Auto-advance slides
+        function startSlideshow() {
+            slideInterval = setInterval(nextSlide, slideDuration);
+            animateProgress();
+        }
+
+        // Stop slideshow
+        function stopSlideshow() {
+            clearInterval(slideInterval);
+            clearInterval(progressInterval);
+        }
+
+        // Toggle play/pause
+        function togglePlayPause() {
+            if (isPlaying) {
+                stopSlideshow();
+                playPauseBtn.textContent = '▶';
+                isPlaying = false;
+            } else {
+                startSlideshow();
+                playPauseBtn.textContent = '⏸';
+                isPlaying = true;
+            }
+        }
+
+        // Event listeners
+        prevBtn.addEventListener('click', () => {
+            stopSlideshow();
+            prevSlide();
+            if (isPlaying) startSlideshow();
+        });
+
+        nextBtn.addEventListener('click', () => {
+            stopSlideshow();
+            nextSlide();
+            if (isPlaying) startSlideshow();
+        });
+
+        playPauseBtn.addEventListener('click', togglePlayPause);
+
+        // Navigation dots
+        navDots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                stopSlideshow();
+                showSlide(index);
+                if (isPlaying) startSlideshow();
+            });
+        });
+
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'ArrowLeft':
+                    stopSlideshow();
+                    prevSlide();
+                    if (isPlaying) startSlideshow();
+                    break;
+                case 'ArrowRight':
+                    stopSlideshow();
+                    nextSlide();
+                    if (isPlaying) startSlideshow();
+                    break;
+                case ' ':
+                    e.preventDefault();
+                    togglePlayPause();
+                    break;
+                case 'Escape':
+                    document.exitFullscreen?.();
+                    break;
+            }
+        });
+
+        // Mouse movement shows cursor temporarily
+        let cursorTimeout;
+        document.addEventListener('mousemove', () => {
+            document.body.style.cursor = 'default';
+            clearTimeout(cursorTimeout);
+            cursorTimeout = setTimeout(() => {
+                document.body.style.cursor = 'none';
+            }, 3000);
+        });
+
+        // Hornet Takeover Effect
+        function triggerHornetTakeover() {
+            const overlay = document.getElementById('hornet-overlay');
+            const logo = document.getElementById('hornet-logo');
+            const explosion = document.getElementById('explosion-effect');
+            const presentationContainer = document.querySelector('.presentation-container');
+
+            // Show overlay
+            overlay.classList.add('active');
+            
+            // Add glitch effect to main content
+            presentationContainer.classList.add('glitch-effect');
+
+            // After logo animation completes (3s), trigger explosion
+            setTimeout(() => {
+                explosion.classList.add('active');
+                
+                // Hide overlay after explosion
+                setTimeout(() => {
+                    overlay.classList.remove('active');
+                    explosion.classList.remove('active');
+                    presentationContainer.classList.remove('glitch-effect');
+                }, 800);
+            }, 3000);
+        }
+
+        // Random hornet takeover (every 30-120 seconds)
+        function scheduleRandomHornetTakeover() {
+            const minDelay = 30000; // 30 seconds
+            const maxDelay = 120000; // 2 minutes
+            const randomDelay = Math.random() * (maxDelay - minDelay) + minDelay;
+            
+            setTimeout(() => {
+                if (isPlaying) { // Only trigger if slideshow is playing
+                    triggerHornetTakeover();
+                }
+                scheduleRandomHornetTakeover(); // Schedule next one
+            }, randomDelay);
+        }
+
+        // Initialize slideshow
+        startSlideshow();
+
+        // Start random hornet takeovers
+        scheduleRandomHornetTakeover();
+
+        // Fullscreen on load (optional)
+        document.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen?.();
+            }
+        }, { once: true });
+    </script>
+</body>
+</html>
