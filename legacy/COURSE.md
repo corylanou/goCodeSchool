@@ -1,6 +1,6 @@
 # COURSE OUTLINE
 
-### Introduction to Full Stack Development
+## Introduction to Full Stack Development
 
 - **Overview of Full Stack Development**
   - What is full stack development?

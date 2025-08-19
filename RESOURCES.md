@@ -2,7 +2,7 @@
 
 We need the GitHub Student Developer Pack and Railway because they provide cost-effective, easy-to-use tools and platforms that are perfect for students to learn and deploy their Go web applications. The GitHub Student Developer Pack offers free access to premium development tools, while Railway provides a user-friendly deployment platform with free monthly credits. Together, they allow students to gain practical, hands-on experience with industry-standard technologies without worrying about costs, making it easier to learn, build, and scale their projects.
 
-### **What is the GitHub Student Developer Pack?**
+## What is the GitHub Student Developer Pack?
 
 The **GitHub Student Developer Pack** is a collection of free tools and resources specifically designed for students to help them learn, build, and develop their skills in software development. It includes access to premium developer tools, cloud services, and educational resources, all free of charge. The pack is available to students who can verify their student status, typically through a school email address or by providing proof of enrollment.
 
@@ -101,7 +101,7 @@ By choosing the GitHub Student Developer Pack and Railway, students gain access 
 - **Explore Railway’s Features**: Railway offers databases, cron jobs, and more. Explore these to enhance your Go web applications.
 - **Stay Within Free Limits**: Keep track of your usage to stay within the free tier provided by Railway.
 
-# Free Learning Resources
+## Free Learning Resources
 
 ## 100+ FREE Resources Every Web Developer Must Try
 
