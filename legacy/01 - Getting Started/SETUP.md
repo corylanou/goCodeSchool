@@ -39,7 +39,7 @@ func main() {
 }
 ```
 
-5. Save the file (Ctrl+S or Cmd+S).
+1. Save the file (Ctrl+S or Cmd+S).
 
 ## Running the Go Program
 

@@ -1,91 +1,222 @@
-# Go for It: Middle & High School Computer Science with Go
+# Go Code School: AI-Assisted Web Development
 
-This repository 
+Learn Go programming through AI-assisted "vibe coding" - build real applications by describing what you want and letting AI help you implement it.
 
-## Why?
+> 📢 **Interested in our program?** Check out our [Activity Fair Presentation](./resources/promotional/programming-club-flyer.md) (flyer) and [Slideshow Overview](./resources/promotional/flyer.html) — perfect for students, parents, and educators!
 
+## 🎯 What Makes This Different
 
+### Traditional Programming Education:
 
-## What technology stack will we use?
+- Read theory → Do exercises → Build simple examples
+- Focus on syntax and language features  
+- Academic projects with limited practical value
 
-The GOTTH stack stands for Go, Gin, TypeScript, Tailwind CSS, and Heroku. Here’s an overview of each chapter that will help students learn the basics of full stack development using this stack:
+### Our AI-Assisted Approach:
 
-## Project: Simple To-Do List Web Application
+- Plan projects → Collaborate with AI → Build real applications → Deploy to production
+- Focus on problem-solving and AI collaboration skills
+- Professional applications for your portfolio
 
-### Objectives
+## 🚀 The Five-Skill Vibe Coding Framework
 
-1. **Learn the basics of Go programming language.**
-2. **Understand web development concepts.**
-3. **Get hands-on experience with Go’s web framework.**
-4. **Learn about data storage and retrieval.**
+1. **Strategic Thinking** - Plan before coding using PRDs and wireframes
+2. **AI Collaboration** - Effective prompting and context management
+3. **Validation Checkpoints** - Testing and reviewing AI-generated code
+4. **Debugging Mastery** - AI-assisted troubleshooting and optimization
+5. **Context Management** - Maintaining project knowledge and documentation
 
-#### Steps
+## 🛠️ Tech Stack: GOTHSAV
 
-1. **Setup and Introduction:**
-   - Install Go on their machines.
-   - Set up a Go workspace.
-   - Introduction to Go syntax and basic programming constructs (variables, loops, functions, etc.).
+- **G**o 1.25 - Modern, powerful programming language
+- **t**empl - Type-safe HTML templating
+- **H**TML/HTMX - Interactive web interfaces without complex JavaScript
+- **S**QLite - Simple, powerful database
+- **s**qlc - Type-safe SQL code generation
+- **A**ir - Live reload development
+- **V**ercel - Free professional hosting
 
-2. **Create a Simple Web Server:**
-   - Use Go’s `net/http` package to create a simple web server.
-   - Handle basic HTTP requests and responses.
-   - Create a simple “Hello, World!” web page.
+## 🆓 Free Tools for Students
 
-3. **Build the To-Do List Application:**
-   - **Frontend:**
-     - Use HTML/CSS to create a simple user interface for the to-do list.
-     - Use JavaScript for basic interactivity (optional, can be kept simple).
-   - **Backend:**
-     - Create handlers for different routes (e.g., `/`, `/add`, `/delete`).
-     - Use Go structs to represent to-do items.
-     - Store to-do items in memory (using slices or maps).
+### GitHub Student Pack Benefits:
 
-4. **Add Data Persistence:**
-   - Introduce basic file I/O to save and load to-do items from a file.
-   - Alternatively, introduce a simple database like SQLite for data persistence.
+- **GitHub Copilot Pro** - FREE AI pair programming (normally $20/month)
+- **Vercel Pro** - FREE unlimited deployments and custom domains
+- **All Course Tools** - Open source and permanently free
 
-5. **Enhance the Application:**
-   - Add features like marking items as completed, editing items, etc.
-   - Implement user authentication (optional, for more advanced students).
+### Real Portfolio Value:
 
-6. **Deploy the Application:**
-   - Teach students how to deploy their application to a cloud service like Heroku or DigitalOcean.
-   - Explain the basics of web hosting and domain names.
+- Deploy applications to professional URLs
+- Showcase projects to employers and schools
+- Build actual value while learning
 
-### Example Code Snippet
+## 📁 Course Structure: From Zero to Hero
 
-Here’s a simple example of how to set up a basic web server in Go:
+Instead of traditional modules, you'll build real applications with AI assistance:
 
-```go
-package main
-
-import (
-    "fmt"
-    "net/http"
-)
-
-func homePage(w http.ResponseWriter, r *http.Request) {
-    fmt.Fprintf(w, "Welcome to the To-Do List App!")
-}
-
-func main() {
-    http.HandleFunc("/", homePage)
-    fmt.Println("Server starting on port 8080...")
-    http.ListenAndServe(":8080", nil)
-}
+```text
+01-Vibe-Starters/           # 5 beginner-friendly HTML/CSS/JS projects
+02-Setup/                   # AI development environment for Go
+03-Portfolio-Project/       # Professional website with Go backend
+04-Resume-Generator/        # Dynamic resume with templating  
+05-Contact-Manager/         # CRUD app with SQLite
+06-Todo-App/               # Authentication + HTMX interactions
+07-Blog-Platform/          # Content management system
+08-Product-Catalog/        # E-commerce with advanced features
+09-Chat-App/              # Real-time communication
+10-Dashboard-Project/     # API integration + data visualization
+11-Capstone-Project/      # Student choice + advanced deployment
 ```
 
-### Resources
+### Each Project Includes:
 
-- **Go Documentation:** [https://golang.org/doc/](https://golang.org/doc/)
-- **Go by Example:** [https://gobyexample.com/](https://gobyexample.com/)
-- **HTML/CSS Basics:** [https://www.w3schools.com/](https://www.w3schools.com/)
-- **Go Web Development Tutorials:** [https://gowebexamples.com/](https://gowebexamples.com/)
+- **Planning Phase**: PRD creation, wireframe design, technical specs
+- **AI Prompting Strategies**: Proven prompts for each feature
+- **Code Understanding**: AI-assisted explanation and modification
+- **Testing & Debugging**: AI-assisted troubleshooting
+- **Deployment**: Professional hosting on Vercel
 
-### Tips
+## 🎯 Learning Progression
 
-- **Keep it Interactive:** Encourage students to add their own features and ideas to the project.
-- **Pair Programming:** Have students work in pairs or small groups to foster collaboration.
-- **Regular Check-ins:** Schedule regular check-ins to discuss progress and address any challenges.
+### Week 1: Gentle Introduction
 
-This project will not only teach students the basics of Go but also give them a sense of accomplishment as they build a functional web application.
+- Start with simple, fun projects using any AI tool
+- Learn AI collaboration through immediate, shareable results
+- Build confidence with HTML, CSS, and JavaScript basics
+
+### Week 2: Professional Setup
+
+- Set up AI development environment for Go
+- Configure GitHub Copilot, VS Code, and deployment tools
+- Master advanced AI prompting techniques
+
+### Week 3-6: Core Skills
+
+- Database integration and CRUD operations
+- Dynamic templating and user interfaces
+- Authentication and session management
+
+### Week 7-10: Advanced Features
+
+- Real-time interactions with HTMX
+- API integration and data visualization
+- Performance optimization and monitoring
+
+### Week 11-12: Capstone
+
+- Student-choice project with advanced requirements
+- Professional deployment and portfolio showcase
+- Code review and optimization with AI assistance
+
+## 🚀 Getting Started
+
+### Step 1: Gentle Introduction
+
+```bash
+# Start with simple, fun projects
+cd 01-Vibe-Starters
+# Build 5 beginner projects with AI assistance
+```
+
+### Step 2: Development Environment
+
+```bash
+# Set up professional Go development
+cd 02-Setup
+# Configure AI tools and Go environment
+```
+
+### Step 3: Real Web Applications
+
+```bash
+# Build professional Go web applications
+cd 03-Portfolio-Project
+# Start your portfolio of deployed apps
+```
+
+### Step 4: Deploy and Share
+
+- Get your applications online within hours
+- Share your progress with friends and family
+- Start building your professional portfolio
+
+## 🤖 AI Integration
+
+### GitHub Copilot Integration:
+
+- FREE access through GitHub Student Pack
+- Integrated prompting strategies for each project
+- Code explanation and debugging assistance
+- Best practices for AI collaboration
+
+### Project-Specific AI Guidance:
+
+- Proven prompts for each development phase
+- Debugging templates for common issues
+- Code review and optimization strategies
+- Deployment and production assistance
+
+## 📚 Key Resources
+
+### Getting Started:
+
+- **[01-Vibe-Starters/](./01-Vibe-Starters/)** - 5 beginner projects to learn AI coding
+- **[02-Setup/](./02-Setup/)** - AI development environment configuration  
+- **[LEARNING_PATH.md](./LEARNING_PATH.md)** - Complete learning progression guide
+- **[templates/](./templates/)** - Shared guides and templates
+
+### AI Assistance:
+
+- **[Prompting Guide](./templates/prompting-guide.md)** - Proven AI prompting strategies
+- **[AI Setup](./templates/ai-coding-setup.md)** - GitHub Copilot configuration
+- **[Deployment Guide](./templates/vercel-deployment-guide.md)** - Professional hosting
+
+### Implementation Resources:
+
+- **[IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md)** - Complete transformation plan
+- **[legacy/](./legacy/)** - Previous curriculum for reference
+
+## 💡 Success Stories
+
+Students using this approach have:
+
+- ✅ Built and deployed real applications within their first week
+- ✅ Created professional portfolios that impressed teachers and employers
+- ✅ Mastered AI collaboration skills relevant to modern development
+- ✅ Gained confidence in learning new technologies independently
+
+## 🎯 Learning Outcomes
+
+By the end of this course, you'll have:
+
+### Technical Skills:
+
+- 14 deployed applications in your portfolio (5 frontend + 9 full-stack)
+- Mastery of Go web development with modern tools
+- AI-assisted development workflow expertise
+- Database design and management skills
+
+### Professional Skills:
+
+- Project planning and technical documentation
+- Problem-solving with AI collaboration
+- Code review and quality improvement
+- Production deployment and maintenance
+
+### Career Readiness:
+
+- Professional portfolio with live applications
+- Experience with industry-standard tools and practices
+- Confidence in learning new technologies with AI
+- Understanding of modern development workflows
+
+---
+
+## 🚀 Ready to Start?
+
+1. **Start with simple projects** in [01-Vibe-Starters/](./01-Vibe-Starters/)
+2. **Set up your Go environment** in [02-Setup/](./02-Setup/)  
+3. **Build professional applications** starting with [03-Portfolio-Project/](./03-Portfolio-Project/)
+4. **Deploy and share** your growing portfolio with the world!
+
+**Welcome to the future of programming education!** 🎉

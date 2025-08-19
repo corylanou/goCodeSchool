@@ -1,6 +1,6 @@
 # TOOLS
 
-### **What Are Developer Tools and Why Do We Need Them?**
+## What Are Developer Tools and Why Do We Need Them?
 
 **1. Code Editor:**
 
