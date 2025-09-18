@@ -212,6 +212,25 @@ By the end of this course, you'll have:
 
 ---
 
+## 📅 Meeting Schedule (2025-2026 School Year)
+
+### Kickoff Meeting
+
+**Thursday, September 18th, 2025 at 3:00 PM**  
+High School Library (Resource Time)
+
+### Regular Schedule (September 2025 - May 2026)
+
+- **Tuesdays: 3:00 PM - 3:30 PM** (Resource Time) - High School Library
+- **Thursdays: 3:30 PM - 5:30 PM** (After School) - High School Library
+
+### Flexible Participation
+
+- **Sports Conflicts?** No problem! Students can still join resource time sessions or get materials to work on their own schedule
+- **Bring Your Laptop** - Students are welcome to bring their own devices for setup assistance
+- **Recommended Systems**: Mac laptops or Windows machines with Linux dual-boot capability
+- **School Computers Available**: 5-10 computers available for in-school use only (cannot be taken home)
+
 ## 🚀 Ready to Start?
 
 1. **Start with simple projects** in [01-Vibe-Starters/](./01-Vibe-Starters/)
