@@ -28,7 +28,7 @@ If you have your own Windows, Mac, or Linux computer where you can install softw
 ⚠️ **CRITICAL SCHOOL NETWORK ISSUE**: Our school blocks Google OAuth authentication. You MUST enter your email manually - do not click "Sign in with Google."
 
 1. **Visit the Student Developer Pack Page**
-   - Go to: `https://education.github.com/pack`
+   - Go to: [https://education.github.com/pack](https://education.github.com/pack)
    - Click "Sign up for Student Developer Pack"
 
 2. **Create Your GitHub Account**
@@ -72,7 +72,7 @@ If you have your own Windows, Mac, or Linux computer where you can install softw
 ⚠️ **IMPORTANT**: Codespaces cannot be created from empty repositories!
 
 1. **Create a New Repository**
-   - Sign in to GitHub.com
+   - Sign in to [GitHub.com](https://github.com)
    - Click the "+" button (top right)
    - Select "New repository"
    - **CRITICAL**: ✅ Check "Add a README file"
@@ -93,7 +93,7 @@ If you have your own Windows, Mac, or Linux computer where you can install softw
 ### Step 2B: Setting Up VS Code Locally (Non-Chromebook)
 
 1. **Download VS Code**
-   - Visit: `https://code.visualstudio.com`
+   - Visit: [https://code.visualstudio.com](https://code.visualstudio.com)
    - Download for your operating system
    - Run the installer
 
