@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git & GitHub: Save Your Game</title>
+    <style>
+        :root {
+            --accent: #FFD700;
+            --bg-overlay: rgba(0, 0, 0, 0.7);
+            --card-bg: rgba(26, 26, 26, 0.92);
+            --text-light: #F5F5F5;
+            --text-muted: #B5B5B5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #000;
+            color: var(--text-light);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide-stage {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            max-width: 1920px;
+            max-height: 1080px;
+            background-image: url('../../resources/logo/background.png');
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+        }
+
+        .slide-stage::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--bg-overlay);
+        }
+
+        .hornet-badge {
+            position: absolute;
+            top: 40px;
+            right: 60px;
+            width: 110px;
+            height: 110px;
+            background: url('../../resources/logo/angry-hornet.png') no-repeat center;
+            background-size: contain;
+            z-index: 2;
+            filter: drop-shadow(3px 6px 12px rgba(0,0,0,0.6));
+        }
+
+        .slides {
+            position: relative;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .slide {
+            position: absolute;
+            inset: 6%;
+            background: var(--card-bg);
+            border: 4px solid var(--accent);
+            border-radius: 32px;
+            padding: 60px 80px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+            opacity: 0;
+            transform: translateX(80px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0);
+            z-index: 3;
+        }
+
+        .slide-title {
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 0 6px 18px rgba(0, 0, 0, 0.7);
+        }
+
+        .slide-subtitle {
+            font-size: 1.8rem;
+            color: var(--text-muted);
+            max-width: 800px;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        ul li {
+            font-size: 1.6rem;
+            margin-bottom: 18px;
+            padding-left: 36px;
+            position: relative;
+            line-height: 1.4;
+        }
+
+        ul li::before {
+            content: '▶';
+            color: var(--accent);
+            position: absolute;
+            left: 0;
+            top: 2px;
+            font-size: 1.4rem;
+        }
+
+        ol {
+            margin-left: 24px;
+            font-size: 1.6rem;
+            line-height: 1.5;
+        }
+
+        ol li {
+            margin-bottom: 14px;
+        }
+
+        .callout {
+            background: rgba(255, 215, 0, 0.12);
+            border-left: 6px solid var(--accent);
+            padding: 20px 28px;
+            font-size: 1.4rem;
+            color: var(--text-muted);
+        }
+
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 16px 28px;
+            background: var(--accent);
+            color: #1a1a1a;
+            font-weight: 700;
+            font-size: 1.4rem;
+            border-radius: 14px;
+            text-decoration: none;
+            width: fit-content;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 30px rgba(0,0,0,0.5);
+        }
+
+        .nav-bar {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            z-index: 4;
+            background: rgba(0, 0, 0, 0.65);
+            padding: 16px 28px;
+            border-radius: 999px;
+            border: 2px solid var(--accent);
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+
+        .nav-button {
+            background: transparent;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            font-size: 1.1rem;
+            padding: 10px 18px;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .nav-button:hover {
+            background: var(--accent);
+            color: #1a1a1a;
+        }
+
+        .progress-dots {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .progress-dots span {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .progress-dots span.active {
+            background: var(--accent);
+        }
+
+        @media (max-width: 1280px) {
+            .slide {
+                inset: 4%;
+                padding: 50px 60px;
+            }
+            .slide-title {
+                font-size: 3rem;
+            }
+            ul li, ol li {
+                font-size: 1.4rem;
+            }
+        }
+
+        @media (max-width: 960px) {
+            body {
+                font-size: 90%;
+            }
+            .slide {
+                inset: 3%;
+                padding: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-stage">
+        <div class="hornet-badge" aria-hidden="true"></div>
+        <div class="slides" role="region" aria-live="polite">
+            <section class="slide active" data-index="0">
+                <h1 class="slide-title">Git &amp; GitHub</h1>
+                <p class="slide-subtitle">Git tracks your code history and GitHub shares it with your crew—video game vibes are just for color.</p>
+                <a class="cta-button" href="https://www.youtube.com/watch?v=a9u2yZvsqHA" target="_blank" rel="noopener">▶ Watch: How To Use GitHub For Beginners</a>
+                <div class="callout">Use ⬅️ ➡️ arrow keys or the buttons below to move through the deck.</div>
+            </section>
+
+            <section class="slide" data-index="1">
+                <h2 class="slide-title">Why We Care</h2>
+                <ul>
+                    <li>Git records every project change so you can restore stable versions. <em>Game parallel: feels like a playable memory of your adventure.</em></li>
+                    <li>GitHub hosts that history online so teammates can sync anytime. <em>Game parallel: everyone loads the same progress file.</em></li>
+                    <li>Together they let you experiment safely and undo calmly. <em>Game parallel: the party respawns without losing loot.</em></li>
+                </ul>
+                <div class="callout">GitHub is the real website where you share repos; in game terms it’s the lobby where your party gathers before the next quest.</div>
+            </section>
+
+            <section class="slide" data-index="2">
+                <h2 class="slide-title">Git Checkpoints</h2>
+                <ul>
+                    <li>Each commit captures the current state of your tracked files. <em>Game parallel: like grabbing a glowing save crystal when things feel stable.</em></li>
+                    <li>Every commit includes your message explaining the change. <em>Game parallel: jotting a quick note about the mission you completed.</em></li>
+                    <li>If something breaks, you can restore an earlier commit. <em>Game parallel: reload the last save and respawn with confidence.</em></li>
+                </ul>
+                <div class="callout">Pro move: Save often. Small commits beat giant “I hope this works” saves.</div>
+            </section>
+
+            <section class="slide" data-index="3">
+                <h2 class="slide-title">GitHub Basics</h2>
+                <ul>
+                    <li>Stores a copy of your repo online so teammates can sync anytime. <em>Game parallel: your shared server with the latest save.</em></li>
+                    <li>Shows who changed what and when for clear collaboration. <em>Game parallel: a scoreboard that awards XP to the right players.</em></li>
+                    <li>Connects to VS Code so you can push and pull without the terminal. <em>Game parallel: quality-of-life mods that streamline co-op.</em></li>
+                </ul>
+                <div class="callout">Public repos showcase real work to schools, internships, and future squads—think highlight reel in game terms.</div>
+            </section>
+
+            <section class="slide" data-index="4">
+                <h2 class="slide-title">VS Code Flow</h2>
+                <ol>
+                    <li>Make edits in your project files.</li>
+                    <li>Open the Source Control tab (branch icon).</li>
+                    <li>Stage the files you want included in this commit (click the <strong>+</strong>). <em>Game parallel: pack the gear you’ll carry forward.</em></li>
+                    <li>Write a short commit message: <em>“Add hero image”</em>.</li>
+                    <li>Hit the checkmark to commit, then Sync to share with the team.</li>
+                </ol>
+                <div class="callout">VS Code runs Git commands for you. Focus on the story you’re telling with each commit.</div>
+            </section>
+
+            <section class="slide" data-index="5">
+                <h2 class="slide-title">Merge Conflicts</h2>
+                <ul>
+                    <li>Happens when two people edit the same line, so Git pauses for a decision. <em>Game parallel: the party has to agree before the boss battle continues.</em></li>
+                    <li>VS Code shows both versions between <code>&lt;&lt;&lt;&lt;&lt;&lt;</code> and <code>&gt;&gt;&gt;&gt;&gt;&gt;</code>. <em>Game parallel: choose which script becomes canon.</em></li>
+                    <li>Chat with your teammate, edit the file to the final text, then commit again. <em>Game parallel: strategize together, lock in the winning move.</em></li>
+                </ul>
+                <div class="callout">Conflicts aren’t bad—they protect real work. Co-op like a boss fight once you’ve got the plan.</div>
+            </section>
+
+            <section class="slide" data-index="6">
+                <h2 class="slide-title">Practice Quest</h2>
+                <ol>
+                    <li>Create a new folder and open it in VS Code.</li>
+                    <li>Initialize Git in the Source Control tab.</li>
+                    <li>Add <code>notes.md</code>, write one sentence, commit, sync.</li>
+                    <li>Edit the note, commit again, sync.</li>
+                    <li>Show the commit history on GitHub—celebrate the timeline!</li>
+                </ol>
+                <div class="callout">Run this together so everyone feels the commit loop before touching bigger projects.</div>
+            </section>
+
+            <section class="slide" data-index="7">
+                <h2 class="slide-title">Keep Exploring</h2>
+                <ul>
+                    <li><a class="cta-button" href="https://docs.github.com/en/get-started/start-your-journey/hello-world" target="_blank" rel="noopener">GitHub Docs: Hello World</a></li>
+                    <li><a class="cta-button" href="https://www.atlassian.com/git/tutorials/what-is-version-control" target="_blank" rel="noopener">What Is Version Control?</a></li>
+                    <li><a class="cta-button" href="https://www.freecodecamp.org/news/what-is-git-learn-git-version-control" target="_blank" rel="noopener">freeCodeCamp: Git Basics</a></li>
+                    <li><a class="cta-button" href="https://skills.github.com/" target="_blank" rel="noopener">GitHub Skills Labs</a></li>
+                </ul>
+                <div class="callout">Pick one resource to explore this week and share a takeaway at the next meetup.</div>
+            </section>
+        </div>
+
+        <div class="nav-bar" role="navigation" aria-label="Slide controls">
+            <button class="nav-button" id="prevBtn" type="button" aria-label="Previous slide">⬅️ Back</button>
+            <div class="progress-dots" aria-hidden="true"></div>
+            <button class="nav-button" id="nextBtn" type="button" aria-label="Next slide">Next ➡️</button>
+        </div>
+    </div>
+
+    <script>
+        const slides = Array.from(document.querySelectorAll('.slide'));
+        const dotsContainer = document.querySelector('.progress-dots');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        let current = 0;
+
+        function buildDots() {
+            slides.forEach((_, index) => {
+                const dot = document.createElement('span');
+                dot.dataset.index = index;
+                dotsContainer.appendChild(dot);
+            });
+        }
+
+        function updateDots() {
+            dotsContainer.querySelectorAll('span').forEach((dot, index) => {
+                dot.classList.toggle('active', index === current);
+            });
+        }
+
+        function showSlide(index) {
+            if (index < 0 || index >= slides.length) {
+                return;
+            }
+            slides[current].classList.remove('active');
+            current = index;
+            slides[current].classList.add('active');
+            updateDots();
+        }
+
+        function nextSlide() {
+            if (current < slides.length - 1) {
+                showSlide(current + 1);
+            }
+        }
+
+        function prevSlide() {
+            if (current > 0) {
+                showSlide(current - 1);
+            }
+        }
+
+        function handleKeydown(event) {
+            if (event.key === 'ArrowRight') {
+                nextSlide();
+            }
+            if (event.key === 'ArrowLeft') {
+                prevSlide();
+            }
+        }
+
+        buildDots();
+        updateDots();
+
+        prevBtn.addEventListener('click', prevSlide);
+        nextBtn.addEventListener('click', nextSlide);
+        document.addEventListener('keydown', handleKeydown);
+
+        dotsContainer.addEventListener('click', (event) => {
+            const target = event.target;
+            if (target.tagName.toLowerCase() === 'span') {
+                const idx = Number(target.dataset.index);
+                showSlide(idx);
+            }
+        });
+    </script>
+</body>
+</html>
