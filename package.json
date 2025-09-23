@@ -1,0 +1,24 @@
+{
+  "name": "gocodeschool",
+  "version": "1.0.0",
+  "description": "Learn Go programming through AI-assisted \"vibe coding\" - build real applications by describing what you want and letting AI help you implement it.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/corylanou/goCodeSchool.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/corylanou/goCodeSchool/issues"
+  },
+  "homepage": "https://github.com/corylanou/goCodeSchool#readme",
+  "devDependencies": {
+    "playwright": "^1.55.1"
+  }
+}
