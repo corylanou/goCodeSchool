@@ -3,71 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Debugging Mindset – Stub</title>
+    <title>Debugging Mindset</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #0b0f19;
-            color: #f5f5f5;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
-        .slide-stage {
-            width: 90vw;
-            max-width: 1280px;
-            height: 90vh;
-            background: rgba(5, 8, 16, 0.92);
-            border: 4px solid #ff6b6b;
-            border-radius: 24px;
-            padding: 48px;
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-        h1, h2 {
-            margin: 0;
-            color: #ff6b6b;
-        }
-        ul, ol {
-            margin: 0;
-            padding-left: 24px;
-        }
-        .callout {
-            background: rgba(255, 107, 107, 0.12);
-            border-left: 6px solid #ff6b6b;
-            padding: 16px 20px;
-            font-size: 1rem;
-        }
-        .todo {
-            color: #d6d6d6;
-            font-style: italic;
-        }
+        :root { --accent:#ff6b6b; --bg-overlay:rgba(0,0,0,0.7); --card-bg:rgba(11,15,25,0.92); --text:#f5f5f5; --muted:#cbd5e1; }
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:Arial,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:#000;color:var(--text);height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center}
+        .slide-stage{position:relative;width:100vw;height:100vh;max-width:1920px;max-height:1080px;background-image:url('../../resources/logo/background.png');background-size:cover;background-position:center;box-shadow:0 20px 60px rgba(0,0,0,0.6)}
+        .slide-stage::before{content:'';position:absolute;inset:0;background:var(--bg-overlay)}
+        .hornet-badge{position:absolute;top:40px;right:60px;width:110px;height:110px;background:url('../../resources/logo/angry-hornet.png') no-repeat center;background-size:contain;z-index:2;filter:drop-shadow(3px 6px 12px rgba(0,0,0,0.6))}
+        .slides{position:relative;height:100%;width:100%;overflow:hidden;z-index:1}
+        .slide{position:absolute;inset:6%;background:var(--card-bg);border:4px solid var(--accent);border-radius:32px;padding:60px 80px;display:flex;flex-direction:column;gap:24px;box-shadow:0 20px 60px rgba(0,0,0,0.55);opacity:0;transform:translateX(80px);transition:opacity .6s ease,transform .6s ease}
+        .slide.active{opacity:1;transform:translateX(0);z-index:3}
+        .slide-title{font-size:3rem;color:var(--accent);text-transform:uppercase;letter-spacing:3px;text-shadow:0 6px 18px rgba(0,0,0,.7)}
+        .slide-sub{font-size:1.4rem;color:var(--muted);max-width:780px;line-height:1.5}
+        ul{list-style:none}
+        ul li{font-size:1.4rem;margin-bottom:14px;padding-left:32px;position:relative;line-height:1.4}
+        ul li::before{content:'▶';color:var(--accent);position:absolute;left:0;top:2px;font-size:1.2rem}
+        .callout{background:rgba(255,107,107,0.12);border-left:6px solid var(--accent);padding:18px 22px;color:var(--muted)}
+        pre{background:#0f172a;padding:16px 20px;border-radius:16px;border:2px solid rgba(255,107,107,0.35);color:#f8fafc;font-family:"JetBrains Mono",Menlo,Consolas,monospace;font-size:1.05rem;line-height:1.5;overflow:auto}
+        .nav-bar{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:20px;z-index:4;background:rgba(0,0,0,0.65);padding:16px 28px;border-radius:999px;border:2px solid var(--accent);font-size:1.1rem}
+        .nav-button{background:transparent;border:2px solid var(--accent);color:var(--accent);font-size:1.1rem;padding:10px 18px;border-radius:999px;cursor:pointer;transition:background .2s,color .2s}
+        .nav-button:hover{background:var(--accent);color:#1a1a1a}
+        .progress-dots{display:flex;align-items:center;gap:10px}
+        .progress-dots span{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.25)}
+        .progress-dots span.active{background:var(--accent)}
     </style>
 </head>
 <body>
     <div class="slide-stage">
-        <section>
-            <h1>Debugging Mindset</h1>
-            <p class="todo">TODO: Reframe debugging as collaborative problem solving.</p>
-        </section>
-        <section>
-            <h2>Key Moves</h2>
-            <ul>
-                <li class="todo">VS Code debugger tour</li>
-                <li class="todo">Logging strategies</li>
-                <li class="todo">Pairing rituals</li>
-            </ul>
-        </section>
-        <section>
-            <h2>Scenario Lab</h2>
-            <p class="todo">TODO: Draft a broken feature students can repair live.</p>
-        </section>
-        <section class="callout">
-            <strong>Next:</strong> Add screenshots of breakpoints, console output, and issue tracker follow-up.
-        </section>
+        <div class="hornet-badge" aria-hidden="true"></div>
+        <div class="slides" role="region" aria-live="polite">
+            <section class="slide active" data-index="0">
+                <h1 class="slide-title">Debugging Mindset</h1>
+                <div class="slide-sub">Bugs are feedback. Use evidence, tools, and teamwork to turn chaos into clarity.</div>
+                <div class="callout">Use ⬅️ ➡️ arrows or the buttons below to navigate.</div>
+            </section>
+
+            <section class="slide" data-index="1">
+                <h2 class="slide-title">Shift the Story</h2>
+                <ul>
+                    <li>Treat bugs like detective work, not personal failure.</li>
+                    <li>Write everything down—steps, clues, commands.</li>
+                    <li>Celebrate catches early; they save future panic.</li>
+                </ul>
+                <div class="callout">“It broke” → “We found a constraint.” Language matters.</div>
+            </section>
+
+            <section class="slide" data-index="2">
+                <h2 class="slide-title">The Loop</h2>
+                <pre><code>1. Reproduce the problem reliably
+2. Observe state: debugger, logs, UI, data
+3. Hypothesize: what changed? what should happen?
+4. Test one idea at a time
+5. Fix, verify, and add a guardrail
+6. Share what you learned</code></pre>
+                <div class="callout">Run the loop end-to-end before committing to a fix.</div>
+            </section>
+
+            <section class="slide" data-index="3">
+                <h2 class="slide-title">Reproduce Strategically</h2>
+                <ul>
+                    <li>Capture OS, browser/runtime, branch, seed data.</li>
+                    <li>Automate reproduction: write a failing test or script.</li>
+                    <li>Record a 60s Loom clip so teammates can see it too.</li>
+                </ul>
+            </section>
+
+            <section class="slide" data-index="4">
+                <h2 class="slide-title">Inspect State</h2>
+                <ul>
+                    <li>VS Code debugger: breakpoints, call stack, watch expressions.</li>
+                    <li>Browser DevTools: Network filters, React/Redux inspectors.</li>
+                    <li>Backends: tail structured logs, inspect DB rows, check feature flags.</li>
+                </ul>
+            </section>
+
+            <section class="slide" data-index="5">
+                <h2 class="slide-title">Instrument & Log</h2>
+                <ul>
+                    <li>Prefer structured logs: <code>logger.info('User', { id, state })</code>.</li>
+                    <li>Tag each log with request ID or correlation ID.</li>
+                    <li>Strip noisy logs after the fix to protect signal later.</li>
+                </ul>
+            </section>
+
+            <section class="slide" data-index="6">
+                <h2 class="slide-title">Debugger Boost</h2>
+                <ul>
+                    <li>Create a launch config for the project (Node/Go/Next).</li>
+                    <li>Use conditional breakpoints: pause only when <code>items.length === 0</code>.</li>
+                    <li>Step into library code to confirm assumptions, then step out.</li>
+                </ul>
+            </section>
+
+            <section class="slide" data-index="7">
+                <h2 class="slide-title">Form Smart Hypotheses</h2>
+                <ul>
+                    <li>Anchor on recent changes—git diff is your friend.</li>
+                    <li>Explain hypotheses out loud; your partner will spot gaps.</li>
+                    <li>Log each attempt in your scratchpad to avoid loops.</li>
+                </ul>
+                <div class="callout">“If state resets after fetch, then the reducer is returning a new object.”</div>
+            </section>
+
+            <section class="slide" data-index="8">
+                <h2 class="slide-title">Verify & Guard</h2>
+                <ul>
+                    <li>Write a regression test or Storybook story that fails first.</li>
+                    <li>Update documentation or README with the new edge case.</li>
+                    <li>Share a 3-sentence recap: cause, fix, prevention.</li>
+                </ul>
+            </section>
+
+            <section class="slide" data-index="9">
+                <h2 class="slide-title">Communication Rituals</h2>
+                <ul>
+                    <li>Bug buddy rule: ask for help after 20 focused minutes.</li>
+                    <li>Threaded chat updates: clues, logs, screenshots in one place.</li>
+                    <li>Daily “duck stand-up”: everyone states what they are debugging.</li>
+                </ul>
+            </section>
+
+            <section class="slide" data-index="10">
+                <h2 class="slide-title">Lab: Mystery Bug</h2>
+                <ul>
+                    <li>Broken todo app—items vanish after refresh.</li>
+                    <li>Students document repro, inspect state, patch reducer.</li>
+                    <li>Deliver: fix commit, regression test, README note.</li>
+                </ul>
+                <div class="callout">Timebox 30 minutes, then debrief signals that led to the fix.</div>
+            </section>
+
+            <section class="slide" data-index="11">
+                <h2 class="slide-title">Cheat Sheet</h2>
+                <ul>
+                    <li>401 errors → check env vars/tokens/headers.</li>
+                    <li>UI not updating → inspect state mutation and effect deps.</li>
+                    <li>Flaky tests → control randomness, await async, isolate side effects.</li>
+                </ul>
+            </section>
+
+            <section class="slide" data-index="12">
+                <h2 class="slide-title">Resources & Next</h2>
+                <ul>
+                    <li><a href="https://code.visualstudio.com/docs/editor/debugging" target="_blank" rel="noopener">VS Code Debugger Docs</a></li>
+                    <li><a href="https://developer.chrome.com/docs/devtools/" target="_blank" rel="noopener">Chrome DevTools Guides</a></li>
+                    <li><a href="https://sentry.io/welcome/" target="_blank" rel="noopener">Sentry: capture production errors</a></li>
+                </ul>
+                <div class="callout">Next session: pair this with automated testing so every bug fix earns a guardrail.</div>
+            </section>
+        </div>
+
+        <div class="nav-bar" role="navigation" aria-label="Slide controls">
+            <button class="nav-button" id="prevBtn" type="button" aria-label="Previous slide">⬅️ Back</button>
+            <div class="progress-dots" aria-hidden="true"></div>
+            <button class="nav-button" id="nextBtn" type="button" aria-label="Next slide">Next ➡️</button>
+        </div>
     </div>
+
+    <script>
+        const slides = Array.from(document.querySelectorAll('.slide'));
+        const dotsContainer = document.querySelector('.progress-dots');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        let current = 0;
+        function buildDots(){slides.forEach((_,i)=>{const d=document.createElement('span');d.dataset.index=i;dotsContainer.appendChild(d);});}
+        function updateDots(){dotsContainer.querySelectorAll('span').forEach((dot,i)=>{dot.classList.toggle('active',i===current)});}
+        function showSlide(i){if(i<0||i>=slides.length)return;slides[current].classList.remove('active');current=i;slides[current].classList.add('active');updateDots();}
+        const nextSlide=()=>{if(current<slides.length-1)showSlide(current+1)}; const prevSlide=()=>{if(current>0)showSlide(current-1)};
+        document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')nextSlide(); if(e.key==='ArrowLeft')prevSlide();});
+        buildDots(); updateDots(); prevBtn.addEventListener('click',prevSlide); nextBtn.addEventListener('click',nextSlide);
+        dotsContainer.addEventListener('click',e=>{if(e.target.tagName.toLowerCase()==='span'){showSlide(Number(e.target.dataset.index));}});
+    </script>
 </body>
 </html>

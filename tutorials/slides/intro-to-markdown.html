@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intro to Markdown</title>
+    <style>
+        :root {
+            --accent: #FFD700;
+            --bg-overlay: rgba(0, 0, 0, 0.7);
+            --card-bg: rgba(26, 26, 26, 0.92);
+            --text-light: #F5F5F5;
+            --text-muted: #B5B5B5;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #000;
+            color: var(--text-light);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide-stage {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            max-width: 1920px;
+            max-height: 1080px;
+            background-image: url('../../resources/logo/background.png');
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+        }
+
+        .slide-stage::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--bg-overlay);
+        }
+
+        .hornet-badge {
+            position: absolute;
+            top: 40px;
+            right: 60px;
+            width: 110px;
+            height: 110px;
+            background: url('../../resources/logo/angry-hornet.png') no-repeat center;
+            background-size: contain;
+            z-index: 2;
+            filter: drop-shadow(3px 6px 12px rgba(0,0,0,0.6));
+        }
+
+        .slides { position: relative; height: 100%; width: 100%; overflow: hidden; z-index: 1; }
+
+        .slide {
+            position: absolute;
+            inset: 6%;
+            background: var(--card-bg);
+            border: 4px solid var(--accent);
+            border-radius: 32px;
+            padding: 60px 80px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+            opacity: 0;
+            transform: translateX(80px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .slide.active { opacity: 1; transform: translateX(0); z-index: 3; }
+
+        .slide-title { font-size: 4rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 4px; text-shadow: 0 6px 18px rgba(0, 0, 0, 0.7); }
+        .slide-subtitle { font-size: 1.8rem; color: var(--text-muted); max-width: 800px; }
+
+        ul { list-style: none; }
+        ul li { font-size: 1.6rem; margin-bottom: 18px; padding-left: 36px; position: relative; line-height: 1.4; }
+        ul li::before { content: '▶'; color: var(--accent); position: absolute; left: 0; top: 2px; font-size: 1.4rem; }
+
+        ol { margin-left: 24px; font-size: 1.6rem; line-height: 1.5; }
+        ol li { margin-bottom: 14px; }
+
+        .callout { background: rgba(255, 215, 0, 0.12); border-left: 6px solid var(--accent); padding: 20px 28px; font-size: 1.4rem; color: var(--text-muted); }
+
+        .cta-button { display: inline-flex; align-items: center; justify-content: center; gap: 12px; padding: 16px 28px; background: var(--accent); color: #1a1a1a; font-weight: 700; font-size: 1.1rem; border-radius: 14px; text-decoration: none; width: fit-content; box-shadow: 0 10px 20px rgba(0,0,0,0.4); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .cta-button:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(0,0,0,0.5); }
+
+        .rendered-label { margin-top: 6px; font-weight: 700; color: var(--text-muted); }
+        .rendered-frame { width: 100%; height: 220px; border: 2px solid var(--accent); border-radius: 12px; background: #fff; }
+
+        .nav-bar { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 20px; z-index: 4; background: rgba(0, 0, 0, 0.65); padding: 16px 28px; border-radius: 999px; border: 2px solid var(--accent); font-size: 1.1rem; letter-spacing: 1px; }
+        .nav-button { background: transparent; border: 2px solid var(--accent); color: var(--accent); font-size: 1.1rem; padding: 10px 18px; border-radius: 999px; cursor: pointer; transition: background 0.2s ease, color 0.2s ease; }
+        .nav-button:hover { background: var(--accent); color: #1a1a1a; }
+
+        .progress-dots { display: flex; align-items: center; gap: 10px; }
+        .progress-dots span { width: 12px; height: 12px; border-radius: 50%; background: rgba(255, 255, 255, 0.25); }
+        .progress-dots span.active { background: var(--accent); }
+
+        @media (max-width: 1280px) {
+            .slide { inset: 4%; padding: 50px 60px; }
+            .slide-title { font-size: 3rem; }
+            ul li, ol li { font-size: 1.4rem; }
+        }
+
+        @media (max-width: 960px) {
+            body { font-size: 90%; }
+            .slide { inset: 3%; padding: 40px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-stage">
+        <div class="hornet-badge" aria-hidden="true"></div>
+        <div class="slides" role="region" aria-live="polite">
+            <section class="slide active" data-index="0">
+                <h1 class="slide-title">Intro to Markdown</h1>
+                <p class="slide-subtitle">Each slide shows Markdown, HTML, and a rendered view.</p>
+                <div class="callout">Use ⬅️ ➡️ arrows or the buttons below to navigate.</div>
+            </section>
+
+            <section class="slide" data-index="1">
+                <h2 class="slide-title">Headings</h2>
+                <div class="callout">One of each heading level (H1–H3 shown).</div>
+                <div><strong>Markdown</strong></div>
+                <pre><code># Title H1
+## Section H2
+### Subsection H3</code></pre>
+                <div><strong>HTML</strong></div>
+                <pre><code>&lt;h1&gt;Title H1&lt;/h1&gt;
+&lt;h2&gt;Section H2&lt;/h2&gt;
+&lt;h3&gt;Subsection H3&lt;/h3&gt;</code></pre>
+                <div class="rendered-label">Rendered</div>
+                <iframe class="rendered-frame" title="Headings rendered" srcdoc='<!doctype html><html><head><meta charset="utf-8"><style>body{font-family:system-ui,Segoe UI,Arial;padding:16px;}</style></head><body><h1>Title H1</h1><h2>Section H2</h2><h3>Subsection H3</h3></body></html>'></iframe>
+            </section>
+
+            <section class="slide" data-index="2">
+                <h2 class="slide-title">Emphasis</h2>
+                <div class="callout">Italic, bold, and strikethrough.</div>
+                <div><strong>Markdown</strong></div>
+                <pre><code>*italic*  **bold**  ~~strikethrough~~</code></pre>
+                <div><strong>HTML</strong></div>
+                <pre><code>&lt;em&gt;italic&lt;/em&gt;  &lt;strong&gt;bold&lt;/strong&gt;  &lt;del&gt;strikethrough&lt;/del&gt;</code></pre>
+                <div class="rendered-label">Rendered</div>
+                <iframe class="rendered-frame" title="Emphasis rendered" srcdoc='<!doctype html><html><head><meta charset="utf-8"><style>body{font-family:system-ui,Segoe UI,Arial;padding:16px;font-size:20px}</style></head><body><p><em>italic</em>  <strong>bold</strong>  <del>strikethrough</del></p></body></html>'></iframe>
+            </section>
+
+            <section class="slide" data-index="3">
+                <h2 class="slide-title">Paragraphs & Line Breaks</h2>
+                <div class="callout">Blank line for new paragraph; two spaces at end for a line break.</div>
+                <div><strong>Markdown</strong></div>
+                <pre><code>First paragraph line one␠␠
+line two (same paragraph)
+
+Second paragraph</code></pre>
+                <div><strong>HTML</strong></div>
+                <pre><code>&lt;p&gt;First paragraph line one&lt;br&gt;
+line two (same paragraph)&lt;/p&gt;
+&lt;p&gt;Second paragraph&lt;/p&gt;</code></pre>
+                <div class="rendered-label">Rendered</div>
+                <iframe class="rendered-frame" title="Paragraphs rendered" srcdoc='<!doctype html><html><head><meta charset="utf-8"><style>body{font-family:system-ui,Segoe UI,Arial;padding:16px;}</style></head><body><p>First paragraph line one<br>line two (same paragraph)</p><p>Second paragraph</p></body></html>'></iframe>
+            </section>
+
+            <section class="slide" data-index="4">
+                <h2 class="slide-title">Unordered List</h2>
+                <div class="callout">One top-level item and a nested item.</div>
+                <div><strong>Markdown</strong></div>
+                <pre><code>- Item A
+  - Nested A.1</code></pre>
+                <div><strong>HTML</strong></div>
+                <pre><code>&lt;ul&gt;
+  &lt;li&gt;Item A
+    &lt;ul&gt;
+      &lt;li&gt;Nested A.1&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+                <div class="rendered-label">Rendered</div>
+                <iframe class="rendered-frame" title="Unordered list rendered" srcdoc='<!doctype html><html><head><meta charset="utf-8"><style>body{font-family:system-ui,Segoe UI,Arial;padding:16px;}</style></head><body><ul><li>Item A<ul><li>Nested A.1</li></ul></li></ul></body></html>'></iframe>
+            </section>
+
+            <section class="slide" data-index="5">
+                <h2 class="slide-title">Ordered List</h2>
+                <div class="callout">A simple numbered list.</div>
+                <div><strong>Markdown</strong></div>
+                <pre><code>1. Step one
+2. Step two</code></pre>
+                <div><strong>HTML</strong></div>
+                <pre><code>&lt;ol&gt;
+  &lt;li&gt;Step one&lt;/li&gt;
+  &lt;li&gt;Step two&lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+                <div class="rendered-label">Rendered</div>
+                <iframe class="rendered-frame" title="Ordered list rendered" srcdoc='<!doctype html><html><head><meta charset="utf-8"><style>body{font-family:system-ui,Segoe UI,Arial;padding:16px;}</style></head><body><ol><li>Step one</li><li>Step two</li></ol></body></html>'></iframe>
+            </section>
+
+            <section class="slide" data-index="6">
+                <h2 class="slide-title">Links</h2>
+                <div class="callout">Basic hyperlink syntax.</div>
+                <div><strong>Markdown</strong></div>
+                <pre><code>[OpenAI](https://openai.com)</code></pre>
+                <div><strong>HTML</strong></div>
+                <pre><code>&lt;a href=&quot;https://openai.com&quot;&gt;OpenAI&lt;/a&gt;</code></pre>
+                <div class="rendered-label">Rendered</div>
+                <iframe class="rendered-frame" title="Link rendered" srcdoc='<!doctype html><html><head><meta charset="utf-8"><style>body{font-family:system-ui,Segoe UI,Arial;padding:16px;}</style></head><body><a href="https://openai.com">OpenAI</a></body></html>'></iframe>
+            </section>
+
+            <section class="slide" data-index="7">
+                <h2 class="slide-title">Images</h2>
+                <div class="callout">Alt text is required for accessibility.</div>
+                <div><strong>Markdown</strong></div>
+                <pre><code>![Alt text](https://example.com/logo.png)</code></pre>
+                <div><strong>HTML</strong></div>
+                <pre><code>&lt;img src=&quot;https://example.com/logo.png&quot; alt=&quot;Alt text&quot;&gt;</code></pre>
+                <div class="rendered-label">Rendered</div>
+                <iframe class="rendered-frame" title="Image rendered" srcdoc='<!doctype html><html><head><meta charset="utf-8"><style>body{font-family:system-ui,Segoe UI,Arial;padding:16px;}img{max-width:120px;max-height:120px;border:1px solid #ddd;border-radius:6px;padding:4px;background:#fafafa}</style></head><body><img src="https://via.placeholder.com/120x80.png?text=Image" alt="Alt text"></body></html>'></iframe>
+            </section>
+
+            <section class="slide" data-index="8">
+                <h2 class="slide-title">Code</h2>
+                <div class="callout">Inline and fenced code blocks.</div>
+                <div><strong>Markdown</strong></div>
+                <pre><code>Inline: `const x = 1`
+
+```js
+function hello() {
+  console.log('hi');
+}
+```</code></pre>
+                <div><strong>HTML</strong></div>
+                <pre><code>Inline: &lt;code&gt;const x = 1&lt;/code&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-js&quot;&gt;function hello() {
+  console.log('hi');
+}
+&lt;/code&gt;&lt;/pre&gt;</code></pre>
+                <div class="rendered-label">Rendered</div>
+                <iframe class="rendered-frame" title="Code rendered" srcdoc='<!doctype html><html><head><meta charset="utf-8"><style>body{font-family:system-ui,Segoe UI,Arial;padding:16px;}code{background:#f3f4f6;padding:2px 4px;border-radius:4px}pre{background:#0b1220;color:#e5e7eb;padding:12px;border-radius:8px;overflow:auto}</style></head><body>Inline: <code>const x = 1</code><pre><code>function hello() {\n  console.log(&#39;hi&#39;);\n}</code></pre></body></html>'></iframe>
+            </section>
+
+            <section class="slide" data-index="9">
+                <h2 class="slide-title">Blockquotes</h2>
+                <div class="callout">Quotes can nest.</div>
+                <div><strong>Markdown</strong></div>
+                <pre><code>&gt; A wise thought
+&gt;&gt; A nested idea</code></pre>
+                <div><strong>HTML</strong></div>
+                <pre><code>&lt;blockquote&gt;
+  &lt;p&gt;A wise thought&lt;/p&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;A nested idea&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;</code></pre>
+                <div class="rendered-label">Rendered</div>
+                <iframe class="rendered-frame" title="Blockquotes rendered" srcdoc='<!doctype html><html><head><meta charset="utf-8"><style>body{font-family:system-ui,Segoe UI,Arial;padding:16px;}blockquote{border-left:4px solid #999;margin:0 0 0 8px;padding:6px 12px;color:#333;background:#f9fafb}</style></head><body><blockquote><p>A wise thought</p><blockquote><p>A nested idea</p></blockquote></blockquote></body></html>'></iframe>
+            </section>
+
+            <section class="slide" data-index="10">
+                <h2 class="slide-title">Tables</h2>
+                <div class="callout">Alignment via colons in the divider row.</div>
+                <div><strong>Markdown</strong></div>
+                <pre><code>| Col A | Col B |
+|-----:|:-----:|
+|  123 |  xyz  |</code></pre>
+                <div><strong>HTML</strong></div>
+                <pre><code>&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;&lt;th style=&quot;text-align:right&quot;&gt;Col A&lt;/th&gt;&lt;th style=&quot;text-align:center&quot;&gt;Col B&lt;/th&gt;&lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;&lt;td style=&quot;text-align:right&quot;&gt;123&lt;/td&gt;&lt;td style=&quot;text-align:center&quot;&gt;xyz&lt;/td&gt;&lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</code></pre>
+                <div class="rendered-label">Rendered</div>
+                <iframe class="rendered-frame" title="Table rendered" srcdoc='<!doctype html><html><head><meta charset="utf-8"><style>body{font-family:system-ui,Segoe UI,Arial;padding:16px;}table{border-collapse:collapse}th,td{border:1px solid #ccc;padding:6px 10px}</style></head><body><table><thead><tr><th style="text-align:right">Col A</th><th style="text-align:center">Col B</th></tr></thead><tbody><tr><td style="text-align:right">123</td><td style="text-align:center">xyz</td></tr></tbody></table></body></html>'></iframe>
+            </section>
+
+            <section class="slide" data-index="11">
+                <h2 class="slide-title">Task List (GFM)</h2>
+                <div class="callout">Rendered as disabled checkboxes on GitHub.</div>
+                <div><strong>Markdown</strong></div>
+                <pre><code>- [ ] Todo item
+- [x] Done item</code></pre>
+                <div><strong>HTML</strong></div>
+                <pre><code>&lt;ul&gt;
+  &lt;li&gt;&lt;input type=&quot;checkbox&quot; disabled&gt; Todo item&lt;/li&gt;
+  &lt;li&gt;&lt;input type=&quot;checkbox&quot; disabled checked&gt; Done item&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+                <div class="rendered-label">Rendered</div>
+                <iframe class="rendered-frame" title="Task list rendered" srcdoc='<!doctype html><html><head><meta charset="utf-8"><style>body{font-family:system-ui,Segoe UI,Arial;padding:16px;}input[type=checkbox]{transform:scale(1.2);margin-right:8px}</style></head><body><ul><li><input type="checkbox" disabled> Todo item</li><li><input type="checkbox" disabled checked> Done item</li></ul></body></html>'></iframe>
+            </section>
+        </div>
+
+        <div class="nav-bar" role="navigation" aria-label="Slide controls">
+            <button class="nav-button" id="prevBtn" type="button" aria-label="Previous slide">⬅️ Back</button>
+            <div class="progress-dots" aria-hidden="true"></div>
+            <button class="nav-button" id="nextBtn" type="button" aria-label="Next slide">Next ➡️</button>
+        </div>
+    </div>
+
+    <script>
+        const slides = Array.from(document.querySelectorAll('.slide'));
+        const dotsContainer = document.querySelector('.progress-dots');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        let current = 0;
+
+        function buildDots() {
+            slides.forEach((_, index) => {
+                const dot = document.createElement('span');
+                dot.dataset.index = index;
+                dotsContainer.appendChild(dot);
+            });
+        }
+
+        function updateDots() {
+            dotsContainer.querySelectorAll('span').forEach((dot, index) => {
+                dot.classList.toggle('active', index === current);
+            });
+        }
+
+        function showSlide(index) {
+            if (index < 0 || index >= slides.length) return;
+            slides[current].classList.remove('active');
+            current = index;
+            slides[current].classList.add('active');
+            updateDots();
+        }
+
+        function nextSlide() { if (current < slides.length - 1) showSlide(current + 1); }
+        function prevSlide() { if (current > 0) showSlide(current - 1); }
+
+        function handleKeydown(event) {
+            if (event.key === 'ArrowRight') nextSlide();
+            if (event.key === 'ArrowLeft') prevSlide();
+        }
+
+        buildDots();
+        updateDots();
+        prevBtn.addEventListener('click', prevSlide);
+        nextBtn.addEventListener('click', nextSlide);
+        document.addEventListener('keydown', handleKeydown);
+        dotsContainer.addEventListener('click', (event) => {
+            const target = event.target;
+            if (target.tagName.toLowerCase() === 'span') {
+                const idx = Number(target.dataset.index);
+                showSlide(idx);
+            }
+        });
+    </script>
+</body>
+</html>

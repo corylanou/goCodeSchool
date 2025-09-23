@@ -3,71 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern Data Foundations – Stub</title>
+    <title>Modern Data Foundations</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #150b1e;
-            color: #f8f8ff;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
-        .slide-stage {
-            width: 90vw;
-            max-width: 1280px;
-            height: 90vh;
-            background: rgba(20, 5, 35, 0.88);
-            border: 4px solid #9d4edd;
-            border-radius: 24px;
-            padding: 48px;
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-        h1, h2 {
-            margin: 0;
-            color: #c77dff;
-        }
-        ul, ol {
-            margin: 0;
-            padding-left: 24px;
-        }
-        .callout {
-            background: rgba(157, 78, 221, 0.12);
-            border-left: 6px solid #c77dff;
-            padding: 16px 20px;
-            font-size: 1rem;
-        }
-        .todo {
-            color: #cab2ff;
-            font-style: italic;
-        }
+        :root { --accent:#c77dff; --bg-overlay:rgba(0,0,0,0.7); --card-bg:rgba(20,5,35,0.88); --text:#f5f5f5; --muted:#e9d8fd; }
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:Arial,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:#000;color:var(--text);height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center}
+        .slide-stage{position:relative;width:100vw;height:100vh;max-width:1920px;max-height:1080px;background-image:url('../../resources/logo/background.png');background-size:cover;background-position:center;box-shadow:0 20px 60px rgba(0,0,0,0.6)}
+        .slide-stage::before{content:'';position:absolute;inset:0;background:var(--bg-overlay)}
+        .hornet-badge{position:absolute;top:40px;right:60px;width:110px;height:110px;background:url('../../resources/logo/angry-hornet.png') no-repeat center;background-size:contain;z-index:2;filter:drop-shadow(3px 6px 12px rgba(0,0,0,0.6))}
+        .slides{position:relative;height:100%;width:100%;overflow:hidden;z-index:1}
+        .slide{position:absolute;inset:6%;background:var(--card-bg);border:4px solid var(--accent);border-radius:32px;padding:60px 80px;display:flex;flex-direction:column;gap:24px;box-shadow:0 20px 60px rgba(0,0,0,0.55);opacity:0;transform:translateX(80px);transition:opacity .6s ease,transform .6s ease}
+        .slide.active{opacity:1;transform:translateX(0);z-index:3}
+        .slide-title{font-size:3rem;color:var(--accent);text-transform:uppercase;letter-spacing:3px;text-shadow:0 6px 18px rgba(0,0,0,.7)}
+        .slide-sub{font-size:1.4rem;color:var(--muted);max-width:780px;line-height:1.5}
+        ul{list-style:none}
+        ul li{font-size:1.4rem;margin-bottom:14px;padding-left:32px;position:relative;line-height:1.4}
+        ul li::before{content:'▶';color:var(--accent);position:absolute;left:0;top:2px;font-size:1.2rem}
+        .callout{background:rgba(157,78,221,0.12);border-left:6px solid var(--accent);padding:18px 22px;color:var(--muted)}
+        pre{background:#130f26;padding:16px 20px;border-radius:16px;border:2px solid rgba(157,78,221,0.35);color:#f8fafc;font-family:"JetBrains Mono",Menlo,Consolas,monospace;font-size:1rem;line-height:1.45;overflow:auto}
+        .nav-bar{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:20px;z-index:4;background:rgba(0,0,0,0.65);padding:16px 28px;border-radius:999px;border:2px solid var(--accent);font-size:1.1rem}
+        .nav-button{background:transparent;border:2px solid var(--accent);color:var(--accent);font-size:1.1rem;padding:10px 18px;border-radius:999px;cursor:pointer;transition:background .2s,color .2s}
+        .nav-button:hover{background:var(--accent);color:#1a1a1a}
+        .progress-dots{display:flex;align-items:center;gap:10px}
+        .progress-dots span{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.25)}
+        .progress-dots span.active{background:var(--accent)}
     </style>
 </head>
 <body>
     <div class="slide-stage">
-        <section>
-            <h1>Modern Data Foundations</h1>
-            <p class="todo">TODO: Introduce why realtime backends matter for vibe coding projects.</p>
-        </section>
-        <section>
-            <h2>Compare Options</h2>
-            <ul>
-                <li class="todo">Relational vs serverless databases</li>
-                <li class="todo">Firebase/Firestore architecture</li>
-                <li class="todo">Supabase, Appwrite, and other contenders</li>
-            </ul>
-        </section>
-        <section>
-            <h2>Realtime Demo Idea</h2>
-            <p class="todo">TODO: Outline live presence tracker with listeners and security rules.</p>
-        </section>
-        <section class="callout">
-            <strong>Next:</strong> Add diagrams showing data flow and cost checkpoints.
-        </section>
+        <div class="hornet-badge" aria-hidden="true"></div>
+        <div class="slides" role="region" aria-live="polite">
+            <section class="slide active" data-index="0">
+                <h1 class="slide-title">Modern Data Foundations</h1>
+                <div class="slide-sub">Choose storage, model data, and wire realtime features that serve the product—without blowing the budget.</div>
+                <div class="callout">Use ⬅️ ➡️ arrows or the buttons below to navigate.</div>
+            </section>
+
+            <section class="slide" data-index="1">
+                <h2 class="slide-title">Why This Matters</h2>
+                <ul>
+                    <li>Students demo confidently when data feels instant and reliable.</li>
+                    <li>Good modeling reduces future rewrites and painful migrations.</li>
+                    <li>Knowing pricing/security tradeoffs keeps side projects sustainable.</li>
+                </ul>
+            </section>
+
+            <section class="slide" data-index="2">
+                <h2 class="slide-title">Landscape Snapshot</h2>
+                <ul>
+                    <li>Managed SQL (Supabase, Neon) → relational, SQL, triggers.</li>
+                    <li>Serverless NoSQL (Firestore, DynamoDB) → schemaless, realtime, per-document billing.</li>
+                    <li>Edge KV / cache (Upstash, Cloudflare D1) → fast reads, limited querying.</li>
+                </ul>
+                <div class="callout">Pick based on access patterns, not hype.</div>
+            </section>
+
+            <section class="slide" data-index="3">
+                <h2 class="slide-title">Design the Domain</h2>
+                <ul>
+                    <li>List core entities + relationships (User, Project, Task, Comment).</li>
+                    <li>Define required fields, optional fields, indexes.</li>
+                    <li>Sketch queries the UI needs: “tasks by status”, “recent activity”.</li>
+                </ul>
+            </section>
+
+            <section class="slide" data-index="4">
+                <h2 class="slide-title">Schema Patterns</h2>
+                <ul>
+                    <li>Consistent IDs + timestamps (<code>uuid</code>, <code>created_at</code>, <code>updated_at</code>).</li>
+                    <li>Denormalize when it cuts reads (e.g., store author name with comment).</li>
+                    <li>Add soft-delete column (<code>deleted_at</code>) instead of hard deletes.</li>
+                </ul>
+            </section>
+
+            <section class="slide" data-index="5">
+                <h2 class="slide-title">Realtime Building Blocks</h2>
+                <ul>
+                    <li>Presence: update user doc with <code>lastSeen</code> or presence channel.</li>
+                    <li>Subscriptions: listen to query subsets (room messages, board columns).</li>
+                    <li>Backoff + debounce to avoid write storms.</li>
+                </ul>
+            </section>
+
+            <section class="slide" data-index="6">
+                <h2 class="slide-title">Security & Access</h2>
+                <ul>
+                    <li>Use row-level security / Firestore rules for least privilege.</li>
+                    <li>Validate writes server-side: shape, owner, allowed fields.</li>
+                    <li>Rotate service keys; never embed admin secrets in clients.</li>
+                </ul>
+            </section>
+
+            <section class="slide" data-index="7">
+                <h2 class="slide-title">Cost Awareness</h2>
+                <ul>
+                    <li>Supabase: charged per database size + egress + auth users.</li>
+                    <li>Firestore: reads/writes per document—batch updates to save cost.</li>
+                    <li>Use dashboards/alerts to monitor usage spikes.</li>
+                </ul>
+                <div class="callout">Teach students to estimate monthly cost for their capstone.</div>
+            </section>
+
+            <section class="slide" data-index="8">
+                <h2 class="slide-title">Demo Blueprint</h2>
+                <ul>
+                    <li>Presence tracker: when student logs in, mark them online.</li>
+                    <li>Realtime board: update column counts via listeners.</li>
+                    <li>Analytics: render sparkline via serverless function + cached query.</li>
+                </ul>
+                <pre><code>// Firestore presence example
+await userRef.update({
+  status: 'online',
+  lastSeen: serverTimestamp()
+});
+</code></pre>
+            </section>
+
+            <section class="slide" data-index="9">
+                <h2 class="slide-title">Migration Path</h2>
+                <ul>
+                    <li>Prototype quickly in serverless DB; keep data access abstracted.</li>
+                    <li>Document schema decisions in <code>/docs/data.md</code>.</li>
+                    <li>When scale grows, plan for managed Postgres or dedicated cluster.</li>
+                </ul>
+            </section>
+
+            <section class="slide" data-index="10">
+                <h2 class="slide-title">Lab: Data Deep Dive</h2>
+                <ul>
+                    <li>Students diagram entity relationships for their project.</li>
+                    <li>Create a Supabase table + policy and seed sample data.</li>
+                    <li>Wire a realtime listener in the app and instrument console logs.</li>
+                </ul>
+                <div class="callout">Deliverable: screenshot of ER diagram + demo video of realtime update.</div>
+            </section>
+
+            <section class="slide" data-index="11">
+                <h2 class="slide-title">Resources</h2>
+                <ul>
+                    <li><a href="https://supabase.com/docs" target="_blank" rel="noopener">Supabase Docs</a></li>
+                    <li><a href="https://firebase.google.com/docs/firestore" target="_blank" rel="noopener">Firestore Realtime Guides</a></li>
+                    <li><a href="https://electric-sql.com/blog/realtime-patterns" target="_blank" rel="noopener">Realtime Pattern Playbook</a></li>
+                </ul>
+                <div class="callout">Homework: write out the top 3 queries your app must answer + indexes required.</div>
+            </section>
+        </div>
+
+        <div class="nav-bar" role="navigation" aria-label="Slide controls">
+            <button class="nav-button" id="prevBtn" type="button" aria-label="Previous slide">⬅️ Back</button>
+            <div class="progress-dots" aria-hidden="true"></div>
+            <button class="nav-button" id="nextBtn" type="button" aria-label="Next slide">Next ➡️</button>
+        </div>
     </div>
+
+    <script>
+        const slides = Array.from(document.querySelectorAll('.slide'));
+        const dotsContainer = document.querySelector('.progress-dots');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        let current = 0;
+        function buildDots(){slides.forEach((_,i)=>{const d=document.createElement('span');d.dataset.index=i;dotsContainer.appendChild(d);});}
+        function updateDots(){dotsContainer.querySelectorAll('span').forEach((dot,i)=>{dot.classList.toggle('active',i===current)});}
+        function showSlide(i){if(i<0||i>=slides.length)return;slides[current].classList.remove('active');current=i;slides[current].classList.add('active');updateDots();}
+        const nextSlide=()=>{if(current<slides.length-1)showSlide(current+1)}; const prevSlide=()=>{if(current>0)showSlide(current-1)};
+        document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')nextSlide(); if(e.key==='ArrowLeft')prevSlide();});
+        buildDots(); updateDots(); prevBtn.addEventListener('click',prevSlide); nextBtn.addEventListener('click',nextSlide);
+        dotsContainer.addEventListener('click',e=>{if(e.target.tagName.toLowerCase()==='span'){showSlide(Number(e.target.dataset.index));}});
+    </script>
 </body>
 </html>

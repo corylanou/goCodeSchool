@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>reCAPTCHA Fundamentals</title>
+    <style>
+        :root { --accent:#38bdf8; --bg-overlay:rgba(0,0,0,0.7); --card-bg:rgba(10,17,28,0.9); --text:#f5f5f5; --muted:#bae6fd; }
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:Arial,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:#000;color:var(--text);height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center}
+        .slide-stage{position:relative;width:100vw;height:100vh;max-width:1920px;max-height:1080px;background-image:url('../../resources/logo/background.png');background-size:cover;background-position:center;box-shadow:0 20px 60px rgba(0,0,0,0.6)}
+        .slide-stage::before{content:'';position:absolute;inset:0;background:var(--bg-overlay)}
+        .hornet-badge{position:absolute;top:40px;right:60px;width:110px;height:110px;background:url('../../resources/logo/angry-hornet.png') no-repeat center;background-size:contain;z-index:2;filter:drop-shadow(3px 6px 12px rgba(0,0,0,0.6))}
+        .slides{position:relative;height:100%;width:100%;overflow:hidden;z-index:1}
+        .slide{position:absolute;inset:6%;background:var(--card-bg);border:4px solid var(--accent);border-radius:32px;padding:60px 80px;display:flex;flex-direction:column;gap:24px;box-shadow:0 20px 60px rgba(0,0,0,0.55);opacity:0;transform:translateX(80px);transition:opacity .6s ease,transform .6s ease}
+        .slide.active{opacity:1;transform:translateX(0);z-index:3}
+        .slide-title{font-size:3rem;color:var(--accent);text-transform:uppercase;letter-spacing:3px;text-shadow:0 6px 18px rgba(0,0,0,.7)}
+        .slide-sub{font-size:1.4rem;color:var(--muted);max-width:780px;line-height:1.5}
+        ul{list-style:none}
+        ul li{font-size:1.4rem;margin-bottom:14px;padding-left:32px;position:relative;line-height:1.4}
+        ul li::before{content:'▶';color:var(--accent);position:absolute;left:0;top:2px;font-size:1.2rem}
+        .callout{background:rgba(56,189,248,0.15);border-left:6px solid var(--accent);padding:18px 22px;color:var(--muted)}
+        pre{background:#0b1220;padding:16px 20px;border-radius:16px;border:2px solid rgba(56,189,248,0.35);color:#f8fafc;font-family:"JetBrains Mono",Menlo,Consolas,monospace;font-size:1rem;line-height:1.45;overflow:auto}
+        table{width:100%;border-collapse:collapse;font-size:1.2rem}
+        th,td{border:1px solid rgba(56,189,248,0.4);padding:12px 14px;text-align:left}
+        th{background:rgba(56,189,248,0.15);text-transform:uppercase;font-size:1rem;letter-spacing:1px}
+        .nav-bar{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:20px;z-index:4;background:rgba(0,0,0,0.65);padding:16px 28px;border-radius:999px;border:2px solid var(--accent);font-size:1.1rem}
+        .nav-button{background:transparent;border:2px solid var(--accent);color:var(--accent);font-size:1.1rem;padding:10px 18px;border-radius:999px;cursor:pointer;transition:background .2s,color .2s}
+        .nav-button:hover{background:var(--accent);color:#1a1a1a}
+        .progress-dots{display:flex;align-items:center;gap:10px}
+        .progress-dots span{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.25)}
+        .progress-dots span.active{background:var(--accent)}
+    </style>
+</head>
+<body>
+    <div class="slide-stage">
+        <div class="hornet-badge" aria-hidden="true"></div>
+        <div class="slides" role="region" aria-live="polite">
+            <section class="slide active" data-index="0">
+                <h1 class="slide-title">reCAPTCHA Fundamentals</h1>
+                <div class="slide-sub">Prevent bots from clogging your forms. Understand v2 vs v3, when to use them, and how to verify tokens securely.</div>
+                <div class="callout">Use ⬅️ ➡️ arrows or the buttons below to navigate.</div>
+            </section>
+
+            <section class="slide" data-index="1">
+                <h2 class="slide-title">Why Every Form Needs It</h2>
+                <ul>
+                    <li>Blocks spam signups, bogus contact requests, and SEO comment blasts.</li>
+                    <li>Protects API quotas and email reputation from automated abuse.</li>
+                    <li>Signals professionalism—real users expect responsive, human-reviewed forms.</li>
+                </ul>
+            </section>
+
+            <section class="slide" data-index="2">
+                <h2 class="slide-title">Version Snapshot</h2>
+                <table>
+                    <thead>
+                        <tr><th>Version</th><th>Experience</th><th>Output</th><th>Best For</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>v2 Checkbox</td><td>User clicks "I'm not a robot"; puzzle fallback</td><td>Token (success/fail)</td><td>Public forms that can show visible friction</td></tr>
+                        <tr><td>v2 Invisible</td><td>Runs on submit; prompts only if suspicious</td><td>Token (success/fail)</td><td>Forms needing fallback puzzle but no checkbox UI</td></tr>
+                        <tr><td>v3</td><td>No prompt; score 0.0–1.0 returned</td><td>Score + action</td><td>Risk scoring, adaptive friction on login/checkout</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section class="slide" data-index="3">
+                <h2 class="slide-title">Admin Console Setup</h2>
+                <ul>
+                    <li>Visit <a href="https://www.google.com/recaptcha/admin/create" target="_blank" rel="noopener">reCAPTCHA admin</a>, register domain, choose v2 or v3.</li>
+                    <li>Store site key (client) + secret key (server) in your secrets manager.</li>
+                    <li>Use separate keys per environment (dev/staging/prod).</li>
+                </ul>
+            </section>
+
+            <section class="slide" data-index="4">
+                <h2 class="slide-title">v2 Checkbox Integration</h2>
+                <pre><code>&lt;script src="https://www.google.com/recaptcha/api.js" async defer&gt;&lt;/script&gt;
+&lt;form action="/submit" method="post"&gt;
+  &lt;!-- form fields --&gt;
+  &lt;div class="g-recaptcha" data-sitekey="SITE_KEY"&gt;&lt;/div&gt;
+  &lt;button type="submit"&gt;Send&lt;/button&gt;
+&lt;/form&gt;
+</code></pre>
+                <div class="callout">Always verify the token server-side using the secret key.</div>
+            </section>
+
+            <section class="slide" data-index="5">
+                <h2 class="slide-title">Server Verification (v2)</h2>
+                <pre><code>const params = new URLSearchParams({
+  secret: process.env.RECAPTCHA_SECRET,
+  response: token,
+  remoteip: req.ip,
+});
+const res = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+  method:'POST', body: params
+});
+const data = await res.json();
+if (!data.success) {
+  return res.status(400).json({ error: 'Try again' });
+}
+</code></pre>
+                <div class="callout">Log failures with context; alert if attack volume spikes.</div>
+            </section>
+
+            <section class="slide" data-index="6">
+                <h2 class="slide-title">v3 Flow</h2>
+                <ul>
+                    <li>Load script with render key: <code>https://www.google.com/recaptcha/api.js?render=SITE_KEY</code>.</li>
+                    <li>Execute with action identifier (<code>contact_form</code>, <code>signup</code>).</li>
+                    <li>Send token to server; inspect <code>score</code> + <code>action</code> from verify API.</li>
+                </ul>
+                <pre><code>grecaptcha.ready(() => {
+  grecaptcha.execute('SITE_KEY', { action: 'signup' })
+    .then(token => form.token.value = token);
+});
+</code></pre>
+            </section>
+
+            <section class="slide" data-index="7">
+                <h2 class="slide-title">Scoring & Fallbacks</h2>
+                <ul>
+                    <li>Start with threshold 0.5; adjust after reviewing analytics.</li>
+                    <li>Low scores → send to moderation queue, trigger v2 checkbox, or require email verification.</li>
+                    <li>Log IP, user agent, action, and score for audits.</li>
+                </ul>
+            </section>
+
+            <section class="slide" data-index="8">
+                <h2 class="slide-title">UX & Accessibility</h2>
+                <ul>
+                    <li>Add descriptive text for screen readers (<code>aria-describedby</code>).</li>
+                    <li>Test keyboard navigation; reCAPTCHA injects iframes.</li>
+                    <li>Lazy-load scripts on modal forms to avoid layout shift.</li>
+                    <li>Update Content Security Policy to allow Google domains.</li>
+                </ul>
+            </section>
+
+            <section class="slide" data-index="9">
+                <h2 class="slide-title">Defense in Depth</h2>
+                <ul>
+                    <li>Pair reCAPTCHA with rate limiting and IP throttling.</li>
+                    <li>Add honeypot fields hidden from humans.</li>
+                    <li>Use WAF/Cloudflare rules to block abusive ASNs.</li>
+                    <li>Monitor weekly: reCAPTCHA dashboards + application logs.</li>
+                </ul>
+            </section>
+
+            <section class="slide" data-index="10">
+                <h2 class="slide-title">Lab: Harden a Contact Form</h2>
+                <ul>
+                    <li>Implement v2 checkbox, verify server-side, ship to staging.</li>
+                    <li>Swap to v3, compare scores over 7 days, chart in Notion.</li>
+                    <li>Document the fallback plan for low-score submissions.</li>
+                </ul>
+                <div class="callout">Deliverable: before/after spam metrics + next steps.</div>
+            </section>
+
+            <section class="slide" data-index="11">
+                <h2 class="slide-title">Resources</h2>
+                <ul>
+                    <li><a href="https://developers.google.com/recaptcha/docs/v2" target="_blank" rel="noopener">reCAPTCHA v2 docs</a></li>
+                    <li><a href="https://developers.google.com/recaptcha/docs/v3" target="_blank" rel="noopener">reCAPTCHA v3 docs</a></li>
+                    <li><a href="https://security.googleblog.com/search/label/reCAPTCHA" target="_blank" rel="noopener">Google Security Blog</a></li>
+                    <li><a href="https://owasp.org/www-project-automated-threats-to-web-applications/" target="_blank" rel="noopener">OWASP Automated Threats</a></li>
+                </ul>
+                <div class="callout">Next: add reCAPTCHA to signup, login, and password reset flows.</div>
+            </section>
+        </div>
+
+        <div class="nav-bar" role="navigation" aria-label="Slide controls">
+            <button class="nav-button" id="prevBtn" type="button" aria-label="Previous slide">⬅️ Back</button>
+            <div class="progress-dots" aria-hidden="true"></div>
+            <button class="nav-button" id="nextBtn" type="button" aria-label="Next slide">Next ➡️</button>
+        </div>
+    </div>
+
+    <script>
+        const slides = Array.from(document.querySelectorAll('.slide'));
+        const dotsContainer = document.querySelector('.progress-dots');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        let current = 0;
+        function buildDots(){slides.forEach((_,i)=>{const d=document.createElement('span');d.dataset.index=i;dotsContainer.appendChild(d);});}
+        function updateDots(){dotsContainer.querySelectorAll('span').forEach((dot,i)=>{dot.classList.toggle('active',i===current)});}
+        function showSlide(i){if(i<0||i>=slides.length)return;slides[current].classList.remove('active');current=i;slides[current].classList.add('active');updateDots();}
+        const nextSlide=()=>{if(current<slides.length-1)showSlide(current+1)}; const prevSlide=()=>{if(current>0)showSlide(current-1)};
+        document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')nextSlide(); if(e.key==='ArrowLeft')prevSlide();});
+        buildDots(); updateDots(); prevBtn.addEventListener('click',prevSlide); nextBtn.addEventListener('click',nextSlide);
+        dotsContainer.addEventListener('click',e=>{if(e.target.tagName.toLowerCase()==='span'){showSlide(Number(e.target.dataset.index));}});
+    </script>
+</body>
+</html>
