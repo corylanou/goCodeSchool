@@ -23,10 +23,13 @@ Google's reCAPTCHA helps you distinguish real people from bots so your forms sta
 
 1. **Create keys** in [Google reCAPTCHA admin](https://www.google.com/recaptcha/admin/create). Pick v2 → "I’m not a robot".
 2. **Include script** on your form page:
+
    ```html
    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
    ```
+
 3. **Add widget** where the checkbox should render:
+
    ```html
    <form action="/submit" method="post">
      <!-- form fields -->
@@ -34,7 +37,9 @@ Google's reCAPTCHA helps you distinguish real people from bots so your forms sta
      <button type="submit">Send</button>
    </form>
    ```
+
 4. **Validate server-side** using the secret key:
+
    ```js
    import fetch from 'node-fetch';
 
@@ -51,6 +56,7 @@ Google's reCAPTCHA helps you distinguish real people from bots so your forms sta
      return data.success === true;
    }
    ```
+
 5. **Handle failures gracefully.** Show a human-friendly error, log the attempt, and allow retry.
 
 ### Accessibility and UX tips
@@ -63,10 +69,13 @@ Google's reCAPTCHA helps you distinguish real people from bots so your forms sta
 
 1. **Create v3 keys** in the admin console; define "actions" (e.g., `contact_form`, `signup`).
 2. **Load script** with explicit render key:
+
    ```html
    <script src="https://www.google.com/recaptcha/api.js?render=YOUR_SITE_KEY"></script>
    ```
+
 3. **Request token when needed:**
+
    ```js
    grecaptcha.ready(() => {
      grecaptcha.execute('YOUR_SITE_KEY', { action: 'contact_form' })
@@ -75,7 +84,9 @@ Google's reCAPTCHA helps you distinguish real people from bots so your forms sta
        });
    });
    ```
+
 4. **Send token to backend** in a hidden field or header and **score it**:
+
    ```js
    async function scoreToken(token) {
      const params = new URLSearchParams({
@@ -94,6 +105,7 @@ Google's reCAPTCHA helps you distinguish real people from bots so your forms sta
      // Flag for review, add secondary challenge, or silently drop
    }
    ```
+
 5. **Log action + score** for auditing. Consider sending suspicious attempts to moderation queue.
 
 ### Choosing thresholds & fallbacks
@@ -125,11 +137,11 @@ Google's reCAPTCHA helps you distinguish real people from bots so your forms sta
 
 ## Resources
 
-- reCAPTCHA Admin Console: https://www.google.com/recaptcha/admin/create
-- reCAPTCHA v3 Guide: https://developers.google.com/recaptcha/docs/v3
-- reCAPTCHA v2 Guide: https://developers.google.com/recaptcha/docs/display
-- Google Security Blog on reCAPTCHA: https://security.googleblog.com/search/label/reCAPTCHA
-- OWASP Automated Threats to Web Applications: https://owasp.org/www-project-automated-threats-to-web-applications/
+- reCAPTCHA Admin Console: <https://www.google.com/recaptcha/admin/create>
+- reCAPTCHA v3 Guide: <https://developers.google.com/recaptcha/docs/v3>
+- reCAPTCHA v2 Guide: <https://developers.google.com/recaptcha/docs/display>
+- Google Security Blog on reCAPTCHA: <https://security.googleblog.com/search/label/reCAPTCHA>
+- OWASP Automated Threats to Web Applications: <https://owasp.org/www-project-automated-threats-to-web-applications/>
 
 ## Homework / Lab idea
 

@@ -2,6 +2,7 @@
 
 This section collects standalone lessons that pair written guides with accompanying slide decks. Use the links below to jump directly to whichever format you need.
 
+- API Design Concepts — [Guide](api-design-concepts.md) · [Slides](slides/api-design-concepts.html)
 - Debugging Mindset — [Guide](debugging-mindset.md) · [Slides](slides/debugging-mindset.html)
 - Dev Environment Flow — [Guide](dev-environment-flow.md) · [Slides](slides/dev-environment-flow.html)
 - Git & GitHub Basics — [Guide](git-github-basics.md) · [Slides](slides/git-github-basics.html)

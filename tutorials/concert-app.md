@@ -5,6 +5,7 @@
 Welcome to your journey of building the **ultimate concert venue app**! In this tutorial, you'll learn how to create a powerful, multi-tenant concert venue platform that can support multiple organizations hosting multiple events. We'll start simple and gradually add killer features that will make your app stand out.
 
 ## Table of Contents
+
 1. [Getting Started with Flutter/FlutterFlow](#getting-started)
 2. [Project Architecture Overview](#project-architecture)
 3. [Phase 1: Basic MVP Features](#phase-1-basic-mvp)
@@ -20,11 +21,13 @@ Welcome to your journey of building the **ultimate concert venue app**! In this 
 ### Step 1: Environment Setup
 
 1. **Install VS Code**
+
    ```bash
    # Download from https://code.visualstudio.com/
    ```
 
 2. **Install Flutter SDK**
+
    ```bash
    # Visit https://flutter.dev/docs/get-started/install
    # Follow instructions for your OS
@@ -58,7 +61,7 @@ Welcome to your journey of building the **ultimate concert venue app**! In this 
 
 ### Multi-Tenant Structure
 
-```
+```text
 ┌─────────────────────────────────┐
 │        Super Admin              │
 │    (Platform Owner)             │
@@ -137,6 +140,7 @@ events: {
 ### 1.1 User Authentication
 
 **In FlutterFlow:**
+
 1. Create login/signup screens
 2. Add authentication actions
 3. Set up user roles
@@ -156,6 +160,7 @@ Future<String> getUserRole(String uid) async {
 ### 1.2 Event Listing
 
 **Features to implement:**
+
 - Event cards with images
 - Search functionality
 - Filter by date/venue
@@ -164,6 +169,7 @@ Future<String> getUserRole(String uid) async {
 ### 1.3 Event Details Page
 
 **Essential information:**
+
 - Event name, date, time
 - Venue information
 - Artist lineup
@@ -173,6 +179,7 @@ Future<String> getUserRole(String uid) async {
 ### 1.4 Basic Ticket Purchase
 
 **Simple flow:**
+
 1. Select ticket type
 2. Choose quantity
 3. Enter payment info (Stripe integration)
@@ -185,6 +192,7 @@ Future<String> getUserRole(String uid) async {
 ### 2.1 Organization Dashboard
 
 **Features:**
+
 - Event management
 - Basic analytics
 - Staff management
@@ -211,6 +219,7 @@ class SeatMap extends StatefulWidget {
 ### 2.3 QR Code Tickets
 
 **Implementation:**
+
 - Generate unique QR codes for each ticket
 - Store in Cloud Storage
 - Email to customers
@@ -219,6 +228,7 @@ class SeatMap extends StatefulWidget {
 ### 2.4 Push Notifications
 
 **Key notifications:**
+
 - Event reminders
 - New events from followed artists
 - Last-minute tickets available
@@ -233,6 +243,7 @@ class SeatMap extends StatefulWidget {
 **Artist Following**: Track favorite artists and receive personalized concert recommendations
 
 **Community features:**
+
 - Friend finding at venues
 - Share event plans
 - Create group purchases
@@ -258,6 +269,7 @@ double calculateDynamicPrice(
 ### 3.3 Analytics Dashboard
 
 **Venue insights:**
+
 - Heat maps of popular sections
 - Revenue by event type
 - Customer demographics
@@ -289,6 +301,7 @@ MaterialApp(
 **AR Navigation**: Overlay digital information onto real-world environments, providing interactive seating charts that display available upgrades in real-time
 
 **Implementation ideas:**
+
 - Virtual venue tours
 - AR seat preview (see stage view before buying)
 - Find friends in crowd
@@ -300,6 +313,7 @@ MaterialApp(
 **Hybrid experiences**: Blend physical and virtual worlds, allowing fans to enjoy concerts in their living rooms while interacting with virtual elements
 
 **Features:**
+
 - 360-degree live streams
 - Virtual meet-and-greets
 - VR-exclusive content
@@ -325,6 +339,7 @@ class RecommendationEngine {
 ### 4.4 Blockchain Ticketing
 
 **Benefits:**
+
 - Eliminate ticket fraud
 - Enable secure resale
 - Smart contract royalties
@@ -335,6 +350,7 @@ class RecommendationEngine {
 **Interactive wristbands**: Layer crowd-based lighting effects throughout the concert, creating synchronized experiences
 
 **Features:**
+
 - Sync with music beats
 - Crowd wave effects
 - Emergency notifications
@@ -343,6 +359,7 @@ class RecommendationEngine {
 ### 4.6 Biometric Entry
 
 **Implementation:**
+
 - Facial recognition check-in
 - Reduces entry time by 75%
 - Links to payment methods
@@ -353,6 +370,7 @@ class RecommendationEngine {
 **Sustainability tracking**: Monitor renewable energy usage, water efficiency, and waste reduction via connected software
 
 **Eco-friendly features:**
+
 - Carbon footprint calculator
 - Digital-only tickets
 - Rideshare coordination
@@ -361,6 +379,7 @@ class RecommendationEngine {
 ### 4.8 Advanced Social Features
 
 **Next-level community:**
+
 - Live chat during events
 - Virtual afterparties
 - Artist Q&A sessions
@@ -369,6 +388,7 @@ class RecommendationEngine {
 ### 4.9 Predictive Analytics
 
 **Smart features:**
+
 - Crowd density predictions
 - Optimal arrival time suggestions
 - Bathroom line wait times
@@ -377,6 +397,7 @@ class RecommendationEngine {
 ### 4.10 Accessibility Suite
 
 **Inclusive features:**
+
 - Audio descriptions
 - Sign language streams
 - Sensory-friendly options
@@ -489,17 +510,20 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
 ## Resources & Next Steps
 
 ### Learning Resources
+
 - [FlutterFlow University](https://university.flutterflow.io)
 - [Flutter Documentation](https://flutter.dev/docs)
 - [Firebase Codelabs](https://firebase.google.com/codelabs)
 
 ### Advanced Topics to Explore
+
 - Machine Learning integration
 - Real-time collaboration features
 - Advanced animation techniques
 - Performance optimization
 
 ### Community
+
 - Join Flutter Discord
 - Contribute to open source
 - Share your progress

@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Design Concepts: Ship Calm, Confident Backends</title>
+    <style>
+        :root {
+            --accent: #FFD700;
+            --bg-overlay: rgba(0, 0, 0, 0.7);
+            --card-bg: rgba(26, 26, 26, 0.92);
+            --text-light: #F5F5F5;
+            --text-muted: #B5B5B5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #000;
+            color: var(--text-light);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide-stage {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            max-width: 1920px;
+            max-height: 1080px;
+            background-image: url('../../resources/logo/background.png');
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+        }
+
+        .slide-stage::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--bg-overlay);
+        }
+
+        .hornet-badge {
+            position: absolute;
+            top: 40px;
+            right: 60px;
+            width: 110px;
+            height: 110px;
+            background: url('../../resources/logo/angry-hornet.png') no-repeat center;
+            background-size: contain;
+            z-index: 2;
+            filter: drop-shadow(3px 6px 12px rgba(0,0,0,0.6));
+        }
+
+        .slides {
+            position: relative;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .slide {
+            position: absolute;
+            inset: 6%;
+            background: var(--card-bg);
+            border: 4px solid var(--accent);
+            border-radius: 32px;
+            padding: 60px 80px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+            opacity: 0;
+            transform: translateX(80px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0);
+            z-index: 3;
+        }
+
+        .slide-title {
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 0 6px 18px rgba(0, 0, 0, 0.7);
+        }
+
+        .slide-subtitle {
+            font-size: 1.8rem;
+            color: var(--text-muted);
+            max-width: 800px;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        ul li {
+            font-size: 1.6rem;
+            margin-bottom: 18px;
+            padding-left: 36px;
+            position: relative;
+            line-height: 1.4;
+        }
+
+        ul li::before {
+            content: '▶';
+            color: var(--accent);
+            position: absolute;
+            left: 0;
+            top: 2px;
+            font-size: 1.4rem;
+        }
+
+        ol {
+            margin-left: 24px;
+            font-size: 1.6rem;
+            line-height: 1.5;
+        }
+
+        ol li {
+            margin-bottom: 14px;
+        }
+
+        .callout {
+            background: rgba(255, 215, 0, 0.12);
+            border-left: 6px solid var(--accent);
+            padding: 20px 28px;
+            font-size: 1.4rem;
+            color: var(--text-muted);
+        }
+
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 16px 28px;
+            background: var(--accent);
+            color: #1a1a1a;
+            font-weight: 700;
+            font-size: 1.4rem;
+            border-radius: 14px;
+            text-decoration: none;
+            width: fit-content;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 30px rgba(0,0,0,0.5);
+        }
+
+        .nav-bar {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            z-index: 4;
+            background: rgba(0, 0, 0, 0.65);
+            padding: 16px 28px;
+            border-radius: 999px;
+            border: 2px solid var(--accent);
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+
+        .nav-button {
+            background: transparent;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            font-size: 1.1rem;
+            padding: 10px 18px;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .nav-button:hover {
+            background: var(--accent);
+            color: #1a1a1a;
+        }
+
+        .progress-dots {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .progress-dots span {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .progress-dots span.active {
+            background: var(--accent);
+        }
+
+        @media (max-width: 1280px) {
+            .slide {
+                inset: 4%;
+                padding: 50px 60px;
+            }
+            .slide-title {
+                font-size: 3rem;
+            }
+            ul li, ol li {
+                font-size: 1.4rem;
+            }
+        }
+
+        @media (max-width: 960px) {
+            body {
+                font-size: 90%;
+            }
+            .slide {
+                inset: 3%;
+                padding: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-stage">
+        <div class="hornet-badge" aria-hidden="true"></div>
+        <div class="slides" role="region" aria-live="polite">
+            <section class="slide active" data-index="0">
+                <h1 class="slide-title">API Design Concepts</h1>
+                <p class="slide-subtitle">Ten habits to keep your Go APIs calm, confident, and production ready.</p>
+                <a class="cta-button" href="https://medium.com/@vaibhav.chichmalkar/10-api-concepts-every-backend-developer-should-know-the-go-way-a873fe064908" target="_blank" rel="noopener">▶ Read the inspiration by Vaibhav Chichmalkar</a>
+                <div class="callout">Use ⬅️ ➡️ arrow keys or the buttons below to move through the deck.</div>
+            </section>
+
+            <section class="slide" data-index="1">
+                <h2 class="slide-title">Idempotency</h2>
+                <ul>
+                    <li>What it is: Doing the same request twice gives the same result.</li>
+                    <li>Why it matters: Safe retries (no double charges or duplicates).</li>
+                    <li>Everyday example: Click “Pay” twice, still one order/charge.</li>
+                </ul>
+                <div class="callout">Practice: Require an <code>Idempotency-Key</code> header on POST /orders and reuse the saved result when the key repeats.</div>
+            </section>
+
+            <section class="slide" data-index="2">
+                <h2 class="slide-title">Pagination</h2>
+                <ul>
+                    <li>What it is: Break big lists into smaller pages or “load more”.</li>
+                    <li>Why it matters: Keeps lists fast and smooth as data grows.</li>
+                    <li>Everyday example: Instagram feed loads more as you scroll.</li>
+                </ul>
+                <div class="callout">Practice: Prototype both offset and cursor styles; return a <code>next_cursor</code> value.</div>
+            </section>
+
+            <section class="slide" data-index="3">
+                <h2 class="slide-title">Versioning</h2>
+                <ul>
+                    <li>What it is: Keep old and new API versions side‑by‑side.</li>
+                    <li>Why it matters: Old apps keep working while you improve.</li>
+                    <li>Where you’ll see it: <code>/v1/users</code> and <code>/v2/users</code>.</li>
+                </ul>
+                <div class="callout">Practice: Route both <code>/v1/profile</code> and <code>/v2/profile</code> to different handlers in the same mux.</div>
+            </section>
+
+            <section class="slide" data-index="4">
+                <h2 class="slide-title">Rate Limiting</h2>
+                <ul>
+                    <li>What it is: A fair speed limit for requests.</li>
+                    <li>Why it matters: Protects servers and users during spikes.</li>
+                    <li>Where you’ll see it: Logins, search, public endpoints.</li>
+                </ul>
+                <div class="callout">Practice: Wrap a handler with <code>rate.NewLimiter</code> and log rejections to tune the ceiling.</div>
+            </section>
+
+            <section class="slide" data-index="5">
+                <h2 class="slide-title">Error Contracts</h2>
+                <ul>
+                    <li>What it is: Predictable errors with clear codes/messages.</li>
+                    <li>Why it matters: Faster fixes and fewer support pings.</li>
+                    <li>Where you’ll see it: Validation, conflicts, missing fields.</li>
+                </ul>
+                <div class="callout">Practice: Centralize error responses with a helper that sets code, message, and trace ID.</div>
+            </section>
+
+            <section class="slide" data-index="6">
+                <h2 class="slide-title">Caching</h2>
+                <ul>
+                    <li>What it is: Reuse a saved response instead of redoing work.</li>
+                    <li>Why it matters: Faster pages and less database load.</li>
+                    <li>Where you’ll see it: Lists, avatars, static files.</li>
+                </ul>
+                <div class="callout">Practice: Add an ETag header and respond <code>304</code> when the client sends <code>If-None-Match</code>.</div>
+            </section>
+
+            <section class="slide" data-index="7">
+                <h2 class="slide-title">Security</h2>
+                <ul>
+                    <li>What it is: Short‑lived tokens prove who you are.</li>
+                    <li>Why it matters: Limits risk if a token leaks.</li>
+                    <li>Where you’ll see it: Logins, API keys, sessions.</li>
+                </ul>
+                <div class="callout">Practice: Issue a one-minute JWT and log how your middleware handles expiry.</div>
+            </section>
+
+            <section class="slide" data-index="8">
+                <h2 class="slide-title">N+1 Queries</h2>
+                <ul>
+                    <li>What it is: Loading related data one row at a time.</li>
+                    <li>Why it matters: It’s slow—batch or preload instead.</li>
+                    <li>Where you’ll see it: Users + Orders, Posts + Comments.</li>
+                </ul>
+                <div class="callout">Practice: Measure the difference between looping queries and a single eager load.</div>
+            </section>
+
+            <section class="slide" data-index="9">
+                <h2 class="slide-title">Documentation</h2>
+                <ul>
+                    <li>What it is: A readable contract (often OpenAPI).</li>
+                    <li>Why it matters: Shared understanding across teams.</li>
+                    <li>Where you’ll see it: Public APIs, onboarding, QA.</li>
+                </ul>
+                <div class="callout">Practice: Annotate one handler with Swag tags and show the auto-generated page.</div>
+            </section>
+
+            <section class="slide" data-index="10">
+                <h2 class="slide-title">Consistency</h2>
+                <ul>
+                    <li>What it is: Data may take a moment to sync everywhere.</li>
+                    <li>Why it matters: Keeps systems fast and available.</li>
+                    <li>Where you’ll see it: Feeds, counters, notifications.</li>
+                </ul>
+                <div class="callout">Practice: Return <code>202 Accepted</code> while a goroutine finishes the heavy work.</div>
+            </section>
+
+            <section class="slide" data-index="11">
+                <h2 class="slide-title">Hands-on Moves</h2>
+                <ol>
+                    <li>Add idempotency keys to an existing POST endpoint.</li>
+                    <li>Swap offset pagination for cursors on a list route.</li>
+                    <li>Adopt structured error responses across the service.</li>
+                    <li>Publish an OpenAPI snippet and review it with your frontend partner.</li>
+                </ol>
+                <div class="callout">Pair up and share what changed in your telemetry after each improvement.</div>
+            </section>
+
+            <section class="slide" data-index="12">
+                <h2 class="slide-title">Keep Exploring</h2>
+                <ul>
+                    <li><a class="cta-button" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview" target="_blank" rel="noopener">MDN: HTTP Overview</a></li>
+                    <li><a class="cta-button" href="https://stripe.com/docs/idempotency" target="_blank" rel="noopener">Stripe: Idempotency Keys</a></li>
+                    <li><a class="cta-button" href="https://use-the-index-luke.com/no-offset" target="_blank" rel="noopener">Keyset Pagination (No OFFSET)</a></li>
+                    <li><a class="cta-button" href="https://cloud.google.com/apis/design/versioning" target="_blank" rel="noopener">Google API Design: Versioning</a></li>
+                    <li><a class="cta-button" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching" target="_blank" rel="noopener">MDN: HTTP Caching</a></li>
+                    <li><a class="cta-button" href="https://jwt.io/introduction" target="_blank" rel="noopener">JWT: Introduction</a></li>
+                </ul>
+                <div class="callout">Pick one link, read for 10 minutes, share one takeaway with your team.</div>
+            </section>
+
+            <section class="slide" data-index="13">
+                <h2 class="slide-title">Reference</h2>
+                <ul>
+                    <li><a class="cta-button" href="https://medium.com/@vaibhav.chichmalkar/10-api-concepts-every-backend-developer-should-know-the-go-way-a873fe064908" target="_blank" rel="noopener">Vaibhav Chichmalkar, 10 API Concepts Every Backend Developer Should Know: The Go Way (2025)</a></li>
+                    <li><a class="cta-button" href="../api-design-concepts.md" target="_blank" rel="noopener">Read the full goCodeSchool tutorial</a></li>
+                </ul>
+                <div class="callout">Credit where it’s due—this deck builds on Chichmalkar’s guide and adapts it for our crew.</div>
+            </section>
+        </div>
+
+        <div class="nav-bar" role="navigation" aria-label="Slide controls">
+            <button class="nav-button" id="prevBtn" type="button" aria-label="Previous slide">⬅️ Back</button>
+            <div class="progress-dots" aria-hidden="true"></div>
+            <button class="nav-button" id="nextBtn" type="button" aria-label="Next slide">Next ➡️</button>
+        </div>
+    </div>
+
+    <script>
+        const slides = Array.from(document.querySelectorAll('.slide'));
+        const dotsContainer = document.querySelector('.progress-dots');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        let current = 0;
+
+        function buildDots() {
+            slides.forEach((_, index) => {
+                const dot = document.createElement('span');
+                dot.dataset.index = index;
+                dotsContainer.appendChild(dot);
+            });
+        }
+
+        function updateDots() {
+            dotsContainer.querySelectorAll('span').forEach((dot, index) => {
+                dot.classList.toggle('active', index === current);
+            });
+        }
+
+        function showSlide(index) {
+            if (index < 0 || index >= slides.length) {
+                return;
+            }
+            slides[current].classList.remove('active');
+            current = index;
+            slides[current].classList.add('active');
+            updateDots();
+        }
+
+        function nextSlide() {
+            if (current < slides.length - 1) {
+                showSlide(current + 1);
+            }
+        }
+
+        function prevSlide() {
+            if (current > 0) {
+                showSlide(current - 1);
+            }
+        }
+
+        function handleKeydown(event) {
+            if (event.key === 'ArrowRight') {
+                nextSlide();
+            }
+            if (event.key === 'ArrowLeft') {
+                prevSlide();
+            }
+        }
+
+        buildDots();
+        updateDots();
+
+        prevBtn.addEventListener('click', prevSlide);
+        nextBtn.addEventListener('click', nextSlide);
+        document.addEventListener('keydown', handleKeydown);
+
+        dotsContainer.addEventListener('click', (event) => {
+            const target = event.target;
+            if (target.tagName.toLowerCase() === 'span') {
+                const idx = Number(target.dataset.index);
+                showSlide(idx);
+            }
+        });
+    </script>
+</body>
+</html>
