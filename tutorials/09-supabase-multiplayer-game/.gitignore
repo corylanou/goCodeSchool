@@ -1,0 +1,39 @@
+# Environment files
+.envrc
+.env
+
+# Supabase
+.supabase/
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+vendor/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Dependencies
+node_modules/
+
+# Certificates (sensitive)
+certs/
+*.crt
+*.key
+*.pem

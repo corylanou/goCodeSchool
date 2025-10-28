@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crewmate Crisis - Multiplayer Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .player-avatar {
+            transition: all 0.3s ease;
+        }
+        .player-avatar:hover {
+            transform: scale(1.1);
+        }
+        .task-progress {
+            transition: width 0.5s ease;
+        }
+        .chat-message {
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        .emergency-btn {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <header class="text-center mb-8">
+            <h1 class="text-5xl font-bold text-purple-400 mb-2">🚀 Crewmate Crisis</h1>
+            <p class="text-gray-400">Find the impostor before it's too late!</p>
+        </header>
+
+        <!-- Welcome Screen -->
+        <div id="welcomeScreen" class="max-w-md mx-auto">
+            <!-- Connection Info Box -->
+            <div id="connectionInfo" class="bg-yellow-900/20 border border-yellow-600/30 rounded-lg p-4 mb-6">
+                <h3 class="text-sm text-yellow-400 font-semibold mb-2">📡 Share this URL with other players:</h3>
+                <div class="flex items-center gap-2 bg-gray-900 rounded p-3">
+                    <span id="shareUrl" class="text-green-400 font-mono text-sm flex-1">Loading...</span>
+                    <button onclick="copyShareUrl()" class="bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded text-sm transition-colors">
+                        Copy
+                    </button>
+                </div>
+                <p class="text-xs text-gray-400 mt-2">Students on your local network can access this URL</p>
+            </div>
+
+            <div class="bg-gray-800 rounded-lg p-8 shadow-xl">
+                <h2 class="text-2xl font-bold mb-6 text-center">Join the Crew</h2>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-medium mb-2">Your Name</label>
+                    <input type="text" id="username" maxlength="20"
+                           class="w-full px-4 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                           placeholder="Enter your name">
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-medium mb-2">Choose Your Color</label>
+                    <div class="grid grid-cols-4 gap-2">
+                        <button data-color="red" class="color-btn bg-red-500 h-12 rounded hover:ring-2 hover:ring-white"></button>
+                        <button data-color="blue" class="color-btn bg-blue-500 h-12 rounded hover:ring-2 hover:ring-white"></button>
+                        <button data-color="green" class="color-btn bg-green-500 h-12 rounded hover:ring-2 hover:ring-white"></button>
+                        <button data-color="yellow" class="color-btn bg-yellow-500 h-12 rounded hover:ring-2 hover:ring-white"></button>
+                        <button data-color="purple" class="color-btn bg-purple-500 h-12 rounded hover:ring-2 hover:ring-white"></button>
+                        <button data-color="orange" class="color-btn bg-orange-500 h-12 rounded hover:ring-2 hover:ring-white"></button>
+                        <button data-color="pink" class="color-btn bg-pink-500 h-12 rounded hover:ring-2 hover:ring-white"></button>
+                        <button data-color="cyan" class="color-btn bg-cyan-500 h-12 rounded hover:ring-2 hover:ring-white"></button>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <button id="createRoomBtn"
+                            class="w-full bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg font-semibold transition">
+                        Create New Room
+                    </button>
+
+                    <div class="flex space-x-2">
+                        <input type="text" id="roomCodeInput" maxlength="6"
+                               class="flex-1 px-4 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                               placeholder="Room Code">
+                        <button id="joinRoomBtn"
+                                class="bg-green-600 hover:bg-green-700 px-6 py-3 rounded-lg font-semibold transition">
+                            Join Room
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lobby Screen -->
+        <div id="lobbyScreen" class="hidden">
+            <div class="max-w-4xl mx-auto bg-gray-800 rounded-lg p-8 shadow-xl">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold">Room Code: <span id="roomCodeDisplay" class="text-purple-400"></span></h2>
+                        <p class="text-gray-400">Share this code with your friends!</p>
+                    </div>
+                    <button id="startGameBtn" class="hidden bg-green-600 hover:bg-green-700 px-6 py-3 rounded-lg font-semibold transition">
+                        Start Game (3+ players)
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+                    <div id="playersList" class="col-span-full grid grid-cols-2 md:grid-cols-5 gap-4">
+                        <!-- Players will be added here dynamically -->
+                    </div>
+                </div>
+
+                <div class="bg-gray-700 rounded-lg p-4">
+                    <h3 class="font-semibold mb-2">Waiting for players...</h3>
+                    <p class="text-sm text-gray-400">Need at least 3 players to start the game</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="gameScreen" class="hidden">
+            <div class="max-w-6xl mx-auto">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Game Area -->
+                    <div class="lg:col-span-2 bg-gray-800 rounded-lg p-6 shadow-xl">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-bold">
+                                You are: <span id="roleDisplay" class="text-purple-400"></span>
+                            </h2>
+                            <button id="emergencyBtn"
+                                    class="emergency-btn bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg font-semibold transition">
+                                🚨 Emergency Meeting
+                            </button>
+                        </div>
+
+                        <!-- Task Progress -->
+                        <div class="mb-6">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Task Progress</span>
+                                <span id="taskCount">0/10</span>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-3">
+                                <div id="taskProgressBar" class="task-progress bg-green-500 h-3 rounded-full" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Players Grid -->
+                        <div class="grid grid-cols-3 md:grid-cols-5 gap-3 mb-6">
+                            <div id="gamePlayers" class="contents">
+                                <!-- Active players shown here -->
+                            </div>
+                        </div>
+
+                        <!-- Voting Area (shown during meetings) -->
+                        <div id="votingArea" class="hidden bg-gray-700 rounded-lg p-4">
+                            <h3 class="font-bold mb-3">Vote for the Impostor</h3>
+                            <div id="votingOptions" class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                                <!-- Voting buttons added dynamically -->
+                            </div>
+                            <button id="skipVoteBtn" class="mt-3 w-full bg-gray-600 hover:bg-gray-500 px-4 py-2 rounded-lg">
+                                Skip Vote
+                            </button>
+                        </div>
+
+                        <!-- Task List (for crewmates) -->
+                        <div id="taskList" class="hidden bg-gray-700 rounded-lg p-4">
+                            <h3 class="font-bold mb-3">Your Tasks</h3>
+                            <div class="space-y-2">
+                                <div class="flex items-center space-x-2">
+                                    <input type="checkbox" id="task1" class="task-checkbox">
+                                    <label for="task1">Fix wiring in Electrical</label>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <input type="checkbox" id="task2" class="task-checkbox">
+                                    <label for="task2">Empty garbage in Cafeteria</label>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <input type="checkbox" id="task3" class="task-checkbox">
+                                    <label for="task3">Calibrate engines</label>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <input type="checkbox" id="task4" class="task-checkbox">
+                                    <label for="task4">Upload data in Admin</label>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <input type="checkbox" id="task5" class="task-checkbox">
+                                    <label for="task5">Clear asteroids in Weapons</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chat Area -->
+                    <div class="bg-gray-800 rounded-lg p-6 shadow-xl flex flex-col" style="height: 600px;">
+                        <h3 class="font-bold mb-4">Chat</h3>
+                        <div id="chatMessages" class="flex-1 overflow-y-auto bg-gray-700 rounded-lg p-3 mb-4 space-y-2">
+                            <!-- Chat messages appear here -->
+                        </div>
+                        <div class="flex space-x-2">
+                            <input type="text" id="chatInput"
+                                   class="flex-1 px-4 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                   placeholder="Type a message..." maxlength="200">
+                            <button id="sendChatBtn"
+                                    class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg">
+                                Send
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Game Status Bar -->
+                <div id="gameStatus" class="mt-6 bg-gray-800 rounded-lg p-4 text-center">
+                    <p id="statusMessage" class="text-lg font-semibold">Game in progress...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Over Screen -->
+        <div id="gameOverScreen" class="hidden">
+            <div class="max-w-md mx-auto bg-gray-800 rounded-lg p-8 shadow-xl text-center">
+                <h2 id="gameOverTitle" class="text-3xl font-bold mb-4"></h2>
+                <p id="gameOverMessage" class="text-xl mb-6"></p>
+                <button id="playAgainBtn"
+                        class="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg font-semibold transition">
+                    Play Again
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

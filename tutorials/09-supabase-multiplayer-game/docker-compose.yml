@@ -1,0 +1,26 @@
+# Docker Compose for Supabase Local Development
+# This is automatically managed by the Supabase CLI
+# Run 'supabase start' instead of 'docker-compose up'
+
+# NOTE: The Supabase CLI generates and manages its own docker-compose
+# in .supabase/docker-compose.yml after you run 'supabase init'
+
+# If you want to see the full docker-compose that Supabase uses:
+# 1. Run: supabase init
+# 2. Run: supabase start
+# 3. Check: .supabase/docker-compose.yml
+
+# The Supabase CLI approach is recommended because it:
+# - Automatically generates proper JWT secrets
+# - Sets up all service connections correctly
+# - Manages migrations and seeds
+# - Provides helpful commands like 'supabase db reset'
+
+# To use Supabase locally:
+# 1. Install CLI: brew install supabase/tap/supabase
+# 2. Initialize: supabase init
+# 3. Start: supabase start
+# 4. Your services will be available at:
+#    - Studio: http://localhost:54323
+#    - API: http://localhost:54321
+#    - DB: postgresql://postgres:postgres@localhost:54322/postgres

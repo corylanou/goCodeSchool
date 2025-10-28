@@ -1,0 +1,6 @@
+version: "2"
+authtoken: 2y2ELtt48mD5VNkEexZZf_22tvRibG6RwQ8pPPxxufH
+tunnels:
+  game:
+    addr: 8080
+    proto: http
