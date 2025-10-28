@@ -92,6 +92,24 @@ Try this with your class to build muscle memory:
 - **Check history when confused.** VS Code’s Source Control view or GitHub’s “Commits” tab can answer “what changed?” faster than asking around.
 - **Ask for help with conflicts early.** They’re easier to solve before lots of new commits pile up.
 
+## Ready for teamwork? Try the collaboration exercise
+
+Once you're comfortable with basic commits and syncing, level up with our hands-on collaboration exercise:
+
+**[Git Collaboration Exercise: Epic Dodgeball Rules](https://github.com/corylanou/git-dodgeball)**
+
+You'll learn:
+
+- How to **fork** a repository (make your own copy)
+- How to submit **pull requests** (propose changes to someone else's project)
+- How to resolve **merge conflicts** (when two people edit the same thing)
+- How to **sync your fork** with the original project
+
+This is exactly how open source projects work! The exercise uses a fun dodgeball rules theme, so you're just editing text, not worrying about code. Perfect for practicing Git collaboration skills.
+
+**Time needed:** 45-60 minutes
+**Difficulty:** Beginner (assumes you know basic Git from this tutorial)
+
 ## Keep exploring
 
 - [GitHub Docs – Hello World](https://docs.github.com/en/get-started/start-your-journey/hello-world): Official friendly walkthrough that inspired many of these ideas.
