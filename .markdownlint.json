@@ -6,5 +6,6 @@
   "MD033": {
     "allowed_elements": ["br", "kbd", "sub", "sup"]
   },
-  "MD041": false
+  "MD041": false,
+  "MD051": false
 }
