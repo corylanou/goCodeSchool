@@ -25,3 +25,13 @@ go.work.sum
 # env file
 .env
 .playwright-mcp
+
+# Override global gitignore for project-specific CLAUDE.md files
+!CLAUDE.md
+!.claude/
+
+# Ignore personal/local .claude files
+.claude/.hooks/
+.claude/.logs/
+.claude/settings.local.json
+.claude/**/*.backup

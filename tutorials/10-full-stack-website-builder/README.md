@@ -38,15 +38,17 @@ This is an **education-first** tutorial. Each section includes:
 | Component | Technology | Why |
 |-----------|-----------|-----|
 | Backend | Go 1.25 | Fast, type-safe, single binary deployment |
+| Web Framework | Echo v4 | Fast router, middleware, production-ready |
 | Templates | templ | Type-safe components, Go-native |
 | Components | templui | Pre-built professional components |
-| CSS | Tailwind CSS | Modern utility-first, industry standard |
-| Database | SQLite | Zero config, perfect for small business scale |
+| CSS | Tailwind CSS v4 | Modern utility-first, CSS-first config |
+| JavaScript | Alpine.js v3 | Lightweight reactivity, minimal JS |
+| Interactivity | HTMX 1.9+ | Server-driven UI updates (optional) |
+| Database | Neon Postgres | Serverless Postgres, generous free tier |
 | Migrations | goose | Simple SQL-based version control |
 | Queries | sqlc | Type-safe generated code from SQL |
 | Auth | Clerk | Security by experts, free tier |
-| Backups | litestream v0.3.x | Real-time SQLite replication |
-| Hosting | Fly.io or Railway | Simple deployment, free tier |
+| Hosting | Vercel | Free tier, CLI deploy, edge functions |
 
 Read the complete technology comparison and reasoning in [TECH_STACK_DECISIONS.md](./TECH_STACK_DECISIONS.md).
 
@@ -62,24 +64,26 @@ Read the complete technology comparison and reasoning in [TECH_STACK_DECISIONS.m
 
 - [Phase 1: Domain Names & Web Fundamentals](#phase-1-domain-names-web-fundamentals)
 - [Phase 2: Go Programming Language](#phase-2-go-programming-language)
+- [Phase 2.5: Echo Web Framework](#phase-25-echo-web-framework)
 
 ### Frontend
 
 - [Phase 3: Templating with templ](#phase-3-templating-with-templ)
 - [Phase 4: templui Component Library](#phase-4-templui-component-library)
 - [Phase 5: Tailwind CSS](#phase-5-tailwind-css)
+- [Phase 5.5: Alpine.js & Frontend Interactivity](#phase-55-alpinejs--frontend-interactivity)
 
 ### Database
 
 - [Phase 6: SQLite Database](#phase-6-sqlite-database)
 - [Phase 7: goose Migrations](#phase-7-goose-migrations)
 - [Phase 8: sqlc for Type-Safe Queries](#phase-8-sqlc-for-type-safe-queries)
+- [Phase 8.5: Project Structure Best Practices](#phase-85-project-structure-best-practices)
 
 ### Production Features
 
 - [Phase 9: Clerk Authentication](#phase-9-clerk-authentication)
-- [Phase 10: litestream Backups](#phase-10-litestream-backups)
-- [Phase 11: Deployment](#phase-11-deployment)
+- [Phase 10: Deployment](#phase-10-deployment)
 
 ### Client Work
 
@@ -756,6 +760,473 @@ my-website/
 
 ---
 
+## Phase 2.5: Echo Web Framework
+
+### 🧠 What You'll Learn
+
+How to use Echo v4, a high-performance Go web framework with routing, middleware, and context handling.
+
+### What is Echo?
+
+**Echo** is a high-performance, minimalist Go web framework that extends the standard library's `net/http` with powerful features for building production web applications.
+
+#### Why Not Just Use `net/http`?
+
+The standard library is powerful, but Echo adds essential features:
+
+```go
+// Standard library - more verbose
+http.HandleFunc("/users/{id}", func(w http.ResponseWriter, r *http.Request) {
+    // Manual path parameter parsing
+    id := strings.TrimPrefix(r.URL.Path, "/users/")
+
+    // Manual response type handling
+    w.Header().Set("Content-Type", "application/json")
+    w.Write([]byte(`{"id": "` + id + `"}`))
+})
+
+// Echo - cleaner and more powerful
+e.GET("/users/:id", func(c echo.Context) error {
+    id := c.Param("id")  // Automatic path parameter extraction
+    return c.JSON(200, map[string]string{"id": id})  // Automatic JSON serialization
+})
+```
+
+### 🤔 Why We Chose Echo
+
+See [TECH_STACK_DECISIONS.md](./TECH_STACK_DECISIONS.md) for detailed comparison.
+
+#### Key Benefits:
+
+| Feature | Benefit |
+|---------|---------|
+| **Fast routing** | Optimized router handles thousands of routes efficiently |
+| **Middleware** | Composable request/response pipeline |
+| **Context** | Rich context object with helpers |
+| **Error handling** | Centralized error handling |
+| **Performance** | One of the fastest Go frameworks |
+| **Production-ready** | Battle-tested by major companies |
+
+#### Comparison:
+
+| Framework | Speed | Complexity | Community | Our Choice |
+|-----------|-------|------------|-----------|------------|
+| Echo | ⚡️⚡️⚡️ | Low | Large | ✅ **Yes** |
+| Gin | ⚡️⚡️⚡️ | Low | Large | Good alternative |
+| Chi | ⚡️⚡️ | Very Low | Medium | Too minimal |
+| Fiber | ⚡️⚡️⚡️ | Medium | Medium | Not idiomatic Go |
+| Standard lib | ⚡️⚡️ | Medium | N/A | Too verbose |
+
+### Echo Basics
+
+#### Installation:
+
+```bash
+go get github.com/labstack/echo/v4
+go get github.com/labstack/echo/v4/middleware
+```
+
+#### Simple Echo Server:
+
+```go
+package main
+
+import (
+    "net/http"
+    "github.com/labstack/echo/v4"
+    "github.com/labstack/echo/v4/middleware"
+)
+
+func main() {
+    // Create Echo instance
+    e := echo.New()
+
+    // Middleware
+    e.Use(middleware.Logger())
+    e.Use(middleware.Recover())
+
+    // Routes
+    e.GET("/", homeHandler)
+    e.GET("/about", aboutHandler)
+
+    // Start server
+    e.Start(":8080")
+}
+
+func homeHandler(c echo.Context) error {
+    return c.String(http.StatusOK, "Welcome!")
+}
+
+func aboutHandler(c echo.Context) error {
+    return c.String(http.StatusOK, "About Us")
+}
+```
+
+### Echo Context
+
+The `echo.Context` is the heart of Echo - it wraps both `http.Request` and `http.ResponseWriter` with helpful methods.
+
+#### Common Context Methods:
+
+```go
+func handler(c echo.Context) error {
+    // Path parameters
+    id := c.Param("id")           // /users/:id → "123"
+
+    // Query parameters
+    sort := c.QueryParam("sort")  // /users?sort=name → "name"
+
+    // Form values
+    email := c.FormValue("email") // POST form field
+
+    // Request info
+    method := c.Request().Method  // GET, POST, etc.
+    path := c.Request().URL.Path
+
+    // Response helpers
+    return c.String(200, "text")            // Plain text
+    return c.JSON(200, data)                // JSON response
+    return c.HTML(200, "<h1>Hello</h1>")    // HTML string
+    return c.Redirect(302, "/login")        // Redirect
+
+    // Cookies
+    cookie, _ := c.Cookie("session")        // Read cookie
+    c.SetCookie(&http.Cookie{...})          // Set cookie
+
+    // Context values (for middleware)
+    c.Set("user", user)                     // Store in context
+    user := c.Get("user")                   // Retrieve from context
+}
+```
+
+### Routing Patterns
+
+#### Basic Routes:
+
+```go
+e.GET("/", homeHandler)           // GET only
+e.POST("/users", createHandler)   // POST only
+e.PUT("/users/:id", updateHandler)// PUT only
+e.DELETE("/users/:id", deleteHandler) // DELETE only
+
+// Multiple methods for same path
+e.Match([]string{"GET", "POST"}, "/search", searchHandler)
+```
+
+#### Path Parameters:
+
+```go
+e.GET("/users/:id", getUserHandler)
+e.GET("/posts/:category/:slug", getPostHandler)
+
+func getUserHandler(c echo.Context) error {
+    id := c.Param("id")  // Extracts "123" from /users/123
+    return c.String(200, "User: " + id)
+}
+```
+
+#### Route Groups:
+
+```go
+// Group related routes
+api := e.Group("/api")
+api.GET("/users", listUsers)
+api.POST("/users", createUser)
+
+// Nested groups
+v1 := api.Group("/v1")
+v1.GET("/products", listProductsV1)
+```
+
+### Middleware
+
+Middleware are functions that run before/after handlers - perfect for logging, auth, CORS, etc.
+
+#### Built-in Middleware:
+
+```go
+import "github.com/labstack/echo/v4/middleware"
+
+// Logging
+e.Use(middleware.Logger())
+
+// Panic recovery
+e.Use(middleware.Recover())
+
+// CORS (Cross-Origin Resource Sharing)
+e.Use(middleware.CORS())
+
+// Security headers
+e.Use(middleware.Secure())
+
+// Request ID
+e.Use(middleware.RequestID())
+
+// Rate limiting
+e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(20)))
+```
+
+#### Custom Middleware:
+
+```go
+// Authentication middleware
+func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+    return func(c echo.Context) error {
+        // Get auth token from cookie
+        cookie, err := c.Cookie("auth_token")
+        if err != nil {
+            return c.Redirect(302, "/login")
+        }
+
+        // Validate token (simplified)
+        if !isValidToken(cookie.Value) {
+            return c.String(401, "Unauthorized")
+        }
+
+        // Store user info in context
+        user := getUserFromToken(cookie.Value)
+        c.Set("user", user)
+
+        // Continue to next handler
+        return next(c)
+    }
+}
+
+// Apply to specific routes
+e.GET("/dashboard", dashboardHandler, AuthMiddleware)
+
+// Or to all routes in a group
+protected := e.Group("/admin")
+protected.Use(AuthMiddleware)
+protected.GET("/users", adminUsersHandler)
+```
+
+#### Middleware Execution Order:
+
+```go
+e.Use(middleware.Logger())     // 1. Runs first
+e.Use(middleware.Recover())    // 2. Runs second
+
+e.GET("/", handler, middleware1, middleware2) // 3, 4. Route-specific middleware
+
+// Execution order:
+// Logger → Recover → middleware1 → middleware2 → handler
+```
+
+### Error Handling
+
+Echo provides centralized error handling:
+
+```go
+func handler(c echo.Context) error {
+    // Return error
+    if err := doSomething(); err != nil {
+        return echo.NewHTTPError(http.StatusInternalServerError, "Operation failed")
+    }
+
+    // Or use standard error
+    return err  // Echo converts to 500 Internal Server Error
+}
+
+// Custom error handler
+e.HTTPErrorHandler = func(err error, c echo.Context) {
+    var code int
+    var message string
+
+    if he, ok := err.(*echo.HTTPError); ok {
+        code = he.Code
+        message = he.Message.(string)
+    } else {
+        code = 500
+        message = "Internal Server Error"
+    }
+
+    // Log error
+    log.Printf("Error: %v", err)
+
+    // Send JSON response
+    c.JSON(code, map[string]string{"error": message})
+}
+```
+
+### Static Files
+
+Serve CSS, JavaScript, images:
+
+```go
+// Serve entire directory
+e.Static("/public", "public")
+// /public/css/style.css → serves public/css/style.css
+
+// Serve single file
+e.File("/favicon.ico", "public/images/favicon.ico")
+
+// Serve from root
+e.Static("/", "public")
+// /style.css → serves public/style.css
+```
+
+### Integrating with templ
+
+Echo works seamlessly with templ templates:
+
+```go
+import "your-project/templates"
+
+// Helper function to render templ components
+func render(c echo.Context, component templ.Component) error {
+    return component.Render(c.Request().Context(), c.Response())
+}
+
+// Handler
+func homeHandler(c echo.Context) error {
+    data := HomeData{
+        Title: "Welcome",
+        User:  getCurrentUser(c),
+    }
+    return render(c, templates.HomePage(data))
+}
+```
+
+### Complete Project Structure with Echo
+
+```text
+my-website/
+├── cmd/
+│   └── main.go              # Echo server setup
+├── service/
+│   ├── service.go           # Service struct with Echo routes
+│   ├── handlers.go          # Handler functions
+│   ├── middleware.go        # Custom middleware
+│   └── routes.go            # Route registration
+├── storage/
+│   ├── storage.go           # Database connection
+│   └── queries.go           # Database queries
+├── views/
+│   ├── layout/
+│   │   └── base.templ       # Base layout
+│   ├── pages/
+│   │   ├── home.templ
+│   │   └── about.templ
+│   └── components/
+│       └── button.templ
+└── public/
+    ├── css/
+    └── images/
+```
+
+### Echo Context vs Request Context
+
+**Important distinction** for integrating with templ:
+
+```go
+func handler(c echo.Context) error {
+    // ❌ Don't pass echo.Context to templ
+    // templates.Page(c)  // Wrong!
+
+    // ✅ Use c.Request().Context() for:
+    // - Database queries (for cancellation)
+    // - Template rendering (for request lifecycle)
+    ctx := c.Request().Context()
+
+    // Database query
+    users, err := db.ListUsers(ctx)
+
+    // Render template with request context
+    return templates.Page(users).Render(ctx, c.Response())
+
+    // ✅ Use echo.Context (c) for:
+    // - Path/query/form parameters
+    // - Response methods (JSON, Redirect, etc.)
+    // - Cookies
+    // - Setting context values for middleware
+}
+```
+
+### 🌍 Where You'll See Echo
+
+#### Companies Using Echo:
+
+- Medium-sized startups
+- Microservices architectures
+- API backends
+- Real-time applications
+
+#### Common Use Cases:
+
+- RESTful APIs
+- Server-side rendered websites (with templ!)
+- Microservices
+- WebSocket servers
+- Proxy servers
+
+### 🔗 Documentation & Resources
+
+#### Official Documentation:
+
+- [Echo Website](https://echo.labstack.com/) - Official documentation
+- [Echo Guide](https://echo.labstack.com/docs) - Complete guide
+- [Echo Middleware](https://echo.labstack.com/docs/middleware) - Built-in middleware
+- [GitHub Repository](https://github.com/labstack/echo) - Source code
+
+#### Learning Resources:
+
+- [Echo Web Framework - YouTube](https://www.youtube.com/results?search_query=echo+golang+tutorial)
+- [Echo + templ Tutorial](https://echo.labstack.com/) - Building web apps
+
+#### Community:
+
+- [Echo Discussions](https://github.com/labstack/echo/discussions) - GitHub discussions
+- [r/golang](https://reddit.com/r/golang) - Go community (Echo questions welcome)
+
+### ✅ Practice Exercises
+
+#### Exercise 1: Basic Echo Server (30 minutes)
+
+1. Create new project: `mkdir echo-practice && cd echo-practice`
+2. Initialize: `go mod init echo-practice`
+3. Install Echo: `go get github.com/labstack/echo/v4`
+4. Create `main.go` with routes for `/`, `/about`, `/contact`
+5. Add Logger and Recover middleware
+6. Test each route in browser
+
+#### Exercise 2: Path Parameters (20 minutes)
+
+1. Add route: `e.GET("/users/:id", getUserHandler)`
+2. Extract `id` using `c.Param("id")`
+3. Return JSON: `return c.JSON(200, map[string]string{"id": id})`
+4. Test: `/users/123`, `/users/abc`
+
+#### Exercise 3: Query Parameters (20 minutes)
+
+1. Add route: `e.GET("/search", searchHandler)`
+2. Get query param: `query := c.QueryParam("q")`
+3. Return result
+4. Test: `/search?q=echo`
+
+#### Exercise 4: Custom Middleware (45 minutes)
+
+1. Create middleware that logs request method and path
+2. Create middleware that adds custom header to response
+3. Apply both to all routes
+4. Verify middleware executes in order
+
+#### Exercise 5: Static Files (15 minutes)
+
+1. Create `public/css/style.css` with some CSS
+2. Add `e.Static("/public", "public")`
+3. Create HTML response that links to stylesheet
+4. Verify CSS loads in browser
+
+#### Exercise 6: Route Groups (30 minutes)
+
+1. Create `/api` group
+2. Add routes under group: `/api/users`, `/api/posts`
+3. Apply middleware only to API group (e.g., custom header)
+4. Test that middleware only affects `/api/*` routes
+
+---
+
 ## Phase 3: Templating with templ
 
 ### 🧠 What You'll Learn
@@ -1125,6 +1596,354 @@ templ HelloWorld() {
    - Type safety
    - Refactoring ease
 3. Discuss trade-offs
+
+### Layout Patterns & Best Practices
+
+#### Two-Level Layout System
+
+Most production sites use a two-level layout pattern:
+
+1. **Base Layout** - Common structure (HTML boilerplate, head, nav, footer)
+2. **Page Templates** - Page-specific content that uses the base layout
+
+**Base Layout** (`views/layout/base.templ`):
+
+```templ
+package layout
+
+// Meta contains SEO and page metadata
+type Meta struct {
+    Title       string
+    Description string
+    Keywords    string
+}
+
+// Base wraps all pages with common structure
+templ Base(meta Meta) {
+    <!DOCTYPE html>
+    <html lang="en">
+        <head>
+            <meta charset="UTF-8"/>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+            <title>{ meta.Title }</title>
+            <meta name="description" content={ meta.Description }/>
+
+            <!-- CSS -->
+            <link rel="stylesheet" href="/public/css/styles.css"/>
+
+            <!-- Alpine.js for interactivity -->
+            <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+        </head>
+        <body class="min-h-screen bg-gray-50">
+            @Header()
+            <main class="container mx-auto px-4 py-8">
+                { children... }  // Page content injected here
+            </main>
+            @Footer()
+        </body>
+    </html>
+}
+
+templ Header() {
+    <header class="bg-white shadow">
+        <nav class="container mx-auto px-4 py-4">
+            <a href="/" class="text-xl font-bold">My Site</a>
+            <a href="/about" class="ml-4">About</a>
+            <a href="/contact" class="ml-4">Contact</a>
+        </nav>
+    </header>
+}
+
+templ Footer() {
+    <footer class="bg-gray-800 text-white py-8 mt-auto">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2024 My Business. All rights reserved.</p>
+        </div>
+    </footer>
+}
+```
+
+**Page Template** (`views/home/index.templ`):
+
+```templ
+package home
+
+import (
+    "your-project/views/layout"
+    "your-project/views/components"
+)
+
+// Index renders the home page
+templ Index(products []Product) {
+    @layout.Base(layout.Meta{
+        Title:       "Welcome to My Store",
+        Description: "Shop our amazing products",
+        Keywords:    "store, products, shopping",
+    }) {
+        @Hero()
+        @FeaturedProducts(products)
+    }
+}
+
+templ Hero() {
+    <section class="bg-blue-500 text-white py-20 text-center">
+        <h1 class="text-4xl font-bold mb-4">Welcome to Our Store</h1>
+        <p class="text-xl">Find the best products at great prices</p>
+    </section>
+}
+
+templ FeaturedProducts(products []Product) {
+    <section class="py-12">
+        <h2 class="text-3xl font-bold mb-8">Featured Products</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            for _, product := range products {
+                @components.ProductCard(product)
+            }
+        </div>
+    </section>
+}
+```
+
+#### Component Organization
+
+Organize components by purpose:
+
+```text
+views/
+├── layout/              # Base layouts
+│   ├── base.templ       # Public site layout
+│   └── admin.templ      # Admin dashboard layout
+├── components/          # Reusable components
+│   ├── button.templ
+│   ├── card.templ
+│   ├── modal.templ
+│   └── product_card.templ
+├── home/                # Home page templates
+│   └── index.templ
+├── products/            # Product pages
+│   ├── list.templ
+│   └── detail.templ
+└── admin/               # Admin pages
+    ├── dashboard.templ
+    └── users.templ
+```
+
+**Reusable Component** (`views/components/product_card.templ`):
+
+```templ
+package components
+
+import "fmt"
+
+type Product struct {
+    ID          string
+    Name        string
+    Price       float64
+    Image       string
+    Description string
+}
+
+templ ProductCard(product Product) {
+    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
+        <img
+            src={ product.Image }
+            alt={ product.Name }
+            class="w-full h-48 object-cover"
+        />
+        <div class="p-4">
+            <h3 class="text-lg font-semibold mb-2">{ product.Name }</h3>
+            <p class="text-gray-600 text-sm mb-4">{ product.Description }</p>
+            <div class="flex justify-between items-center">
+                <span class="text-xl font-bold text-blue-600">
+                    ${ fmt.Sprintf("%.2f", product.Price) }
+                </span>
+                <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                    Add to Cart
+                </button>
+            </div>
+        </div>
+    </div>
+}
+```
+
+#### Passing Data from Handlers to Templates
+
+**In Echo Handler:**
+
+```go
+package service
+
+import (
+    "your-project/storage/db"
+    "your-project/views/home"
+    "github.com/labstack/echo/v4"
+)
+
+func (s *Service) handleHome(c echo.Context) error {
+    // 1. Get data from database
+    products, err := s.db.Queries.ListFeaturedProducts(c.Request().Context(), 8)
+    if err != nil {
+        slog.Error("failed to get products", "error", err)
+        products = []db.Product{}  // Graceful degradation
+    }
+
+    // 2. Pass data to template
+    return render(c, home.Index(products))
+}
+
+// Helper function to render templ components
+func render(c echo.Context, component templ.Component) error {
+    // Use c.Request().Context() for template rendering
+    return component.Render(c.Request().Context(), c.Response())
+}
+```
+
+**Pattern: Handler → Template → Component**
+
+```go
+// Handler gets data
+func (s *Service) handleProduct(c echo.Context) error {
+    productID := c.Param("id")  // From Echo context
+
+    // Database query with request context
+    product, err := s.db.Queries.GetProduct(c.Request().Context(), productID)
+    if err != nil {
+        return c.String(404, "Product not found")
+    }
+
+    // Render with data
+    return render(c, products.Detail(product))
+}
+```
+
+```templ
+// Template receives typed data
+templ Detail(product Product) {
+    @layout.Base(layout.Meta{Title: product.Name}) {
+        @ProductDetail(product)
+    }
+}
+
+// Component receives same data
+templ ProductDetail(product Product) {
+    <div>
+        <h1>{ product.Name }</h1>
+        <p>${ fmt.Sprintf("%.2f", product.Price) }</p>
+    </div>
+}
+```
+
+#### Import Structure
+
+**Best Practice:**
+
+```templ
+package home
+
+// Import other packages
+import (
+    "fmt"                                  // Standard library
+    "your-project/storage/db"              // Database types
+    "your-project/views/layout"            // Layouts
+    "your-project/views/components"        // Shared components
+)
+
+// Use imported components
+templ Index(user *db.User, products []db.Product) {
+    @layout.Base(layout.Meta{Title: "Home"}) {
+        @components.UserWelcome(user)
+
+        <div class="grid">
+            for _, product := range products {
+                @components.ProductCard(product)
+            }
+        </div>
+    }
+}
+```
+
+#### Conditional Rendering Patterns
+
+```templ
+// Show content based on user state
+templ Navigation(user *User) {
+    <nav>
+        <a href="/">Home</a>
+
+        if user != nil {
+            <a href="/dashboard">Dashboard</a>
+            <a href="/logout">Logout</a>
+        } else {
+            <a href="/login">Login</a>
+            <a href="/signup">Sign Up</a>
+        }
+    </nav>
+}
+```
+
+```templ
+// Show empty state when no data
+templ ProductList(products []Product) {
+    if len(products) == 0 {
+        @EmptyState("No products found")
+    } else {
+        <div class="grid grid-cols-3 gap-4">
+            for _, product := range products {
+                @ProductCard(product)
+            }
+        </div>
+    }
+}
+```
+
+#### Multiple Layouts
+
+Some sites need different layouts for different sections:
+
+```templ
+// Public site layout (views/layout/base.templ)
+templ Base(meta Meta) {
+    // Full marketing site with header, footer
+}
+
+// Admin layout (views/layout/admin.templ)
+templ Admin(title string) {
+    <!DOCTYPE html>
+    <html>
+        <head>
+            <title>{ title } - Admin</title>
+        </head>
+        <body class="flex">
+            @Sidebar()
+            <main class="flex-1 p-6">
+                { children... }
+            </main>
+        </body>
+    </html>
+}
+```
+
+```templ
+// Admin page uses Admin layout
+package admin
+
+import "your-project/views/layout"
+
+templ Dashboard(stats Stats) {
+    @layout.Admin("Dashboard") {
+        <h1>Dashboard</h1>
+        @StatsCards(stats)
+    }
+}
+```
+
+#### Key Principles
+
+1. **Layouts handle structure** - HTML boilerplate, navigation, footer
+2. **Pages handle content** - Page-specific sections and composition
+3. **Components are reusable** - Used across multiple pages
+4. **Data flows down** - Handler → Page → Component
+5. **Keep logic in Go** - Templates render data, handlers process it
 
 ---
 
@@ -1974,11 +2793,440 @@ Write the same button 3 ways:
 
 ---
 
-## Phase 6: SQLite Database
+## Phase 5.5: Alpine.js & Frontend Interactivity
 
 ### 🧠 What You'll Learn
 
-How to store and retrieve persistent data using a lightweight, file-based database.
+How to add lightweight JavaScript interactivity with Alpine.js and optionally HTMX for dynamic server-driven updates.
+
+### What is Alpine.js?
+
+**Alpine.js** is a minimal JavaScript framework that adds interactivity directly in your HTML with a syntax similar to Vue.js.
+
+#### Why Alpine.js?
+
+- **Lightweight** - Only ~15KB (vs React ~40KB minified)
+- **No build step** - Include via CDN, start coding
+- **Template-friendly** - Works perfectly with server-rendered HTML
+- **Declarative** - Add behavior directly in HTML attributes
+
+#### Simple Example:
+
+```html
+<!-- Toggle visibility with Alpine.js -->
+<div x-data="{ open: false }">
+    <button @click="open = !open">Toggle</button>
+    <div x-show="open">
+        This content appears when toggled!
+    </div>
+</div>
+```
+
+### 🤔 Why Alpine.js Over Alternatives
+
+See [TECH_STACK_DECISIONS.md](./TECH_STACK_DECISIONS.md) for detailed comparison.
+
+| Framework | Size | Complexity | Our Use Case | Choice |
+|-----------|------|------------|--------------|--------|
+| Alpine.js | 15KB | Very Low | ✅ Perfect for dropdowns, modals, toggles | ✅ **Yes** |
+| React | 40KB+ | High | ❌ Overkill for server-rendered sites | No |
+| Vue | 33KB+ | Medium | ❌ Too complex for simple interactions | No |
+| Vanilla JS | 0KB | Low | ✅ Good but verbose | Alpine is cleaner |
+
+### Alpine.js Core Directives
+
+#### `x-data` - Component State
+
+Defines reactive data for a component:
+
+```html
+<div x-data="{ count: 0, name: 'John' }">
+    <p>Count: <span x-text="count"></span></p>
+    <p>Name: <span x-text="name"></span></p>
+</div>
+```
+
+#### `x-show` - Conditional Display
+
+Show/hide elements based on condition:
+
+```html
+<div x-data="{ loggedIn: false }">
+    <button @click="loggedIn = !loggedIn">Toggle Login</button>
+    <p x-show="loggedIn">Welcome back!</p>
+    <p x-show="!loggedIn">Please log in.</p>
+</div>
+```
+
+#### `@click` - Event Handling
+
+Respond to user events:
+
+```html
+<div x-data="{ count: 0 }">
+    <button @click="count++">Increment</button>
+    <button @click="count--">Decrement</button>
+    <p>Count: <span x-text="count"></span></p>
+</div>
+```
+
+#### `x-bind` - Dynamic Attributes
+
+Bind attributes to data:
+
+```html
+<div x-data="{ color: 'blue' }">
+    <button @click="color = 'red'">Red</button>
+    <button @click="color = 'blue'">Blue</button>
+    <div :class="'bg-' + color + '-500'" class="p-4">
+        Background changes color
+    </div>
+</div>
+```
+
+#### `x-model` - Two-Way Binding
+
+Sync input values with data:
+
+```html
+<div x-data="{ message: '' }">
+    <input type="text" x-model="message" placeholder="Type something">
+    <p>You typed: <span x-text="message"></span></p>
+</div>
+```
+
+### Common Patterns with templ
+
+#### Dropdown Menu
+
+```templ
+templ Dropdown() {
+    <div x-data="{ open: false }" class="relative">
+        <button
+            @click="open = !open"
+            class="px-4 py-2 bg-blue-500 text-white rounded"
+        >
+            Menu ▼
+        </button>
+        <div
+            x-show="open"
+            @click.away="open = false"
+            class="absolute bg-white shadow-lg rounded mt-2"
+        >
+            <a href="/profile" class="block px-4 py-2">Profile</a>
+            <a href="/settings" class="block px-4 py-2">Settings</a>
+            <a href="/logout" class="block px-4 py-2">Logout</a>
+        </div>
+    </div>
+}
+```
+
+Key features:
+- `@click.away` - Closes menu when clicking outside
+- `x-show` - Shows/hides dropdown
+
+#### Modal Dialog
+
+```templ
+templ Modal() {
+    <div x-data="{ showModal: false }">
+        <button
+            @click="showModal = true"
+            class="bg-blue-500 text-white px-4 py-2 rounded"
+        >
+            Open Modal
+        </button>
+
+        <!-- Modal overlay -->
+        <div
+            x-show="showModal"
+            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+            @click="showModal = false"
+        >
+            <!-- Modal content -->
+            <div
+                @click.stop
+                class="bg-white rounded-lg p-8 max-w-md"
+            >
+                <h2 class="text-2xl font-bold mb-4">Modal Title</h2>
+                <p class="mb-4">Modal content goes here...</p>
+                <button
+                    @click="showModal = false"
+                    class="bg-gray-500 text-white px-4 py-2 rounded"
+                >
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+}
+```
+
+Key features:
+- `@click.stop` - Prevents closing when clicking modal content
+- Fixed positioning for overlay
+
+#### Search with Live Filtering
+
+```templ
+templ SearchableList(items []Item) {
+    <div x-data="{ search: '' }">
+        <input
+            type="text"
+            x-model="search"
+            placeholder="Search..."
+            class="border rounded px-4 py-2 mb-4"
+        />
+
+        <div class="space-y-2">
+            for _, item := range items {
+                <div
+                    x-show="search === '' || '{ item.Name }'.toLowerCase().includes(search.toLowerCase())"
+                    class="p-4 bg-white rounded shadow"
+                >
+                    <h3>{ item.Name }</h3>
+                    <p>{ item.Description }</p>
+                </div>
+            }
+        </div>
+    </div>
+}
+```
+
+#### Tabs
+
+```templ
+templ Tabs() {
+    <div x-data="{ activeTab: 'tab1' }">
+        <!-- Tab buttons -->
+        <div class="flex border-b">
+            <button
+                @click="activeTab = 'tab1'"
+                :class="{ 'border-b-2 border-blue-500': activeTab === 'tab1' }"
+                class="px-4 py-2"
+            >
+                Tab 1
+            </button>
+            <button
+                @click="activeTab = 'tab2'"
+                :class="{ 'border-b-2 border-blue-500': activeTab === 'tab2' }"
+                class="px-4 py-2"
+            >
+                Tab 2
+            </button>
+        </div>
+
+        <!-- Tab content -->
+        <div class="p-4">
+            <div x-show="activeTab === 'tab1'">
+                <p>Content for tab 1</p>
+            </div>
+            <div x-show="activeTab === 'tab2'">
+                <p>Content for tab 2</p>
+            </div>
+        </div>
+    </div>
+}
+```
+
+### Integrating with Echo & templ
+
+**In your base layout:**
+
+```templ
+templ Base(meta Meta) {
+    <!DOCTYPE html>
+    <html>
+        <head>
+            <title>{ meta.Title }</title>
+            <link rel="stylesheet" href="/public/css/styles.css"/>
+
+            <!-- Alpine.js -->
+            <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+        </head>
+        <body>
+            { children... }
+        </body>
+    </html>
+}
+```
+
+**Using Alpine in components:**
+
+```templ
+templ ProductCard(product Product) {
+    <div x-data="{ liked: false }" class="card">
+        <img src={ product.Image } alt={ product.Name }/>
+        <h3>{ product.Name }</h3>
+
+        <button
+            @click="liked = !liked"
+            :class="{ 'text-red-500': liked }"
+            class="mt-2"
+        >
+            <span x-show="!liked">♡</span>
+            <span x-show="liked">♥</span>
+            Like
+        </button>
+    </div>
+}
+```
+
+### What is HTMX? (Optional)
+
+**HTMX** allows you to access modern browser features (AJAX, WebSockets) directly from HTML without writing JavaScript.
+
+#### Simple HTMX Example:
+
+```html
+<!-- Load content dynamically -->
+<button hx-get="/api/more-products" hx-target="#products" hx-swap="beforeend">
+    Load More
+</button>
+
+<div id="products">
+    <!-- Products appear here -->
+</div>
+```
+
+#### When to Use HTMX:
+
+- ✅ Admin panels with lots of CRUD operations
+- ✅ Infinite scrolling
+- ✅ Live search results
+- ✅ Form submissions without page reload
+- ❌ Simple toggles/dropdowns (Alpine.js is simpler)
+
+#### HTMX + templ Pattern:
+
+**Handler returns partial HTML:**
+
+```go
+func (s *Service) handleLoadMore(c echo.Context) error {
+    offset, _ := strconv.Atoi(c.QueryParam("offset"))
+    products, _ := s.db.Queries.ListProducts(c.Request().Context(), offset, 10)
+
+    // Return just the product cards, not full page
+    return render(c, components.ProductCards(products))
+}
+```
+
+**Page template:**
+
+```templ
+templ ProductsPage(products []Product) {
+    @layout.Base(layout.Meta{Title: "Products"}) {
+        <div id="products">
+            @components.ProductCards(products)
+        </div>
+
+        <button
+            hx-get="/api/products?offset=10"
+            hx-target="#products"
+            hx-swap="beforeend"
+            class="mt-4"
+        >
+            Load More
+        </button>
+
+        <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    }
+}
+```
+
+### 🌍 Where You'll See This
+
+#### Alpine.js Used By:
+
+- Tailwind UI (official components use Alpine)
+- Laravel Livewire (uses Alpine internally)
+- Many modern server-rendered sites
+- Admin dashboards
+- E-commerce sites
+
+#### HTMX Used By:
+
+- GitHub's search (partial HTMX patterns)
+- Internal tools and dashboards
+- Django/Rails apps modernizing without React
+- Hypermedia-driven applications
+
+### 🔗 Documentation & Resources
+
+#### Alpine.js:
+
+- [Alpine.js Website](https://alpinejs.dev/) - Official docs
+- [Alpine.js Examples](https://alpinejs.dev/examples) - Component examples
+- [Alpine.js GitHub](https://github.com/alpinejs/alpine) - Source code
+
+#### HTMX:
+
+- [HTMX Website](https://htmx.org/) - Official docs
+- [HTMX Examples](https://htmx.org/examples/) - Usage patterns
+- [HTMX with Go](https://htmx.org/docs/#installing) - Backend integration
+
+#### Learning Resources:
+
+- [Alpine.js From Scratch - YouTube](https://www.youtube.com/results?search_query=alpine+js+tutorial)
+- [HTMX + Go + templ Tutorial](https://www.youtube.com/results?search_query=htmx+go+templ)
+- [Hypermedia Systems Book](https://hypermedia.systems/) - HTMX philosophy
+
+### ✅ Practice Exercises
+
+#### Exercise 1: Add Alpine.js to Layout (15 minutes)
+
+1. Open your base templ layout
+2. Add Alpine.js CDN script to `<head>`
+3. Test with simple `x-data` in body
+4. Verify Alpine.js loads in browser console
+
+#### Exercise 2: Dropdown Menu (30 minutes)
+
+1. Create dropdown component in templ
+2. Add Alpine.js `x-data` for open/closed state
+3. Implement `@click` to toggle
+4. Add `@click.away` to close when clicking outside
+5. Style with Tailwind CSS
+
+#### Exercise 3: Modal Dialog (45 minutes)
+
+1. Create modal component
+2. Add button to trigger modal
+3. Implement overlay with Alpine.js
+4. Add close button
+5. Test keyboard escape (bonus)
+
+#### Exercise 4: Interactive Product Cards (1 hour)
+
+1. Add "like" button to product cards
+2. Use Alpine.js to track liked state
+3. Change heart icon when clicked
+4. Add animation with Tailwind transitions
+5. Test multiple cards independently
+
+#### Exercise 5: Live Search (1 hour)
+
+1. Create search input with `x-model`
+2. Add filter logic with `x-show`
+3. Test with product list
+4. Add "no results" message
+5. Style results with Tailwind
+
+#### Exercise 6: HTMX Integration (Optional, 1.5 hours)
+
+1. Install HTMX via CDN
+2. Create "Load More" button
+3. Implement handler that returns partial HTML
+4. Use `hx-get` and `hx-target` attributes
+5. Test infinite scrolling pattern
+
+---
+
+## Phase 6: Neon Postgres Database
+
+### 🧠 What You'll Learn
+
+How to store and retrieve persistent data using a serverless Postgres database that works for both local development and production.
 
 ### What is a Database?
 
@@ -2016,53 +3264,65 @@ user := GetUserFromDatabase(123)
 - Often specialized queries
 - Examples: MongoDB, Firebase, Redis
 
-**Our Choice:** Relational (SQLite) because most business data is relational.
+**Our Choice:** Relational (Postgres) because most business data is relational.
 
-### What is SQLite?
+### What is Neon Postgres?
 
-**SQLite** is a lightweight, file-based SQL database.
+**Neon** is a serverless Postgres platform - full PostgreSQL without managing servers.
 
 #### Key Characteristics:
 
-- **Zero configuration** (no server to run)
-- **Single file** (entire database in one file)
-- **Serverless** (library, not client-server)
-- **Cross-platform** (works everywhere)
-- **Full SQL support** (joins, indexes, transactions)
+- **Serverless** - Scales to zero when not in use
+- **Full PostgreSQL** - 100% Postgres-compatible
+- **Free tier** - 0.5 GB storage, 100 hours compute/month, no credit card
+- **Branch-based** - Create database branches like git (dev/staging/prod)
+- **Built-in backups** - Automatic, no configuration
+- **Connection pooling** - Handles concurrent connections efficiently
+- **Fast** - Optimized Postgres performance
 
-#### SQLite File:
+#### How It Works:
 
 ```text
-my-website/
-├── database.db          ← Entire database in one file!
-└── database.db-wal      ← Write-ahead log (for safety)
-```text
+Your App (localhost or Vercel)
+    ↓ (connection string)
+postgresql://user:pass@ep-example.us-east-2.aws.neon.tech/mydb
+    ↓
+Neon Serverless Postgres
+    ↓
+Your Data (automatically backed up)
+```
 
-### 🤔 Why We Chose SQLite
+### 🤔 Why We Chose Neon Postgres
 
-See [TECH_STACK_DECISIONS.md](./TECH_STACK_DECISIONS.md#5-database-sqlite) for full comparison.
+See [TECH_STACK_DECISIONS.md](./TECH_STACK_DECISIONS.md#5-database-neon-postgres) for full comparison.
 
 #### Perfect for Small Business Websites:
 
-- ✅ Can handle 100,000+ visitors/day
-- ✅ Read-heavy workloads (typical websites)
-- ✅ No database server costs
-- ✅ Simple backups (copy file, or use litestream)
-- ✅ Fast queries
+- ✅ Industry-standard Postgres (used by Instagram, Uber, Spotify)
+- ✅ Same database for local development AND production
+- ✅ No server management
+- ✅ Automatic backups included
+- ✅ Free tier is very generous
+- ✅ Scales as you grow
+- ✅ Branch databases for dev/staging/prod
+- ✅ Works seamlessly with Vercel
 
-#### When to Use PostgreSQL Instead:
+#### Postgres Advantages:
 
-- Heavy write volume (thousands of writes/second)
-- Multiple concurrent writers
-- Distributed systems (multiple servers)
-- Very large datasets (> 100GB)
+- **ACID compliant** - Data integrity guaranteed
+- **Rich data types** - JSON, arrays, full-text search, geospatial
+- **Powerful queries** - Complex joins, CTEs, window functions
+- **Extensions** - Add features as needed
+- **Battle-tested** - 30+ years of development
 
-#### Companies Using SQLite:
+#### Companies Using Postgres:
 
-- Expensify (accounting software)
-- Apple (iOS core data)
-- Airbnb (early days)
-- Every browser (storing cookies, history)
+- Instagram (billions of users)
+- Uber (global scale)
+- Spotify (massive music data)
+- Airbnb (complex relationships)
+- Reddit (high traffic)
+- Nearly every startup and enterprise
 
 ### SQL Basics
 
@@ -2074,20 +3334,21 @@ See [TECH_STACK_DECISIONS.md](./TECH_STACK_DECISIONS.md#5-database-sqlite) for f
 
 ```sql
 CREATE TABLE businesses (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
     phone TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-```text
+```
 
 #### Insert Data:
 
 ```sql
 INSERT INTO businesses (name, email, phone)
-VALUES ('Blue Mountain Bakery', 'contact@bluemountain.com', '555-1234');
-```text
+VALUES ('Blue Mountain Bakery', 'contact@bluemountain.com', '555-1234')
+RETURNING *;  -- Postgres returns the created row
+```
 
 #### Query Data:
 
@@ -2098,23 +3359,24 @@ SELECT * FROM businesses;
 -- Get specific business
 SELECT * FROM businesses WHERE id = 1;
 
--- Search by name
-SELECT * FROM businesses WHERE name LIKE '%Bakery%';
-```text
+-- Search by name (case-insensitive)
+SELECT * FROM businesses WHERE name ILIKE '%Bakery%';
+```
 
 #### Update Data:
 
 ```sql
 UPDATE businesses
 SET phone = '555-5678'
-WHERE id = 1;
-```text
+WHERE id = 1
+RETURNING *;  -- See what changed
+```
 
 #### Delete Data:
 
 ```sql
 DELETE FROM businesses WHERE id = 1;
-```text
+```
 
 ### Database Schema Design
 
@@ -2125,31 +3387,34 @@ DELETE FROM businesses WHERE id = 1;
 ```sql
 -- Users table (authentication handled by Clerk)
 CREATE TABLE profiles (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id SERIAL PRIMARY KEY,
     clerk_user_id TEXT UNIQUE NOT NULL,
     business_name TEXT NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Services table
 CREATE TABLE services (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    profile_id INTEGER NOT NULL,
+    id SERIAL PRIMARY KEY,
+    profile_id INTEGER NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
     title TEXT NOT NULL,
     description TEXT,
-    price REAL,
-    FOREIGN KEY (profile_id) REFERENCES profiles(id) ON DELETE CASCADE
+    price DECIMAL(10,2),  -- Postgres DECIMAL for money
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Contact submissions table
 CREATE TABLE contact_submissions (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
     email TEXT NOT NULL,
     message TEXT NOT NULL,
-    submitted_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-```text
+
+-- Create index for faster queries
+CREATE INDEX idx_services_profile_id ON services(profile_id);
+```
 
 #### Relationships:
 
@@ -2158,51 +3423,109 @@ profiles (1) ←──→ (many) services
 One business can have many services
 ```text
 
-### Data Types in SQLite
+### Data Types in Postgres
 
-| SQLite Type | Description | Go Type | Example |
-|-------------|-------------|---------|---------|
-| `INTEGER` | Whole numbers | int, int64 | 123, -456 |
-| `REAL` | Decimal numbers | float64 | 19.99, -3.14 |
-| `TEXT` | Strings | string | "Hello", "<user@email.com>" |
-| `BLOB` | Binary data | []byte | Images, files |
-| `NULL` | No value | nil | NULL |
+| Postgres Type | Description | Go Type | Example |
+|---------------|-------------|---------|---------|
+| `SERIAL` | Auto-incrementing integer | int, int32 | 1, 2, 3... |
+| `INTEGER` / `INT` | Whole numbers | int, int32 | 123, -456 |
+| `BIGINT` | Large integers | int64 | 9223372036854775807 |
+| `DECIMAL(p,s)` | Exact decimal | string, decimal | 19.99, 123.456 |
+| `REAL` / `DOUBLE` | Floating point | float32, float64 | 3.14159 |
+| `TEXT` / `VARCHAR` | Strings | string | "Hello", "user@example.com" |
+| `BOOLEAN` | True/false | bool | TRUE, FALSE |
+| `TIMESTAMP` | Date and time | time.Time | 2024-01-15 10:30:00 |
+| `DATE` | Date only | time.Time | 2024-01-15 |
+| `JSON` / `JSONB` | JSON data | json.RawMessage | {"key": "value"} |
+| `BYTEA` | Binary data | []byte | Images, files |
+
+#### Postgres-Specific Features:
+
+- `SERIAL` = Auto-incrementing primary key (recommended)
+- `RETURNING *` = Return inserted/updated rows
+- `ARRAY` types = Store arrays natively
+- `JSONB` = Binary JSON with indexing
+- `UUID` = Universally unique identifiers
+- Full-text search built-in
 
 #### Special Constraints:
 
 - `PRIMARY KEY` = Unique identifier for each row
-- `AUTOINCREMENT` = Automatically assign next number
 - `NOT NULL` = Must have a value
 - `UNIQUE` = No duplicates allowed
-- `DEFAULT` = Value if none provided
+- `REFERENCES` = Foreign key relationship
+- `CHECK` = Custom validation rules
+- `DEFAULT` = Default value if none provided
 
-### Working with SQLite in Go
+### Setting Up Neon Postgres
 
-#### Install SQLite Driver:
+#### Step 1: Create Neon Account
+
+1. Go to [neon.tech](https://neon.tech)
+2. Sign up (free, no credit card required)
+3. Create new project
+4. Choose region closest to you
+5. Copy the connection string
+
+Connection string format:
+```
+postgresql://user:password@ep-example.us-east-2.aws.neon.tech/dbname?sslmode=require
+```
+
+#### Step 2: Create Development Branch
+
+Neon supports branches like git - perfect for dev/staging/prod:
 
 ```bash
-go get github.com/mattn/go-sqlite3
-```text
+# In Neon dashboard or CLI
+# Create a "development" branch
+# This gives you a separate database for local development
+```
+
+#### Step 3: Set Up Environment Variables
+
+Create `.env` file:
+
+```bash
+DATABASE_URL=postgresql://user:password@ep-example.neon.tech/dbname?sslmode=require
+```
+
+### Working with Postgres in Go
+
+#### Install Postgres Driver:
+
+```bash
+go get github.com/lib/pq
+```
 
 #### Connect to Database:
 
 ```go
 import (
     "database/sql"
-    _ "github.com/mattn/go-sqlite3"
+    _ "github.com/lib/pq"  // Postgres driver
 )
 
-db, err := sql.Open("sqlite3", "./database.db")
+// Get connection string from environment
+dbURL := os.Getenv("DATABASE_URL")
+
+db, err := sql.Open("postgres", dbURL)
 if err != nil {
     log.Fatal(err)
 }
 defer db.Close()
-```text
 
-#### Basic Query:
+// Test connection
+if err := db.Ping(); err != nil {
+    log.Fatal("Cannot connect to database:", err)
+}
+```
+
+#### Basic Query (with Postgres placeholders):
 
 ```go
-row := db.QueryRow("SELECT name, email FROM businesses WHERE id = ?", 1)
+// Postgres uses $1, $2, $3 (not ?)
+row := db.QueryRow("SELECT name, email FROM businesses WHERE id = $1", 1)
 
 var name, email string
 err := row.Scan(&name, &email)
@@ -2211,7 +3534,7 @@ if err != nil {
 }
 
 fmt.Printf("Business: %s (%s)\n", name, email)
-```text
+```
 
 **We'll use sqlc to generate type-safe code** (covered in Phase 8), so you won't write this boilerplate often.
 
@@ -2240,63 +3563,73 @@ FOREIGN KEY (profile_id) REFERENCES profiles(id) ON DELETE CASCADE
 -- If profile deleted, services are automatically deleted
 ```text
 
-#### Always Backup (Phase 10):
+#### Backups Are Automatic:
 
-- Use litestream for continuous backup
-- Test restore process
+Neon automatically backs up your database - no configuration needed!
+
+- Point-in-time recovery
+- Automatic daily backups
+- Restore to any point in last 7 days (free tier)
 
 ### 🌍 Where You'll See This
 
-#### SQLite Used In:
+#### Postgres Used By:
 
-- Mobile apps (iOS, Android)
-- Desktop applications
-- Embedded systems
-- Browser storage
-- Small to medium websites
-- Development/testing
+- Instagram (billions of users)
+- Uber (global operations)
+- Spotify (music catalog)
+- Reddit (high traffic)
+- Twitch (real-time data)
+- Most startups and enterprises
 
 #### SQL Skills Transfer To:
 
-- PostgreSQL (very similar SQL)
-- MySQL (similar SQL)
-- Data analysis jobs (SQL is #1 skill)
-- Backend development
+- MySQL (similar SQL dialect)
+- Data analyst/scientist roles (SQL is #1 skill)
+- Backend/full-stack development
+- Database administrator roles
+- Business intelligence
 
 ### 🔗 Documentation & Resources
 
 #### Official Documentation:
 
-- [sqlite.org](https://www.sqlite.org/) - Official site
-- [SQLite Documentation](https://www.sqlite.org/docs.html) - Complete reference
-- [SQL As Understood By SQLite](https://www.sqlite.org/lang.html) - SQL syntax
-- [When To Use SQLite](https://www.sqlite.org/whentouse.html) - Use cases
+- [neon.tech](https://neon.tech) - Neon platform
+- [Neon Documentation](https://neon.tech/docs) - Platform guides
+- [PostgreSQL Docs](https://www.postgresql.org/docs/) - Complete Postgres reference
+- [PostgreSQL Tutorial](https://www.postgresqltutorial.com/) - SQL learning
 
 #### SQL Learning:
 
-- [SQLite Tutorial](https://www.sqlitetutorial.net/) - Comprehensive guide
+- [PostgreSQL Tutorial](https://www.postgresqltutorial.com/) - Comprehensive Postgres guide
 - [SQL Basics - Khan Academy](https://www.khanacademy.org/computing/computer-programming/sql) - Interactive
 - [Learn SQL - Codecademy](https://www.codecademy.com/learn/learn-sql) - Free course
 - [SQL Murder Mystery](https://mystery.knightlab.com/) - Learn SQL by solving mystery
+- [PostgreSQL Exercises](https://pgexercises.com/) - Postgres-specific practice
 
-#### Go + SQLite:
+#### Go + Postgres:
 
-- [go-sqlite3 GitHub](https://github.com/mattn/go-sqlite3) - Driver we'll use
+- [lib/pq GitHub](https://github.com/lib/pq) - Driver we'll use
 - [database/sql Tutorial](https://go.dev/doc/database/querying) - Go standard library
+- [Postgres with Go](https://www.calhoun.io/connecting-to-a-postgresql-database-with-gos-database-sql-package/) - Tutorial
 
 #### Tools:
 
-- [DB Browser for SQLite](https://sqlitebrowser.org/) - GUI for viewing/editing SQLite files
-- [SQLite Online](https://sqliteonline.com/) - Try SQL in browser
+- [Neon Console](https://console.neon.tech) - Manage your database
+- [pgAdmin](https://www.pgadmin.org/) - Free Postgres GUI
+- [Postico](https://eggerapps.at/postico2/) - macOS Postgres client (paid)
+- [DBeaver](https://dbeaver.io/) - Free universal database tool
 
 ### ✅ Practice Exercises
 
-#### Exercise 1: Install SQLite (20 minutes)
+#### Exercise 1: Set Up Neon (20 minutes)
 
-1. Install DB Browser for SQLite (GUI tool)
-2. Install Go SQLite driver: `go get github.com/mattn/go-sqlite3`
-3. Create test database file
-4. Open in DB Browser
+1. Create free Neon account at [neon.tech](https://neon.tech)
+2. Create new project called "practice-db"
+3. Create development branch
+4. Copy connection string
+5. Save to `.env` file
+6. Test connection with `psql` or GUI tool
 
 #### Exercise 2: Create Schema (45 minutes)
 
@@ -2304,44 +3637,47 @@ FOREIGN KEY (profile_id) REFERENCES profiles(id) ON DELETE CASCADE
    - Businesses table
    - Services/products table
    - Contact form submissions
-2. Write CREATE TABLE statements
-3. Execute in DB Browser
+2. Write CREATE TABLE statements with Postgres syntax (SERIAL, TIMESTAMP, etc.)
+3. Execute via Neon SQL Editor or GUI tool
 4. Verify structure
 
 #### Exercise 3: Insert Data (30 minutes)
 
-1. Insert 5 test businesses
+1. Insert 5 test businesses using `INSERT ... RETURNING *`
 2. Insert 2-3 services for each business
 3. Insert sample contact submissions
-4. Use DB Browser or SQL commands
+4. Use Neon SQL Editor or GUI tool
 
-**Exercise 4: Query Practice (1 hour)**
+#### Exercise 4: Query Practice (1 hour)
+
 Write SQL queries to:
 
 1. Get all businesses
-2. Find business by ID
-3. Search businesses by name
-4. Get all services for a business
+2. Find business by ID using `$1` placeholder
+3. Search businesses by name using `ILIKE`
+4. Get all services for a business with JOIN
 5. Count contact submissions
-6. Get recent submissions (last 7 days)
-7. Find businesses with no services
-8. Calculate average service price
+6. Get recent submissions using `INTERVAL`
+7. Find businesses with no services (LEFT JOIN)
+8. Calculate average service price with `DECIMAL` type
 
 #### Exercise 5: Go Integration (1 hour)
 
-1. Create Go program that connects to SQLite
-2. Create a `Business` struct
-3. Write function to insert business
-4. Write function to query all businesses
-5. Print results
+1. Create Go program that connects to Neon
+2. Use `github.com/lib/pq` driver
+3. Create a `Business` struct
+4. Write function to insert business with `$1` placeholders
+5. Write function to query all businesses
+6. Print results
 
 #### Exercise 6: Design Your Schema (Group Activity)
 
 1. For your club's website service, design database schema
 2. What tables do you need?
-3. What columns in each table?
-4. What relationships exist?
-5. Present to class and get feedback
+3. What columns in each table? (use Postgres types!)
+4. What relationships exist? (use REFERENCES)
+5. What indexes would improve performance?
+6. Present to class and get feedback
 
 ---
 
@@ -2432,16 +3768,16 @@ migrations/
 -- +goose Up
 -- SQL in this section is executed when migrating up
 CREATE TABLE profiles (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id SERIAL PRIMARY KEY,
     clerk_user_id TEXT UNIQUE NOT NULL,
     business_name TEXT NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- +goose Down
 -- SQL in this section is executed when migrating down
 DROP TABLE profiles;
-```text
+```
 
 ### Installing and Setting Up goose
 
@@ -2478,12 +3814,12 @@ This creates: `db/migrations/00001_create_profiles.sql`
 ```sql
 -- +goose Up
 CREATE TABLE profiles (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id SERIAL PRIMARY KEY,
     clerk_user_id TEXT UNIQUE NOT NULL,
     business_name TEXT NOT NULL,
     email TEXT,
     phone TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX idx_profiles_clerk_user_id ON profiles(clerk_user_id);
@@ -2491,42 +3827,46 @@ CREATE INDEX idx_profiles_clerk_user_id ON profiles(clerk_user_id);
 -- +goose Down
 DROP INDEX idx_profiles_clerk_user_id;
 DROP TABLE profiles;
-```text
+```
 
 ### Running Migrations
 
 #### Apply migrations (up):
 
 ```bash
-goose -dir db/migrations sqlite3 ./database.db up
-```text
+# Get DATABASE_URL from .env
+export $(cat .env | xargs)
+
+# Run migrations
+goose -dir db/migrations postgres "$DATABASE_URL" up
+```
 
 Output:
 
-```text
+```
 2024/01/15 10:30:00 OK   00001_create_profiles.sql
 goose: no migrations to run. current version: 1
-```text
+```
 
 #### Check status:
 
 ```bash
-goose -dir db/migrations sqlite3 ./database.db status
-```text
+goose -dir db/migrations postgres "$DATABASE_URL" status
+```
 
 Output:
 
-```text
+```
 Applied At                  Migration
 =======================================
 Mon Jan 15 10:30:00 2024 -- 00001_create_profiles.sql
-```text
+```
 
 #### Rollback last migration (down):
 
 ```bash
-goose -dir db/migrations sqlite3 ./database.db down
-```text
+goose -dir db/migrations postgres "$DATABASE_URL" down
+```
 
 ### Common Migration Examples
 
@@ -2545,13 +3885,12 @@ ALTER TABLE profiles DROP COLUMN website;
 ```sql
 -- +goose Up
 CREATE TABLE services (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    profile_id INTEGER NOT NULL,
+    id SERIAL PRIMARY KEY,
+    profile_id INTEGER NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
     title TEXT NOT NULL,
     description TEXT,
-    price REAL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (profile_id) REFERENCES profiles(id) ON DELETE CASCADE
+    price DECIMAL(10,2),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX idx_services_profile_id ON services(profile_id);
@@ -2559,7 +3898,7 @@ CREATE INDEX idx_services_profile_id ON services(profile_id);
 -- +goose Down
 DROP INDEX idx_services_profile_id;
 DROP TABLE services;
-```text
+```
 
 #### Add Index:
 
@@ -2650,10 +3989,10 @@ Output:
 #### Deployment:
 
 ```bash
-# In deployment script:
-goose -dir db/migrations sqlite3 $DATABASE_PATH up
+# In deployment script (Vercel, etc):
+goose -dir db/migrations postgres "$DATABASE_URL" up
 ./mywebsite  # Start server with updated schema
-```text
+```
 
 ### 🌍 Where You'll See This
 
@@ -2752,16 +4091,16 @@ How to write SQL queries and automatically generate type-safe Go code.
 #### Raw SQL in Go (manual approach):
 
 ```go
-row := db.QueryRow("SELECT name, email FROM businesses WHERE id = ?", id)
+row := db.QueryRow("SELECT name, email FROM businesses WHERE id = $1", id)
 
 var name string
 var email string
 err := row.Scan(&name, &email)  // Easy to mess up order!
 
 // Typos in SQL caught only at runtime
-row := db.QueryRow("SELECT nam FROM businesses WHERE id = ?", id)
+row := db.QueryRow("SELECT nam FROM businesses WHERE id = $1", id)
 // ❌ Runtime error: no such column
-```text
+```
 
 #### Problems:
 
@@ -2779,11 +4118,11 @@ row := db.QueryRow("SELECT nam FROM businesses WHERE id = ?", id)
 
 ```sql
 -- name: GetBusiness :one
-SELECT * FROM businesses WHERE id = ? LIMIT 1;
+SELECT * FROM businesses WHERE id = $1 LIMIT 1;
 
 -- name: ListBusinesses :many
 SELECT * FROM businesses ORDER BY name;
-```text
+```
 
 #### sqlc Output (Generated Go Code):
 
@@ -2836,7 +4175,7 @@ sqlc version
 ```yaml
 version: "2"
 sql:
-  - engine: "sqlite"
+  - engine: "postgresql"
     queries: "db/queries/"
     schema: "db/migrations/"
     gen:
@@ -2845,7 +4184,8 @@ sql:
         out: "db"
         emit_json_tags: true
         emit_interface: false
-```text
+        emit_empty_slices: true
+```
 
 #### What this means:
 
@@ -2867,7 +4207,7 @@ mkdir -p db/queries
 ```sql
 -- name: GetBusiness :one
 SELECT * FROM businesses
-WHERE id = ? LIMIT 1;
+WHERE id = $1 LIMIT 1;
 
 -- name: ListBusinesses :many
 SELECT * FROM businesses
@@ -2877,19 +4217,19 @@ ORDER BY name;
 INSERT INTO businesses (
     name, email, phone
 ) VALUES (
-    ?, ?, ?
+    $1, $2, $3
 )
 RETURNING *;
 
 -- name: UpdateBusiness :exec
 UPDATE businesses
-SET name = ?, email = ?, phone = ?
-WHERE id = ?;
+SET name = $1, email = $2, phone = $3
+WHERE id = $4;
 
 -- name: DeleteBusiness :exec
 DELETE FROM businesses
-WHERE id = ?;
-```text
+WHERE id = $1;
+```
 
 #### Query Annotations:
 
@@ -2947,13 +4287,15 @@ package main
 import (
     "database/sql"
     "mywebsite/db"
+    "os"
 
-    _ "github.com/mattn/go-sqlite3"
+    _ "github.com/lib/pq"
 )
 
 func main() {
-    // Open database
-    dbConn, err := sql.Open("sqlite3", "./database.db")
+    // Open database (Neon Postgres)
+    dbURL := os.Getenv("DATABASE_URL")
+    dbConn, err := sql.Open("postgres", dbURL)
     if err != nil {
         log.Fatal(err)
     }
@@ -2966,7 +4308,7 @@ func main() {
     http.HandleFunc("/businesses", app.listBusinessesHandler)
     http.ListenAndServe(":8080", nil)
 }
-```text
+```
 
 #### In handler (handlers/businesses.go):
 
@@ -3016,11 +4358,11 @@ func (app *App) createBusinessHandler(w http.ResponseWriter, r *http.Request) {
 ```sql
 -- name: SearchBusinesses :many
 SELECT * FROM businesses
-WHERE name LIKE '%' || ? || '%'
-OR email LIKE '%' || ? || '%'
+WHERE name ILIKE '%' || $1 || '%'
+OR email ILIKE '%' || $2 || '%'
 ORDER BY name
-LIMIT ? OFFSET ?;
-```text
+LIMIT $3 OFFSET $4;
+```
 
 #### Joins:
 
@@ -3192,6 +4534,543 @@ Write same database operation 3 ways:
 - Type safety
 - Ease of refactoring
 - Learning curve
+
+---
+
+## Phase 8.5: Project Structure Best Practices
+
+### 🧠 What You'll Learn
+
+How to organize a production-ready Go web application with proper separation of concerns and maintainable code structure.
+
+### Why Project Structure Matters
+
+A well-organized project:
+
+- ✅ Makes code easy to find and navigate
+- ✅ Separates concerns (database, handlers, templates)
+- ✅ Scales as project grows
+- ✅ Helps team members onboard quickly
+- ✅ Follows Go community conventions
+
+### Production-Ready Structure
+
+Based on real production applications, here's the recommended structure:
+
+```text
+my-website/
+├── cmd/                    # Application entry points
+│   ├── main.go            # Server initialization and startup
+│   ├── generate.go        # go:generate directives
+│   └── config.go          # Configuration loading (optional)
+│
+├── service/               # Business logic layer (handlers + middleware)
+│   ├── service.go         # Service struct with dependencies
+│   ├── routes.go          # Route registration
+│   ├── handlers.go        # HTTP handlers
+│   ├── middleware.go      # Custom middleware
+│   ├── users.go           # User-related handlers (optional grouping)
+│   └── products.go        # Product handlers (optional grouping)
+│
+├── storage/               # Data access layer
+│   ├── storage.go         # Database connection wrapper
+│   ├── db/               # SQLC generated code
+│   │   ├── db.go         # Queries struct
+│   │   ├── models.go     # Type definitions
+│   │   └── *.sql.go      # Generated query functions
+│   ├── migrations/       # Goose SQL migrations (embedded)
+│   │   ├── 00001_init.sql
+│   │   └── 00002_users.sql
+│   ├── queries/          # SQL files for SQLC
+│   │   ├── users.sql
+│   │   └── products.sql
+│   └── sqlc.yaml         # SQLC configuration
+│
+├── views/                # Templ templates
+│   ├── layout/           # Base layouts
+│   │   ├── base.templ    # Public site layout
+│   │   └── admin.templ   # Admin layout (if needed)
+│   ├── components/       # Reusable components
+│   │   ├── button.templ
+│   │   ├── card.templ
+│   │   └── product_card.templ
+│   ├── home/            # Home page templates
+│   │   └── index.templ
+│   ├── products/        # Product pages
+│   │   ├── list.templ
+│   │   └── detail.templ
+│   └── auth/            # Authentication pages
+│       ├── login.templ
+│       └── signup.templ
+│
+├── public/               # Static assets
+│   ├── css/
+│   │   ├── input.css    # Tailwind source
+│   │   └── styles.css   # Generated (DO NOT EDIT)
+│   ├── js/
+│   │   └── app.js       # Custom JavaScript (if needed)
+│   └── images/
+│       ├── logo.png
+│       └── products/
+│
+├── db/                   # Database files (gitignored)
+│   └── app.db           # SQLite database file
+│
+├── go.mod                # Go module definition
+├── go.sum                # Dependency checksums
+├── .env                  # Environment variables (gitignored)
+├── .env.example          # Example env vars (committed)
+├── .gitignore            # Git ignore rules
+├── Makefile              # Build automation
+├── README.md             # Project documentation
+└── litestream.yml        # Backup configuration
+```
+
+### Layer Responsibilities
+
+#### 1. `cmd/` - Application Entry Point
+
+**Purpose:** Initialize and start the application
+
+**`cmd/main.go` example:**
+
+```go
+package main
+
+import (
+    "log"
+    "github.com/labstack/echo/v4"
+    "github.com/labstack/echo/v4/middleware"
+    "your-project/service"
+    "your-project/storage"
+)
+
+func main() {
+    // 1. Load configuration
+    config, err := loadConfig()
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    // 2. Initialize database
+    db, err := storage.New(config.DBPath)
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer db.Close()
+
+    // 3. Initialize Echo
+    e := echo.New()
+    e.Use(middleware.Logger())
+    e.Use(middleware.Recover())
+    e.Static("/public", "public")
+
+    // 4. Initialize service layer
+    svc := service.New(db, config)
+
+    // 5. Register routes
+    svc.RegisterRoutes(e)
+
+    // 6. Start server
+    log.Printf("Server starting on :%s", config.Port)
+    e.Start(":" + config.Port)
+}
+```
+
+**Key Principles:**
+- Keep main.go simple - just wiring
+- No business logic in cmd/
+- Initialize dependencies in order
+
+#### 2. `service/` - Business Logic Layer
+
+**Purpose:** Handle HTTP requests, business rules, and coordinate between layers
+
+**`service/service.go` example:**
+
+```go
+package service
+
+import (
+    "github.com/labstack/echo/v4"
+    "your-project/storage"
+)
+
+// Service holds dependencies for handlers
+type Service struct {
+    db     *storage.Storage
+    config *Config
+}
+
+// New creates a new Service
+func New(db *storage.Storage, config *Config) *Service {
+    return &Service{
+        db:     db,
+        config: config,
+    }
+}
+
+// RegisterRoutes sets up all HTTP routes
+func (s *Service) RegisterRoutes(e *echo.Echo) {
+    // Public routes
+    e.GET("/", s.handleHome)
+    e.GET("/products", s.handleProductList)
+    e.GET("/products/:id", s.handleProductDetail)
+
+    // API routes
+    api := e.Group("/api")
+    api.GET("/search", s.handleSearch)
+
+    // Protected routes
+    protected := e.Group("/dashboard")
+    protected.Use(s.AuthMiddleware)
+    protected.GET("", s.handleDashboard)
+}
+```
+
+**`service/handlers.go` example:**
+
+```go
+package service
+
+import (
+    "log/slog"
+    "github.com/labstack/echo/v4"
+    "your-project/views/home"
+)
+
+func (s *Service) handleHome(c echo.Context) error {
+    // 1. Get data from database
+    products, err := s.db.Queries.ListFeaturedProducts(c.Request().Context(), 8)
+    if err != nil {
+        slog.Error("failed to get products", "error", err)
+        products = []db.Product{} // Graceful degradation
+    }
+
+    // 2. Render template
+    return render(c, home.Index(products))
+}
+
+// Helper to render templ components
+func render(c echo.Context, component templ.Component) error {
+    return component.Render(c.Request().Context(), c.Response())
+}
+```
+
+**Key Principles:**
+- Service struct holds dependencies (no globals)
+- Handlers are methods on Service
+- Keep handlers thin - delegate to storage layer
+- Use structured logging (slog)
+
+#### 3. `storage/` - Data Access Layer
+
+**Purpose:** Manage database connections and queries
+
+**`storage/storage.go` example:**
+
+```go
+package storage
+
+import (
+    "database/sql"
+    "embed"
+    _ "github.com/lib/pq"
+    "your-project/storage/db"
+)
+
+//go:embed migrations/*.sql
+var migrationsFS embed.FS
+
+type Storage struct {
+    db      *sql.DB
+    Queries *db.Queries  // SQLC generated queries
+}
+
+func New(dbURL string) (*Storage, error) {
+    // Open database (Neon Postgres)
+    database, err := sql.Open("postgres", dbURL)
+    if err != nil {
+        return nil, err
+    }
+
+    // Test connection
+    if err := database.Ping(); err != nil {
+        return nil, err
+    }
+
+    s := &Storage{
+        db:      database,
+        Queries: db.New(database),
+    }
+
+    // Run migrations
+    if err := s.migrate(); err != nil {
+        return nil, err
+    }
+
+    return s, nil
+}
+
+func (s *Storage) Close() error {
+    return s.db.Close()
+}
+```
+
+**Key Principles:**
+- Embed migrations for single-binary deployment
+- Use SQLC for type-safe queries
+- Run migrations automatically on startup
+- Expose Queries struct, hide sql.DB
+
+#### 4. `views/` - Presentation Layer
+
+**Purpose:** Render HTML with templ templates
+
+**Organization by feature:**
+
+```text
+views/
+├── layout/              # Shared layouts
+├── components/          # Reusable across pages
+├── home/               # Home page feature
+├── products/           # Products feature
+└── auth/               # Auth feature
+```
+
+**Key Principles:**
+- One package per feature/page
+- Shared components in `components/`
+- Layouts in `layout/`
+- Import database types directly
+- Keep templates focused on presentation
+
+### Putting It All Together
+
+**Request Flow:**
+
+```text
+1. Browser → Echo Router
+   ↓
+2. Echo → Middleware (logging, auth, etc.)
+   ↓
+3. Middleware → Service Handler
+   ↓
+4. Handler → Storage Layer (SQLC queries)
+   ↓
+5. Storage → Database (Postgres)
+   ↓
+6. Database → Storage (results)
+   ↓
+7. Storage → Handler (Go structs)
+   ↓
+8. Handler → templ Template (data)
+   ↓
+9. Template → Handler (HTML)
+   ↓
+10. Handler → Browser (HTTP response)
+```
+
+**Example Full Stack:**
+
+```go
+// cmd/main.go
+func main() {
+    dbURL := os.Getenv("DATABASE_URL")
+    db := storage.New(dbURL)
+    svc := service.New(db)
+    e := echo.New()
+    svc.RegisterRoutes(e)
+    e.Start(":8080")
+}
+```
+
+```go
+// service/handlers.go
+func (s *Service) handleProductDetail(c echo.Context) error {
+    id := c.Param("id")
+    product, err := s.db.Queries.GetProduct(c.Request().Context(), id)
+    if err != nil {
+        return c.String(404, "Not found")
+    }
+    return render(c, products.Detail(product))
+}
+```
+
+```sql
+-- storage/queries/products.sql
+-- name: GetProduct :one
+SELECT * FROM products WHERE id = $1 LIMIT 1;
+```
+
+```templ
+// views/products/detail.templ
+package products
+
+import "your-project/views/layout"
+
+templ Detail(product Product) {
+    @layout.Base(layout.Meta{Title: product.Name}) {
+        <h1>{ product.Name }</h1>
+        <p>${ fmt.Sprintf("%.2f", product.Price) }</p>
+    }
+}
+```
+
+### File Naming Conventions
+
+**Go Files:**
+
+- `main.go` - Entry point
+- `service.go` - Service struct definition
+- `routes.go` - Route registration
+- `handlers.go` - General handlers (or split by feature)
+- `middleware.go` - Custom middleware
+- `*_test.go` - Tests alongside code
+
+**templ Files:**
+
+- `base.templ` - Base layout
+- `index.templ` - Main page of section
+- `detail.templ` - Detail/show page
+- `list.templ` - List/index page
+- `_templ.go` - Generated (never edit!)
+
+**SQL Files:**
+
+- `NNNNN_description.sql` - Migrations (goose)
+- `table_name.sql` - Queries (sqlc)
+
+### Makefile for Common Tasks
+
+```makefile
+.PHONY: dev build test migrate generate clean
+
+# Development server with hot reload
+dev:
+	air
+
+# Generate templ and sqlc code
+generate:
+	templ generate
+	sqlc generate
+
+# Build production binary
+build: generate
+	go build -o bin/server cmd/main.go
+
+# Run migrations
+migrate:
+	goose -dir storage/migrations postgres "$$DATABASE_URL" up
+
+# Build Tailwind CSS
+css:
+	tailwindcss -i public/css/input.css -o public/css/styles.css --minify
+
+# Run tests
+test:
+	go test ./...
+
+# Clean generated files
+clean:
+	rm -rf bin/
+	rm -f public/css/styles.css
+	find . -name '*_templ.go' -delete
+```
+
+### Configuration Management
+
+**`.env` file (gitignored):**
+
+```bash
+# Server
+PORT=8080
+
+# Database (Neon Postgres)
+DATABASE_URL=postgresql://user:pass@ep-example.us-east-2.aws.neon.tech/neondb?sslmode=require
+
+# Clerk (or other auth)
+CLERK_SECRET_KEY=sk_test_xxxxx
+
+# Environment
+ENV=development
+```
+
+**`.env.example` (committed):**
+
+```bash
+# Copy to .env and fill in values
+PORT=8080
+DATABASE_URL=postgresql://user:pass@your-db.neon.tech/neondb?sslmode=require
+CLERK_SECRET_KEY=your_key_here
+ENV=development
+```
+
+**Load in code:**
+
+```go
+func loadConfig() (*Config, error) {
+    if err := godotenv.Load(); err != nil {
+        log.Println("No .env file found")
+    }
+
+    return &Config{
+        Port:           getEnv("PORT", "8080"),
+        DatabaseURL:    os.Getenv("DATABASE_URL"),
+        ClerkSecretKey: os.Getenv("CLERK_SECRET_KEY"),
+        Env:            getEnv("ENV", "development"),
+    }, nil
+}
+
+func getEnv(key, fallback string) string {
+    if value := os.Getenv(key); value != "" {
+        return value
+    }
+    return fallback
+}
+```
+
+### `.gitignore` Best Practices
+
+```gitignore
+# Binaries
+bin/
+*.exe
+main
+
+# Environment
+.env
+.env.local
+
+# Generated files
+*_templ.go
+public/css/styles.css
+
+# Dependencies
+node_modules/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+```
+
+### Key Takeaways
+
+1. **Separate Concerns** - cmd/ service/ storage/ views/
+2. **Service Struct Pattern** - Dependencies injected, not global
+3. **Thin Handlers** - Coordinate, don't implement
+4. **SQLC for Database** - Type-safe queries in storage/
+5. **Feature-Based Views** - Group templates by feature
+6. **Embed Migrations** - Single binary deployment
+7. **Environment Config** - .env for secrets, fallbacks for defaults
 
 ---
 
@@ -3754,466 +5633,12 @@ go get github.com/clerk/clerk-sdk-go/v2
 
 ---
 
-## Phase 10: litestream Backups
+
+## Phase 10: Deployment
 
 ### 🧠 What You'll Learn
 
-How to implement continuous backups for your SQLite database to prevent data loss.
-
-### Why Backups Are Critical
-
-#### Disasters Happen:
-
-- 💥 Server crashes
-- 🔥 Data center fires
-- 🐛 Bugs that corrupt data
-- 👤 Accidental deletions
-- 💻 Hard drive failures
-- 🔒 Ransomware attacks
-
-#### Without Backups:
-
-```text
-Database corrupted → All client data lost → Business destroyed
-```text
-
-#### With Backups:
-
-```text
-Database corrupted → Restore from backup → Back online in minutes
-```text
-
-### The SQLite Backup Challenge
-
-#### Problem with SQLite:
-
-- Single file database
-- If file corrupted = all data lost
-- Need continuous backups, not just daily
-
-#### Traditional Database Approach:
-
-- PostgreSQL: Built-in replication
-- MySQL: Binary logs
-- MongoDB: Replica sets
-
-**SQLite Solution:** **litestream**
-
-### What is litestream?
-
-**litestream** continuously streams SQLite changes to cloud storage.
-
-#### How it works:
-
-```text
-Your App writes to database.db
-            ↓
-litestream watches for changes
-            ↓
-Changes streamed to S3/B2/Azure/GCS
-            ↓
-Restore from any point in time
-```text
-
-#### Features:
-
-- ✅ Continuous replication (not periodic)
-- ✅ Point-in-time recovery
-- ✅ Streams to S3-compatible storage
-- ✅ Minimal data loss (seconds behind)
-- ✅ Automatic restoration on startup
-- ✅ Minimal performance impact
-
-### 🤔 Why We Chose litestream v0.3.x
-
-See [TECH_STACK_DECISIONS.md](./TECH_STACK_DECISIONS.md#9-backupreplication-litestream-v03x) for full comparison.
-
-#### Critical for Production SQLite:
-
-- SQLite + litestream = Production ready
-- Without litestream = Too risky
-
-#### Why v0.3.x:
-
-- Latest stable release
-- Important bug fixes
-- Production-tested
-- Good documentation
-
-#### Cost:
-
-- S3: ~$1-5/month for small database
-- Backblaze B2: Even cheaper (~$0.50-2/month)
-- Essential insurance for client data
-
-### Storage Options
-
-#### S3-Compatible Services:
-
-| Service | Cost | Best For |
-|---------|------|----------|
-| **AWS S3** | $0.023/GB/month | Enterprise, AWS users |
-| **Backblaze B2** | $0.005/GB/month | Budget-conscious (**Recommended**) |
-| **Cloudflare R2** | $0.015/GB/month | Zero egress fees |
-| **DigitalOcean Spaces** | $5/month (250GB) | DO users |
-
-**Recommendation:** **Backblaze B2** (cheapest, reliable)
-
-### Installing litestream
-
-#### Linux/macOS:
-
-```bash
-# Download and install
-wget https://github.com/benbjohnson/litestream/releases/download/v0.3.13/litestream-v0.3.13-linux-amd64.tar.gz
-tar -xzf litestream-v0.3.13-linux-amd64.tar.gz
-sudo mv litestream /usr/local/bin/
-```text
-
-#### Verify:
-
-```bash
-litestream version
-# Should show: v0.3.13 (or current v0.3.x)
-```text
-
-#### macOS via Homebrew:
-
-```bash
-brew install litestream
-```text
-
-### Setting Up Backblaze B2
-
-#### 1. Create B2 Account:
-
-- Visit [backblaze.com/b2](https://www.backblaze.com/b2/cloud-storage.html)
-- Sign up (free 10GB)
-
-#### 2. Create Bucket:
-
-- Name: `myapp-database-backups`
-- Private (not public)
-- Region: Choose closest to your server
-
-#### 3. Create Application Key:
-
-- Bucket dashboard → App Keys
-- Copy:
-  - Key ID: `005abc...`
-  - Application Key: `K005xyz...`
-  - Endpoint: `s3.us-west-000.backblazeb2.com`
-
-### Configuring litestream
-
-#### Create config file `litestream.yml`:
-
-```yaml
-dbs:
-  - path: /path/to/database.db
-    replicas:
-      - type: s3
-        bucket: myapp-database-backups
-        path: database
-        endpoint: https://s3.us-west-000.backblazeb2.com
-        access-key-id: ${LITESTREAM_ACCESS_KEY_ID}
-        secret-access-key: ${LITESTREAM_SECRET_ACCESS_KEY}
-```text
-
-#### Environment variables:
-
-```bash
-# .env file
-LITESTREAM_ACCESS_KEY_ID=005abc...
-LITESTREAM_SECRET_ACCESS_KEY=K005xyz...
-```text
-
-### Running litestream
-
-#### Replicate (backup):
-
-```bash
-litestream replicate -config litestream.yml
-```text
-
-Output:
-
-```text
-time=2024-01-15T10:30:00Z level=INFO msg=litestream version=v0.3.13
-time=2024-01-15T10:30:00Z level=INFO msg="initialized db" path=/path/to/database.db
-time=2024-01-15T10:30:01Z level=INFO msg="replicating to" name=s3
-```text
-
-#### Check status:
-
-```bash
-litestream dbs -config litestream.yml
-```text
-
-### Restoring from Backup
-
-#### Restore to point in time:
-
-```bash
-# Restore latest
-litestream restore -config litestream.yml /path/to/database.db
-
-# Restore to specific time
-litestream restore -config litestream.yml -timestamp 2024-01-15T10:00:00Z /path/to/database.db
-```text
-
-#### Test restore regularly!
-
-```bash
-# Test restore to different file
-litestream restore -config litestream.yml ./test-restore.db
-
-# Verify data
-sqlite3 test-restore.db "SELECT COUNT(*) FROM businesses;"
-```text
-
-### Production Deployment with litestream
-
-#### Option 1: Run alongside app (Docker Compose):
-
-```yaml
-version: '3'
-services:
-  app:
-    build: .
-    ports:
-      - "8080:8080"
-    volumes:
-      - ./data:/data
-    environment:
-      - DATABASE_PATH=/data/database.db
-
-  litestream:
-    image: litestream/litestream:0.3
-    volumes:
-      - ./data:/data
-      - ./litestream.yml:/etc/litestream.yml
-    environment:
-      - LITESTREAM_ACCESS_KEY_ID=${LITESTREAM_ACCESS_KEY_ID}
-      - LITESTREAM_SECRET_ACCESS_KEY=${LITESTREAM_SECRET_ACCESS_KEY}
-    command: replicate -config /etc/litestream.yml
-```text
-
-#### Option 2: Single container with supervisor:
-
-```dockerfile
-FROM golang:1.25 AS builder
-WORKDIR /app
-COPY . .
-RUN go build -o main .
-
-FROM debian:bookworm-slim
-RUN apt-get update && apt-get install -y wget supervisor
-RUN wget https://github.com/benbjohnson/litestream/releases/download/v0.3.13/litestream-v0.3.13-linux-amd64.tar.gz
-RUN tar -xzf litestream-v0.3.13-linux-amd64.tar.gz && mv litestream /usr/local/bin/
-
-COPY --from=builder /app/main /app/main
-COPY litestream.yml /etc/litestream.yml
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
-CMD ["/usr/bin/supervisord"]
-```text
-
-#### supervisord.conf:
-
-```ini
-[supervisord]
-nodaemon=true
-
-[program:litestream]
-command=/usr/local/bin/litestream replicate -config /etc/litestream.yml
-autorestart=true
-
-[program:app]
-command=/app/main
-autorestart=true
-```text
-
-### Automatic Restore on Startup
-
-#### Script to restore if database missing:
-
-```bash
-#!/bin/bash
-# startup.sh
-
-if [ ! -f "/data/database.db" ]; then
-    echo "Database not found, restoring from litestream..."
-    litestream restore -config /etc/litestream.yml /data/database.db
-fi
-
-# Run migrations
-goose -dir /app/migrations sqlite3 /data/database.db up
-
-# Start litestream in background
-litestream replicate -config /etc/litestream.yml &
-
-# Start app
-/app/main
-```text
-
-### Monitoring Backups
-
-#### Check replication lag:
-
-```bash
-litestream dbs -config litestream.yml
-```text
-
-Output:
-
-```text
-path                     replica  generation  lag    size
-/data/database.db        s3       abc123      2.1s   4.2MB
-```text
-
-**Lag should be < 10 seconds** for healthy replication.
-
-**Set up alerts** (pseudo-code):
-
-```go
-// Check lag every minute
-lag := getLitestreamLag()
-if lag > time.Minute {
-    sendAlert("litestream lag exceeds 1 minute!")
-}
-```text
-
-### Disaster Recovery Plan
-
-#### 1. Regular Testing:
-
-- Test restore weekly
-- Verify data integrity
-- Time how long restore takes
-
-#### 2. Document Process:
-
-```markdown
-## Emergency Restore Procedure
-
-1. Stop application
-2. Run: litestream restore -config litestream.yml /data/database.db
-3. Verify: sqlite3 /data/database.db "SELECT COUNT(*) FROM businesses;"
-4. Start application
-5. Check logs for errors
-```text
-
-#### 3. Keep config backed up:
-
-- Store `litestream.yml` in version control
-- Backup environment variables securely (1Password, AWS Secrets Manager)
-
-### 🌍 Where You'll See This
-
-#### Backup Strategies:
-
-- **PostgreSQL**: Continuous archiving (WAL), pg_dump
-- **MySQL**: Binary logs, mysqldump
-- **MongoDB**: Replica sets, mongodump
-- **SQLite**: litestream (or periodic file copies)
-
-**Point-in-time recovery** is standard for production databases.
-
-#### Companies using litestream:
-
-- Many startups running SQLite in production
-- Side projects that grew
-- Edge computing applications
-- Cost-conscious SaaS products
-
-### 🔗 Documentation & Resources
-
-#### Official Documentation:
-
-- [litestream.io](https://litestream.io/) - Official site
-- [litestream Documentation](https://litestream.io/reference/) - Complete reference
-- [litestream GitHub](https://github.com/benbjohnson/litestream) - Source code
-
-#### Installation:
-
-- [Install Guide](https://litestream.io/install/) - All platforms
-
-#### Guides:
-
-- [Getting Started](https://litestream.io/getting-started/) - First backup
-- [Kubernetes Deployment](https://litestream.io/guides/kubernetes/) - K8s setup
-- [Docker Deployment](https://litestream.io/guides/docker/) - Docker setup
-
-#### Storage Providers:
-
-- [Backblaze B2](https://www.backblaze.com/b2/cloud-storage.html) - Recommended
-- [AWS S3](https://aws.amazon.com/s3/) - Enterprise
-- [Cloudflare R2](https://www.cloudflare.com/products/r2/) - Zero egress
-
-#### Disaster Recovery:
-
-- [Backup Best Practices](https://www.backblaze.com/blog/the-3-2-1-backup-strategy/) - 3-2-1 rule
-- [Database Recovery Planning](https://www.postgresql.org/docs/current/backup.html) - Concepts apply to all databases
-
-### ✅ Practice Exercises
-
-#### Exercise 1: Install litestream (20 minutes)
-
-1. Install litestream locally
-2. Verify version: `litestream version`
-3. Create config file
-4. Set up environment variables
-
-#### Exercise 2: Set Up B2 Storage (30 minutes)
-
-1. Create Backblaze B2 account
-2. Create bucket for backups
-3. Create application key
-4. Configure in litestream.yml
-5. Test connection
-
-#### Exercise 3: First Backup (45 minutes)
-
-1. Create test SQLite database with data
-2. Configure litestream for that database
-3. Run `litestream replicate`
-4. Verify backup in B2 dashboard
-5. Check replication lag
-
-#### Exercise 4: Test Restore (1 hour)
-
-1. Stop litestream
-2. Delete local database file (scary!)
-3. Restore from backup
-4. Verify all data intact
-5. Document restore time
-
-#### Exercise 5: Point-in-Time Restore (45 minutes)
-
-1. Note current time
-2. Add data to database
-3. Note time again
-4. Add more data
-5. Restore to middle timestamp
-6. Verify only first data present
-
-#### Exercise 6: Production Simulation (1.5 hours)
-
-1. Set up Docker Compose with app + litestream
-2. Run migrations
-3. Add data through app
-4. Verify data backed up
-5. Simulate disaster (delete database)
-6. Restore and verify app works
-
----
-
-## Phase 11: Deployment
-
-### 🧠 What You'll Learn
-
-How to deploy your Go website to production with a custom domain.
+How to deploy your Go website to production with Vercel and Neon Postgres.
 
 ### What is Deployment?
 
@@ -4237,318 +5662,371 @@ Anyone can access
 
 #### Three Main Approaches:
 
-**1. PaaS (Platform as a Service)** ← We'll use this
+**1. Serverless** ← We'll use this (Vercel)
 
 - Simple deployment (git push style)
-- Platform handles servers
-- Examples: Fly.io, Railway, Heroku
-- ✅ Best for learning
+- Automatic scaling
+- Global edge network
+- Free tier with good limits
+- ✅ Best for most small business sites
 
-#### 2. VPS (Virtual Private Server)
+#### 2. PaaS (Platform as a Service)
+
+- Simple deployment
+- Persistent filesystem
+- Examples: Fly.io, Railway, Render
+- ✅ Alternative to serverless
+
+#### 3. VPS (Virtual Private Server)
 
 - You manage Linux server
-- Install everything manually
-- Examples: DigitalOcean Droplets, Linode
+- Full control
+- Examples: DigitalOcean, Linode
 - ❌ More complex for beginners
 
-#### 3. Serverless
+### 🤔 Why We Chose Vercel
 
-- Code runs on-demand
-- No persistent server
-- Examples: AWS Lambda, Vercel, Cloudflare Workers
-- ❌ Not ideal for SQLite (needs persistent filesystem)
+See [TECH_STACK_DECISIONS.md](./TECH_STACK_DECISIONS.md#10-hosting-platform) for full comparison.
 
-### 🤔 Why We Chose Fly.io / Railway
+#### Key Benefits:
 
-See [TECH_STACK_DECISIONS.md](./TECH_STACK_DECISIONS.md#10-hosting-platform-flyio-or-railway) for full comparison.
+- **Free tier** - Generous limits for small sites
+- **Simple deployment** - Push to Git, auto-deploy
+- **Global CDN** - Fast worldwide
+- **Auto HTTPS** - SSL certificates included
+- **Great CLI** - Easy to use
+- **Edge functions** - Fast serverless
+- **Custom domains** - Easy setup
 
-#### Both are excellent choices:
+#### Database: Neon Postgres
 
-#### Fly.io:
+We use **Neon** - a serverless Postgres database that pairs perfectly with Vercel.
 
-- More mature
-- Better documentation
-- Global edge network
-- Great for SQLite (persistent volumes)
+**Why Neon:**
+- Serverless Postgres (scales to zero)
+- Generous free tier: 0.5 GB storage, 100 hours compute/month
+- No credit card required for free tier
+- Branch-based development (create database branches like git!)
+- Built-in connection pooling
+- Automatic backups
+- Works seamlessly with Vercel's serverless architecture
 
-#### Railway:
+### Deploying to Vercel with Neon
 
-- Simpler interface
-- Beautiful dashboard
-- Great for beginners
-- Easy environment variables
-
-**Choose either!** This tutorial covers both.
-
-### Deploying to Fly.io
-
-#### Step 1: Install flyctl
-
-#### macOS:
+#### Step 1: Install Vercel CLI
 
 ```bash
-brew install flyctl
-```text
+npm install -g vercel
+```
 
-#### Linux:
-
-```bash
-curl -L https://fly.io/install.sh | sh
-```text
-
-#### Verify:
+Verify:
 
 ```bash
-flyctl version
-```text
+vercel --version
+```
 
-#### Step 2: Sign Up
-
-```bash
-flyctl auth signup
-```text
-
-Follow browser to create account (free tier available).
-
-#### Step 3: Initialize App
+#### Step 2: Sign Up for Vercel
 
 ```bash
-cd your-project
-flyctl launch
-```text
+vercel login
+```
 
-Interactive prompts:
+Follow browser to create free account.
 
-```text
-? App Name: mybusiness-website
-? Region: Choose closest to users
-? Set up PostgreSQL: No (we're using SQLite)
-? Set up Redis: No
-```text
+#### Step 3: Set Up Neon Database
 
-Creates `fly.toml` configuration file.
+Sign up at [neon.tech](https://neon.tech) (free, no credit card):
 
-#### Step 4: Configure fly.toml
+1. Create account
+2. Create new project (choose region closest to your users)
+3. Copy the connection string - it looks like:
+   ```
+   postgresql://user:password@ep-example-123.us-east-2.aws.neon.tech/neondb?sslmode=require
+   ```
 
-#### Edit `fly.toml`:
-
-```toml
-app = "mybusiness-website"
-
-[build]
-  builder = "paketobuildpacks/builder:base"
-
-[env]
-  PORT = "8080"
-  DATABASE_PATH = "/data/database.db"
-
-[http_service]
-  internal_port = 8080
-  force_https = true
-  auto_stop_machines = true
-  auto_start_machines = true
-
-[[mounts]]
-  source = "data"
-  destination = "/data"
-```text
-
-**Why mounts?** SQLite needs persistent disk storage.
-
-#### Step 5: Create Volume
+**Or use Neon CLI:**
 
 ```bash
-flyctl volumes create data --size 1 --region <your-region>
-```text
+# Install Neon CLI
+npm install -g neonctl
 
-This creates persistent storage for your database.
+# Authenticate
+neonctl auth
 
-#### Step 6: Set Environment Variables
+# Create database
+neonctl projects create --name my-website
 
-```bash
-flyctl secrets set CLERK_SECRET_KEY=sk_test_xxxxx
-flyctl secrets set LITESTREAM_ACCESS_KEY_ID=xxxxx
-flyctl secrets set LITESTREAM_SECRET_ACCESS_KEY=xxxxx
-```text
+# Get connection string
+neonctl connection-string my-website
+```
 
-#### Step 7: Deploy!
+Save the connection string - you'll need it!
 
-```bash
-flyctl deploy
-```text
+#### Step 4: Verify Database Connection Code
 
-Output:
+Your `storage/storage.go` should already be set up for Postgres from earlier phases:
 
-```text
-==> Building image
-==> Pushing image to registry
-==> Deploying mybusiness-website
- ✓ Deployment successful
+```go
+package storage
 
-Visit your app at: https://mybusiness-website.fly.dev
-```text
+import (
+    "database/sql"
+    "embed"
+    _ "github.com/lib/pq"  // Postgres driver
+    "your-project/storage/db"
+)
 
-#### Step 8: Check Logs
+//go:embed migrations/*.sql
+var migrationsFS embed.FS
 
-```bash
-flyctl logs
-```text
+func New(dbURL string) (*Storage, error) {
+    // Connect to Neon Postgres
+    database, err := sql.Open("postgres", dbURL)
+    if err != nil {
+        return nil, err
+    }
 
-#### Step 9: Connect Custom Domain
+    // Test connection
+    if err := database.Ping(); err != nil {
+        return nil, err
+    }
 
-#### Add domain:
+    s := &Storage{
+        db:      database,
+        Queries: db.New(database),
+    }
 
-```bash
-flyctl certs create yourbusiness.com
-flyctl certs create www.yourbusiness.com
-```text
+    // Run migrations
+    if err := s.migrate(); err != nil {
+        return nil, err
+    }
 
-#### Configure DNS (in your registrar):
+    return s, nil
+}
+```
 
-```text
-A    @      66.241.125.115  (Fly.io's IP, shown after certs create)
-CNAME www    yourbusiness.com
-```text
-
-Wait 5-60 minutes for DNS propagation.
-
-#### Verify:
-
-```bash
-flyctl certs check yourbusiness.com
-```text
-
-### Deploying to Railway
-
-#### Step 1: Sign Up
-
-Visit [railway.app](https://railway.app/) and sign up (GitHub login recommended).
-
-#### Step 2: Install Railway CLI
+Ensure you have the Postgres driver:
 
 ```bash
-npm install -g @railway/cli
-```text
+go get github.com/lib/pq
+```
 
-Or use dashboard (no CLI needed).
+#### Step 5: Create vercel.json
 
-#### Step 3: Initialize Project
+Create `vercel.json` in your project root:
 
-```bash
-railway login
-railway init
-```text
+```json
+{
+  "buildCommand": "go build -o api/index cmd/main.go",
+  "outputDirectory": "api",
+  "installCommand": "go mod download",
+  "framework": null,
+  "functions": {
+    "api/index.go": {
+      "runtime": "go1.x"
+    }
+  },
+  "routes": [
+    {
+      "src": "/public/(.*)",
+      "dest": "/public/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/api/index"
+    }
+  ]
+}
+```
 
-Choose "Create new project".
+#### Step 6: Configure Environment Variables
 
-#### Step 4: Link to Git
-
-#### Option A: Connect GitHub Repo
-
-1. Push code to GitHub
-2. In Railway dashboard, "New Project"
-3. "Deploy from GitHub repo"
-4. Select your repository
-5. Railway auto-detects Go and deploys!
-
-#### Option B: Deploy from CLI
-
-```bash
-railway up
-```text
-
-#### Step 5: Add Volume (for SQLite)
-
-Railway dashboard:
-
-1. Select your service
-2. "Data" tab
-3. "Add Volume"
-4. Mount point: `/data`
-
-#### Step 6: Set Environment Variables
-
-Railway dashboard:
-
-1. "Variables" tab
-2. Add each variable:
-   - `CLERK_SECRET_KEY=sk_test_xxxxx`
-   - `DATABASE_PATH=/data/database.db`
-   - `LITESTREAM_ACCESS_KEY_ID=xxxxx`
-   - `LITESTREAM_SECRET_ACCESS_KEY=xxxxx`
-
-#### Step 7: Configure Domain
-
-Railway dashboard:
-
-1. "Settings" tab
-2. "Domains"
-3. "Custom Domain"
-4. Add `yourbusiness.com`
-5. Configure DNS as shown
-
-#### DNS records:
-
-```text
-CNAME @   <your-app>.up.railway.app
-CNAME www <your-app>.up.railway.app
-```text
-
-#### Step 8: Deploy
-
-Railway auto-deploys on git push!
+Add to Vercel:
 
 ```bash
-git push origin main
-```text
+# Set Neon database connection
+vercel env add DATABASE_URL
+# Paste your Neon connection string:
+# postgresql://user:pass@ep-example.us-east-2.aws.neon.tech/neondb?sslmode=require
 
-Watch build logs in dashboard.
+# Add other secrets
+vercel env add CLERK_SECRET_KEY
+# Paste your Clerk secret
+
+vercel env add PORT
+8080
+```
+
+Your `.env` file for local development:
+
+```bash
+# .env
+DATABASE_URL=postgresql://user:pass@ep-example.neon.tech/neondb?sslmode=require
+CLERK_SECRET_KEY=your-clerk-key
+PORT=8080
+```
+
+#### Step 7: Verify main.go Configuration
+
+Your `main.go` should load the DATABASE_URL from environment:
+
+```go
+func main() {
+    // Load .env file (development only)
+    if err := godotenv.Load(); err != nil {
+        log.Println("No .env file found (OK in production)")
+    }
+
+    // Get database URL from environment
+    dbURL := os.Getenv("DATABASE_URL")
+    if dbURL == "" {
+        log.Fatal("DATABASE_URL environment variable required")
+    }
+
+    // Initialize storage with Neon Postgres
+    db, err := storage.New(dbURL)
+    if err != nil {
+        log.Fatal("Failed to connect to database:", err)
+    }
+    defer db.Close()
+
+    // Initialize service
+    svc := service.New(db)
+
+    // Set up Echo server
+    e := echo.New()
+    svc.RegisterRoutes(e)
+
+    // Start server
+    port := os.Getenv("PORT")
+    if port == "" {
+        port = "8080"
+    }
+    e.Start(":" + port)
+}
+```
+
+#### Step 8: Deploy!
+
+```bash
+# Deploy to preview
+vercel
+
+# Deploy to production
+vercel --prod
+```
+
+Vercel will:
+1. Build your Go binary
+2. Upload to edge network
+3. Give you a URL: `https://your-project.vercel.app`
+
+#### Step 9: Add Custom Domain
+
+In Vercel dashboard or CLI:
+
+```bash
+vercel domains add yourdomain.com
+```
+
+Follow instructions to:
+1. Update DNS records at your registrar
+2. Wait for DNS propagation (~5-10 minutes)
+3. Vercel auto-configures HTTPS
+
+#### Step 10: Verify Deployment
+
+Visit your site:
+
+```bash
+vercel open
+```
+
+Check logs:
+
+```bash
+vercel logs
+```
+
+### Local Development vs Production
+
+Both local and production use the same Neon Postgres database, just with different connection strings.
+
+**Local development:**
+
+```bash
+# .env
+DATABASE_URL=postgresql://user:pass@ep-example.neon.tech/neondb?sslmode=require
+CLERK_SECRET_KEY=sk_test_xxxxx
+PORT=8080
+```
+
+**Production (Vercel):**
+
+```bash
+# Set via: vercel env add
+DATABASE_URL=postgresql://user:pass@ep-example.neon.tech/neondb?sslmode=require
+CLERK_SECRET_KEY=sk_live_xxxxx
+PORT=8080
+```
+
+**Pro tip:** Use Neon's [branch feature](https://neon.tech/docs/guides/branching) to create separate databases for development and production:
+
+```bash
+# Create development branch
+neonctl branches create --name development --project my-website
+
+# Get connection string for dev branch
+neonctl connection-string my-website --branch development
+```
+
+This gives you isolated environments that work identically!
 
 ### Deployment Checklist
 
 #### Before deploying:
 
 - [ ] All tests pass locally
-- [ ] Environment variables documented
-- [ ] Database migrations ready
-- [ ] litestream configured
+- [ ] Environment variables documented (DATABASE_URL, CLERK_SECRET_KEY)
+- [ ] Database migrations ready and tested with Neon
 - [ ] Health check endpoint works
-- [ ] HTTPS will be forced
+- [ ] Vercel CLI installed and logged in
 
 #### After deploying:
 
-- [ ] Site loads at URL
-- [ ] Database migrations ran
-- [ ] litestream backing up
-- [ ] Custom domain connected
-- [ ] SSL certificate active (HTTPS)
+- [ ] Site loads at Vercel URL
+- [ ] Database migrations ran successfully
+- [ ] Neon database connected (check logs)
+- [ ] Custom domain connected (if applicable)
+- [ ] SSL certificate active (automatic with Vercel)
 - [ ] Can sign in with Clerk
-- [ ] All features work
+- [ ] All features work correctly
 
 ### Health Check Endpoint
 
 #### Add to your app:
 
 ```go
-func healthHandler(w http.ResponseWriter, r *http.Request) {
-    // Check database
-    err := db.Ping()
-    if err != nil {
-        w.WriteHeader(http.StatusServiceUnavailable)
-        fmt.Fprintf(w, "Database unavailable: %v", err)
-        return
+func (s *Service) healthHandler(c echo.Context) error {
+    // Check database connection
+    ctx, cancel := context.WithTimeout(c.Request().Context(), 2*time.Second)
+    defer cancel()
+
+    if err := s.db.Ping(ctx); err != nil {
+        return c.JSON(http.StatusServiceUnavailable, map[string]string{
+            "status": "unhealthy",
+            "error":  "database unavailable",
+        })
     }
 
-    // Check litestream
-    // (check lag, etc.)
-
-    w.WriteHeader(http.StatusOK)
-    fmt.Fprintf(w, "OK")
+    return c.JSON(http.StatusOK, map[string]string{
+        "status": "healthy",
+    })
 }
 
-// Register route
-http.HandleFunc("/health", healthHandler)
-```text
+// Register route in RegisterRoutes()
+e.GET("/health", s.healthHandler)
+```
 
 #### Test:
 
@@ -4557,23 +6035,25 @@ curl https://yourbusiness.com/health
 # Should return: OK
 ```text
 
+
 ### Rolling Back Deployments
 
-#### Fly.io:
+Vercel makes rolling back simple:
 
 ```bash
-# List releases
-flyctl releases
+# View recent deployments
+vercel ls
 
-# Rollback to previous
-flyctl releases rollback
-```text
+# Promote a previous deployment to production
+vercel promote <deployment-url>
+```
 
-#### Railway:
-
-- Dashboard → Deployments
-- Click previous deployment
-- "Redeploy"
+Or via Dashboard:
+1. Visit [vercel.com/dashboard](https://vercel.com/dashboard)
+2. Select your project
+3. Go to "Deployments" tab
+4. Find the working deployment
+5. Click "..." → "Promote to Production"
 
 ### Monitoring Your Site
 
@@ -4581,99 +6061,110 @@ flyctl releases rollback
 
 - [UptimeRobot](https://uptimerobot.com/) - Checks site every 5 min
 - [Pingdom](https://www.pingdom.com/) - Free tier available
-- [HealthChecks.io](https://healthchecks.io/) - Cron job monitoring
+- [Vercel Analytics](https://vercel.com/analytics) - Built-in, free tier
 
 #### Setup:
 
 1. Create account
-2. Add your URL
+2. Add your URL (or enable in Vercel dashboard)
 3. Configure alerts (email/SMS)
 4. Get notified if site goes down
 
 #### Log Management:
 
 ```bash
-# Fly.io
-flyctl logs --app mybusiness-website
+# View logs in real-time
+vercel logs
 
-# Railway
-railway logs
-```text
+# View logs for specific deployment
+vercel logs <deployment-url>
 
-### Scaling (When Needed)
+# Follow logs (like tail -f)
+vercel logs --follow
+```
 
-#### Vertical Scaling (Bigger server):
+Or view in Vercel Dashboard → Your Project → Logs
 
-#### Fly.io:
+### Scaling with Vercel
 
-```bash
-flyctl scale vm shared-cpu-2x --memory 512
-```text
+Vercel automatically scales your application:
 
-#### Railway:
+- **Automatic**: Scales up during traffic spikes
+- **Global**: Deployed to edge locations worldwide
+- **Zero config**: No manual scaling needed
 
-- Dashboard → Settings → Resources
-- Adjust CPU/RAM
+#### Neon Postgres Scaling:
 
-#### Horizontal Scaling (More servers):
+Neon also auto-scales:
 
-#### Fly.io:
+- **Compute**: Auto-scales from 0 to match load
+- **Storage**: Grows automatically as needed
+- **Connections**: Built-in connection pooling
 
-```bash
-flyctl scale count 2
-```text
+#### If you need more:
 
-**Note:** SQLite doesn't support multiple writers. If you need horizontal scaling:
+- **Vercel Pro** ($20/month): More bandwidth, faster builds
+- **Neon Scale** plan: More compute, storage, projects
 
-- Switch to PostgreSQL
-- Or use SQLite read replicas
+For most small business sites, free tiers are sufficient!
 
 ### Cost Estimation
 
-#### Small Business Website:
+#### Small Business Website (Vercel + Neon):
 
 | Service | Cost/Month |
 |---------|------------|
-| Fly.io/Railway | $0-5 (free tier sufficient initially) |
+| Vercel (free tier) | $0 |
+| Neon Postgres (free tier) | $0 |
 | Domain name | ~$1 (amortized over year) |
-| Backblaze B2 | $0.50-2 |
-| **Total** | **~$1.50-7/month** |
+| Clerk Auth (free tier) | $0 |
+| **Total** | **~$1/month** |
 
-**Can charge clients:** $20-50/month for hosting (includes profit margin).
+**Can charge clients:** $20-50/month for hosting + maintenance (includes your support and profit margin).
+
+**When you'll need paid tiers:**
+- Vercel Pro: High traffic (>100GB bandwidth/month)
+- Neon Scale: Large database (>0.5GB), high compute needs
 
 ### 🌍 Where You'll See This
 
-#### PaaS Platforms:
+#### Serverless Platforms:
 
-- Heroku (removed free tier)
-- Render
-- Fly.io
-- Railway
-- Google Cloud Run
-- AWS Elastic Beanstalk
+- Vercel - Frontend + serverless functions
+- Netlify - Similar to Vercel
+- AWS Lambda - Amazon's serverless
+- Cloudflare Workers - Edge computing
+
+#### Serverless Databases:
+
+- Neon Postgres - What we use
+- PlanetScale (MySQL) - Alternative
+- Supabase - Postgres + more features
+- MongoDB Atlas - NoSQL option
 
 #### Used for:
 
-- Startups (move fast)
+- Small business websites
+- Client projects
+- Startups (MVP stage)
 - Side projects
-- Client websites
-- MVPs
-- Small businesses
+- Portfolio sites
 
 ### 🔗 Documentation & Resources
 
-#### Fly.io:
+#### Vercel:
 
-- [fly.io](https://fly.io/) - Official site
-- [Fly.io Documentation](https://fly.io/docs/) - Complete docs
-- [Go on Fly.io](https://fly.io/docs/languages-and-frameworks/golang/) - Go deployment guide
-- [flyctl CLI Reference](https://fly.io/docs/flyctl/) - Commands
+- [vercel.com](https://vercel.com/) - Official site
+- [Vercel Documentation](https://vercel.com/docs) - Complete docs
+- [Go on Vercel](https://vercel.com/docs/functions/serverless-functions/runtimes/go) - Go deployment guide
+- [Vercel CLI Reference](https://vercel.com/docs/cli) - Commands
 
-#### Railway:
+#### Neon:
 
-- [railway.app](https://railway.app/) - Official site
-- [Railway Documentation](https://docs.railway.app/) - Complete docs
-- [Railway CLI](https://docs.railway.app/develop/cli) - CLI reference
+- [neon.tech](https://neon.tech/) - Official site
+- [Neon Documentation](https://neon.tech/docs) - Complete docs
+- [Neon Branching](https://neon.tech/docs/guides/branching) - Database branches
+- [neonctl CLI](https://neon.tech/docs/reference/neon-cli) - CLI reference
 
 #### Domain & DNS:
 
@@ -4682,66 +6173,67 @@ flyctl scale count 2
 
 #### Monitoring:
 
+- [Vercel Analytics](https://vercel.com/analytics) - Built-in analytics
 - [UptimeRobot](https://uptimerobot.com/) - Free uptime monitoring
 - [Better Stack](https://betterstack.com/) - Uptime + logs
 
 ### ✅ Practice Exercises
 
-#### Exercise 1: Choose Platform (15 minutes)
+#### Exercise 1: Set Up Vercel & Neon (30 minutes)
 
-1. Review Fly.io vs Railway documentation
-2. Compare pricing
-3. Decide which to use
-4. Create account
-5. Install CLI
+1. Create Vercel account
+2. Install Vercel CLI
+3. Create Neon account
+4. Install neonctl CLI
+5. Create a Neon database project
 
 #### Exercise 2: First Deployment (1.5 hours)
 
 1. Prepare app for deployment
 2. Add health check endpoint
-3. Test locally one more time
-4. Deploy to chosen platform
-5. Verify site loads
+3. Test locally with Neon database
+4. Run `vercel` to deploy
+5. Verify site loads at Vercel URL
 
 #### Exercise 3: Environment Variables (30 minutes)
 
-1. List all required env vars
-2. Set in platform dashboard/CLI
-3. Verify app can access them
+1. List all required env vars (DATABASE_URL, CLERK_SECRET_KEY)
+2. Set using `vercel env add`
+3. Redeploy with `vercel --prod`
 4. Test Clerk authentication works
-5. Check database connection
+5. Check database connection in logs
 
-#### Exercise 4: Database Setup (1 hour)
+#### Exercise 4: Database Migrations (45 minutes)
 
-1. Create persistent volume
-2. Run migrations on production
-3. Verify tables created
-4. Test creating data through app
-5. Verify litestream backing up
+1. Ensure migrations are in `storage/migrations/`
+2. Test migrations locally against Neon
+3. Deploy app (migrations run automatically)
+4. Verify tables created in Neon console
+5. Test creating data through app
 
 #### Exercise 5: Custom Domain (1 hour)
 
-1. Add your domain to platform
-2. Configure DNS records
+1. Add your domain in Vercel dashboard
+2. Configure DNS records as shown
 3. Wait for propagation (check with whatsmydns.net)
-4. Verify HTTPS certificate
+4. Verify HTTPS certificate (automatic)
 5. Test site at custom domain
 
-#### Exercise 6: Monitoring Setup (45 minutes)
+#### Exercise 6: Monitoring Setup (30 minutes)
 
-1. Sign up for UptimeRobot
-2. Add your site URL
-3. Configure alerts
-4. Test by stopping app (simulate outage)
-5. Verify you receive alert
+1. Enable Vercel Analytics in dashboard
+2. Sign up for UptimeRobot
+3. Add your site URL to UptimeRobot
+4. Configure email/SMS alerts
+5. Check dashboard after some traffic
 
-#### Exercise 7: Disaster Recovery Drill (Group Activity)
+#### Exercise 7: Database Branching (30 minutes)
 
-1. Simulate database corruption
-2. Practice restore procedure
-3. Time how long it takes
-4. Document any issues
-5. Update runbook
+1. Create a development branch in Neon
+2. Get the development branch connection string
+3. Update local .env with dev branch URL
+4. Test migrations on dev branch
+5. Understand how to use branches for safe testing
 
 ---
 
