@@ -1,0 +1,86 @@
+{
+  "project_name": "goCodeSchool",
+  "description": "Go programming tutorials and educational resources",
+
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/lint-files.sh",
+            "timeout": 30,
+            "run_in_background": false
+          }
+        ]
+      },
+      {
+        "matcher": "NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Notebook edited - consider running tests'",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+
+    "PreToolUse": [
+      {
+        "matcher": "Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pre-edit-check.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '📝 Processing request for goCodeSchool...'",
+            "timeout": 2
+          }
+        ]
+      }
+    ],
+
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/session-summary.sh",
+            "timeout": 10,
+            "run_in_background": true
+          }
+        ]
+      }
+    ]
+  },
+
+  "auto_formatting": {
+    "enabled": true,
+    "markdown": {
+      "enabled": true,
+      "tool": "markdownlint"
+    },
+    "json": {
+      "enabled": true,
+      "tool": "jq"
+    }
+ },
+
+  "file_permissions": {
+    "read_only_patterns": [
+      "*.pdf"
+    ]
+ }
+}
