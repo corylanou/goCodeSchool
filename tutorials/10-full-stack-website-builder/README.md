@@ -118,7 +118,7 @@ Before diving into specific technologies, let's understand how websites actually
                                           │  Database   │
                                           │   (SQLite)  │
                                           └─────────────┘
-```text
+```
 
 #### Key Concepts:
 
@@ -149,7 +149,7 @@ HTTP (HyperText Transfer Protocol) is how browsers and servers communicate.
 ```text
 GET /about HTTP/1.1
 Host: www.example.com
-```text
+```
 
 #### HTTP Response Example:
 
@@ -162,7 +162,7 @@ Content-Type: text/html
     <h1>About Us</h1>
   </body>
 </html>
-```text
+```
 
 #### Common HTTP Methods:
 
@@ -177,7 +177,7 @@ DNS (Domain Name System) translates human-readable names to IP addresses.
 
 ```text
 www.mysite.com  →  DNS Lookup  →  172.67.180.123  →  Your Server
-```text
+```
 
 #### Why it matters:
 
@@ -237,7 +237,7 @@ www.mysite.com  →  DNS Lookup  →  172.67.180.123  →  Your Server
 │                      SQLite Database                          │
 │  (With litestream continuously backing up to S3)             │
 └──────────────────────────────────────────────────────────────┘
-```text
+```
 
 ### 🔗 Learn More
 
@@ -278,7 +278,7 @@ https://www.mybusiness.com/about
 │      │   └──────────────── Subdomain (optional)
 │      └──────────────────── Protocol
 └─────────────────────────── Scheme
-```text
+```
 
 #### Domain Structure:
 
@@ -366,7 +366,7 @@ A **registrar** is a company that sells domain names. Here are student-friendly 
 ```text
 example.com          A       172.67.180.123
 www.example.com      CNAME   example.com
-```text
+```
 
 This makes both `example.com` and `www.example.com` go to your server.
 
@@ -377,12 +377,12 @@ This makes both `example.com` and `www.example.com` go to your server.
 - Real-world experience
 - Understanding of DNS
 - Professional portfolio piece
-- Can be used on resume
+- Can be used on a resume
 
 #### Client Work Preparation:
 
 - Every client will want their own domain
-- Practice now with club domain
+- Practice now with the club domain
 - Understand renewal costs to quote clients
 
 #### Club Benefits:
@@ -434,14 +434,14 @@ Every professional website uses:
 2. Check availability at Namecheap
 3. Compare prices at 3 different registrars
 4. Document first-year vs renewal costs
-5. Present findings to team
+5. Present findings to the team
 
 #### Exercise 2: DNS Investigation (20 minutes)
 
-1. Use `nslookup google.com` in terminal
-2. Use MXToolbox to lookup DNS records for 3 websites
-3. Find the A record, CNAME records, MX records
-4. Draw a diagram showing domain → IP address flow
+1. Use `nslookup google.com` in the terminal
+2. Use MXToolbox to look up DNS records for 3 websites
+3. Find the A record, CNAME records, and MX records
+4. Draw a diagram showing the domain → IP address flow
 
 #### Exercise 3: Domain Decision (Group Activity)
 
@@ -449,11 +449,11 @@ Every professional website uses:
 2. Decide which registrar to use
 3. Calculate total first-year and 3-year costs
 4. Plan who will manage renewals
-5. Purchase domain (get instructor approval first)
+5. Purchase a domain (get instructor approval first)
 
 #### Exercise 4: DNS Configuration (After Purchase)
 
-1. Log into your registrar
+1. Log in to your registrar
 2. Find the DNS management page
 3. Identify existing DNS records
 4. Document the nameservers
@@ -496,7 +496,7 @@ Go       ████████████████░░░░
 Java     ██████████████░░░░░░
 Node.js  ████████░░░░░░░░░░░░
 Python   ████░░░░░░░░░░░░░░░░
-```text
+```
 
 - Go is compiled (not interpreted like Python)
 - Fast startup time
@@ -518,7 +518,7 @@ var age int = "twenty"  // ❌ Error: cannot use "twenty" (type string) as type 
 
 // This will:
 var age int = 20  // ✅ Correct
-```text
+```
 
 #### Built-in Concurrency
 
@@ -527,7 +527,7 @@ var age int = 20  // ✅ Correct
 go handleRequest(req1)  // Runs in background
 go handleRequest(req2)  // Runs in background
 // Both execute concurrently!
-```text
+```
 
 #### Single Binary Deployment
 
@@ -537,7 +537,7 @@ go build -o mywebsite
 
 # Result: One file that contains everything!
 ./mywebsite
-```text
+```
 
 No need to install:
 
@@ -582,7 +582,7 @@ See [TECH_STACK_DECISIONS.md](./TECH_STACK_DECISIONS.md#1-backend-language-go-12
 ```bash
 go version
 # Should show: go version go1.25 darwin/amd64 (or similar)
-```text
+```
 
 ### Understanding Go's Type System
 
@@ -600,7 +600,7 @@ name := "My Business"  // string
 year := 2024          // int
 price := 29.99        // float64
 isOpen := true        // bool
-```text
+```
 
 #### Benefits:
 
@@ -634,7 +634,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
     // Write HTML response
     fmt.Fprintf(w, "<h1>Welcome to my website!</h1>")
 }
-```text
+```
 
 #### What's happening:
 
@@ -648,7 +648,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 ```bash
 go run main.go
 # Visit http://localhost:8080 in browser
-```text
+```
 
 ### Go Project Structure
 
@@ -666,7 +666,7 @@ my-website/
 │   └── layout.templ
 └── static/             # CSS, images, etc.
     └── styles.css
-```text
+```
 
 ### 🌍 Where You'll See Go
 
