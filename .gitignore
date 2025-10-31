@@ -31,7 +31,7 @@ go.work.sum
 !.claude/
 
 # Ignore personal/local .claude files
-.claude/.hooks/
-.claude/.logs/
+.claude/hooks/
+.claude/logs/
 .claude/settings.local.json
 .claude/**/*.backup
