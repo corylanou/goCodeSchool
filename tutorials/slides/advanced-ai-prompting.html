@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced AI Prompting: From Vibe Coding to Context Engineering</title>
+    <style>
+        :root { --accent:#ff6b6b; --bg-overlay:rgba(0,0,0,0.7); --card-bg:rgba(11,15,25,0.92); --text:#f5f5f5; --muted:#cbd5e1; }
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:Arial,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:#000;color:var(--text);height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center}
+        .slide-stage{position:relative;width:100vw;height:100vh;max-width:1920px;max-height:1080px;background-image:url('../../resources/logo/background.png');background-size:cover;background-position:center;box-shadow:0 20px 60px rgba(0,0,0,0.6)}
+        .slide-stage::before{content:'';position:absolute;inset:0;background:var(--bg-overlay)}
+        .hornet-badge{position:absolute;top:40px;right:60px;width:110px;height:110px;background:url('../../resources/logo/angry-hornet.png') no-repeat center;background-size:contain;z-index:2;filter:drop-shadow(3px 6px 12px rgba(0,0,0,0.6))}
+        .slides{position:relative;height:100%;width:100%;overflow:hidden;z-index:1}
+        .slide{position:absolute;inset:6%;background:var(--card-bg);border:4px solid var(--accent);border-radius:32px;padding:60px 80px;display:flex;flex-direction:column;gap:24px;box-shadow:0 20px 60px rgba(0,0,0,0.55);opacity:0;transform:translateX(80px);transition:opacity .6s ease,transform .6s ease;overflow-y:auto}
+        .slide.active{opacity:1;transform:translateX(0);z-index:3}
+        .slide-title{font-size:3rem;color:var(--accent);text-transform:uppercase;letter-spacing:3px;text-shadow:0 6px 18px rgba(0,0,0,.7)}
+        .slide-sub{font-size:1.4rem;color:var(--muted);max-width:780px;line-height:1.5}
+        ul{list-style:none}
+        ul li{font-size:1.4rem;margin-bottom:14px;padding-left:32px;position:relative;line-height:1.4}
+        ul li::before{content:'▶';color:var(--accent);position:absolute;left:0;top:2px;font-size:1.2rem}
+        .callout{background:rgba(255,107,107,0.12);border-left:6px solid var(--accent);padding:18px 22px;color:var(--muted)}
+        .stat{font-size:2.2rem;color:var(--accent);font-weight:bold}
+        pre{background:#0f172a;padding:16px 20px;border-radius:16px;border:2px solid rgba(255,107,107,0.35);color:#f8fafc;font-family:"JetBrains Mono",Menlo,Consolas,monospace;font-size:1.05rem;line-height:1.5;overflow:auto}
+        code{background:rgba(255,107,107,0.15);padding:2px 6px;border-radius:4px;font-family:"JetBrains Mono",monospace}
+        .nav-bar{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:20px;z-index:4;background:rgba(0,0,0,0.65);padding:16px 28px;border-radius:999px;border:2px solid var(--accent);font-size:1.1rem}
+        .nav-button{background:transparent;border:2px solid var(--accent);color:var(--accent);font-size:1.1rem;padding:10px 18px;border-radius:999px;cursor:pointer;transition:background .2s,color .2s}
+        .nav-button:hover{background:var(--accent);color:#1a1a1a}
+        .progress-dots{display:flex;align-items:center;gap:10px}
+        .progress-dots span{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.25)}
+        .progress-dots span.active{background:var(--accent)}
+        .two-column{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:20px}
+        .before-after{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:15px}
+        .before-after div{background:rgba(0,0,0,0.3);padding:15px;border-radius:10px}
+        .before-after h3{color:var(--accent);margin-bottom:10px;font-size:1.2rem}
+    </style>
+</head>
+<body>
+    <div class="slide-stage">
+        <div class="hornet-badge" aria-hidden="true"></div>
+        <div class="slides" role="region" aria-live="polite">
+            <section class="slide active" data-index="0">
+                <h1 class="slide-title">Advanced AI Prompting</h1>
+                <div class="slide-sub">From Vibe Coding to Context Engineering in 2025</div>
+                <div class="callout">
+                    <span class="stat">25%</span> of new tech companies let AI write 95% of their code<br>
+                    (Y Combinator = a super famous company that helps startups get off the ground)<br>
+                    <span class="stat">48%</span> of that AI code has security problems hackers could exploit<br>
+                    <span style="color:#fff;margin-top:10px">Today: Learn how to be in the SAFE 52%</span>
+                </div>
+                <div class="slide-sub">Use ⬅️ ➡️ arrows or buttons below to navigate</div>
+            </section>
+
+            <section class="slide" data-index="1">
+                <h2 class="slide-title">The 2025 Reality</h2>
+                <ul>
+                    <li><strong>Context > Prompts:</strong> Success depends on context management</li>
+                    <li><strong>256K-1M tokens:</strong> Huge windows, but still finite</li>
+                    <li><strong>Security crisis:</strong> 86% AI code fails XSS defense</li>
+                    <li><strong>Debugging paradox:</strong> AI code takes 45% longer to debug</li>
+                </ul>
+                <div class="callout">"Vibe coding" coined by Andrej Karpathy: Understanding without writing</div>
+            </section>
+
+            <section class="slide" data-index="2">
+                <h2 class="slide-title">Understanding Tokens & Context Windows</h2>
+                <ul>
+                    <li><strong>What's a token?</strong> Roughly 4 characters or 0.75 words</li>
+                    <li><strong>Examples:</strong> "Hello" = 1 token, "Hello world" = 2-3 tokens</li>
+                    <li><strong>Context window:</strong> How much AI can "see" at once</li>
+                    <li><strong>Math:</strong> 100K tokens ≈ 75,000 words ≈ 300-page book</li>
+                    <li><strong>The problem:</strong> When you hit the limit, AI forgets earlier context</li>
+                </ul>
+                <div class="callout">This is why fresh chats & strategic context matter. You're managing limited space.</div>
+            </section>
+
+            <section class="slide" data-index="3">
+                <h2 class="slide-title">Why Starting Fresh Is Better</h2>
+                <ul>
+                    <li><strong>The research:</strong> 11 of 12 AI models drop to 50% worse performance at 32k tokens</li>
+                    <li><strong>Context anxiety:</strong> AI "panics" when it thinks context is full and takes shortcuts</li>
+                    <li><strong>Lost in the middle:</strong> AI forgets what's in the center of long conversations</li>
+                    <li><strong>Summaries fail:</strong> Each compression loses details (like CliffsNotes: you get the main idea, but lose the important stuff)</li>
+                    <li><strong>The cascade:</strong> Compress once = some details lost; Compress twice = vaguer; Compress 3+ times = unreliable</li>
+                </ul>
+                <div class="callout">
+                    <strong>The fix:</strong> Fresh chat &gt; Compressed chat. Always.<br>
+                    When 100+ messages in, start new chat with a checklist instead of relying on memory
+                </div>
+            </section>
+
+            <section class="slide" data-index="4">
+                <h2 class="slide-title">Context Engineering (LCMP)</h2>
+                <pre><code>Long-term Context Management Protocol:
+
+1. Fresh chat per feature (no contamination)
+2. Document architecture in every prompt
+3. Clear tool results when switching
+4. Maintain structured notes across sessions</code></pre>
+                <div class="callout">Think of it like Git branches for your AI conversations</div>
+            </section>
+
+            <section class="slide" data-index="5">
+                <h2 class="slide-title">The Three-Step Approach: Talk → Plan → Build</h2>
+                <pre><code>Step 1: TALK with AI about your idea
+↓ "What do we want to build?"
+↓ Ask questions, work out confusing parts
+
+Step 2: MAKE a checklist
+↓ Write down all the things to build
+↓ Break it into small, doable tasks
+
+Step 3: BUILD one task at a time
+↓ New chat for each task
+↓ Check it works
+↓ Move to the next one
+
+Result: Way fewer mistakes, cleaner work</code></pre>
+                <div class="callout">
+                    <strong>The key idea:</strong> Plan first, code second<br>
+                    Like an essay outline = better than writing randomly
+                </div>
+            </section>
+
+            <section class="slide" data-index="6">
+                <h2 class="slide-title">Pattern 1: Architecture-First</h2>
+                <pre><code>"I'm working on a Go project using Echo and SQLite.
+I've organized my code like this: /handlers for the
+web stuff, /models for database stuff, /views for HTML.
+
+I want to add a comment system for blog posts. Can you
+look at how I structured my contact handler and user
+model, then build the comment system the same way?
+
+Here's my existing code: [paste code]"</code></pre>
+                <div class="callout">Explain the big picture first, then ask for help</div>
+            </section>
+
+            <section class="slide" data-index="7">
+                <h2 class="slide-title">Pattern 2: Test-Driven Prompting</h2>
+                <pre><code>"Write tests that validate password strength. Make
+sure you test edge cases like:
+- Empty passwords
+- Passwords that are too short
+- Ones missing numbers or uppercase letters
+- Security issues like &lt;script&gt; tags (XSS attempts)
+
+Search the internet for best practices on password
+validation. Then write the ValidatePassword function
+to pass all those tests. Make it secure."</code></pre>
+                <div class="callout">Tell AI what you want tested, let it write tests AND code</div>
+            </section>
+
+            <section class="slide" data-index="8">
+                <h2 class="slide-title">Pattern 3: Two-Stage Security</h2>
+                <div class="two-column">
+                    <div>
+                        <h3 style="color:var(--accent)">Stage 1: Build</h3>
+                        <pre><code>"Help me build a comment form
+where users can submit comments.
+Just get it working - form, save
+to database, display comments.
+Don't worry about security yet."</code></pre>
+                    </div>
+                    <div>
+                        <h3 style="color:var(--accent)">Stage 2: Secure</h3>
+                        <pre><code>"Now act like a security expert.
+Review this comment code. Tell me
+everywhere a hacker could break in.
+Check for: XSS attacks, SQL
+injection, CSRF. Be thorough."</code></pre>
+                    </div>
+                </div>
+                <div class="callout">Build first, then secure. Way fewer bugs this way</div>
+            </section>
+
+            <section class="slide" data-index="9">
+                <h2 class="slide-title">Pattern 4: Few-Shot Examples</h2>
+                <pre><code>"Here's how I built my contact handler:
+[paste your existing code]
+
+I like this style - the way it checks
+if it's GET or POST, how it validates,
+and how it returns responses.
+
+Can you build a profile handler that
+follows this exact same pattern and
+structure? Keep my code style consistent."</code></pre>
+                <div class="callout">Show AI an example, it learns your style</div>
+            </section>
+
+            <section class="slide" data-index="10">
+                <h2 class="slide-title">Common Intermediate Mistakes</h2>
+                <ul>
+                    <li><strong>Context contamination:</strong> Mixing unrelated tasks in same chat</li>
+                    <li><strong>Missing dependencies:</strong> Not showing related files</li>
+                    <li><strong>Vague requirements:</strong> "Make it faster" vs "Under 200ms"</li>
+                    <li><strong>Ignoring edge cases:</strong> Empty data, special chars, Unicode</li>
+                    <li><strong>Blind trust:</strong> Not reviewing for security/correctness</li>
+                </ul>
+            </section>
+
+            <section class="slide" data-index="11">
+                <h2 class="slide-title">Security Reality Check</h2>
+                <div class="before-after">
+                    <div>
+                        <h3>Vulnerability Rates</h3>
+                        <ul>
+                            <li>86% fail XSS defense</li>
+                            <li>88% log injection vulnerable</li>
+                            <li>70% Java code insecure</li>
+                            <li>22% hallucinated packages</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>Mitigation Strategy</h3>
+                        <ul>
+                            <li>Always validate input</li>
+                            <li>Encode output properly</li>
+                            <li>Use parameterized queries</li>
+                            <li>Verify all imports exist</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="callout">Trust but verify. Always.</div>
+            </section>
+
+            <section class="slide" data-index="12">
+                <h2 class="slide-title">GitHub Copilot Power Features</h2>
+                <ul>
+                    <li><code>@workspace</code> - Search entire codebase</li>
+                    <li><code>@terminal</code> - See command output</li>
+                    <li><code>/tests</code> - Generate test suites</li>
+                    <li><code>/fix</code> - Auto-fix issues</li>
+                    <li>Multi-file editing with Copilot Edits</li>
+                    <li>Multi-model support (OpenAI, Gemini 2.0)</li>
+                </ul>
+                <div class="callout">55% faster completion, but only with proper usage</div>
+            </section>
+
+            <section class="slide" data-index="13">
+                <h2 class="slide-title">Debugging with AI</h2>
+                <div class="before-after">
+                    <div>
+                        <h3>❌ Bad</h3>
+                        <pre><code>"My code broke, fix it"
+[code dump]</code></pre>
+                    </div>
+                    <div>
+                        <h3>✅ Good</h3>
+                        <pre><code>"I'm getting this error when I try
+to upload a profile picture:
+[paste error message]
+
+Here's my handler code:
+[paste your function]
+
+What's going wrong? Can you help me
+figure it out?"</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide" data-index="14">
+                <h2 class="slide-title">Hands-On Challenge</h2>
+                <h3 style="color:var(--accent);margin-bottom:20px">Add comments to your portfolio</h3>
+                <pre><code>Round 1: Basic prompt (2 min)
+"Add a comment system"
+
+Round 2: Apply all patterns (3 min)
+- Architecture context
+- Security requirements
+- Test cases
+- Edge cases
+- Performance targets
+
+Compare: How much better is v2?</code></pre>
+            </section>
+
+            <section class="slide" data-index="15">
+                <h2 class="slide-title">Staying Current</h2>
+                <ul>
+                    <li><strong>Monthly check:</strong> Official changelogs</li>
+                    <li><strong>Search smart:</strong> "[tool] features 2025"</li>
+                    <li><strong>Test in sandbox:</strong> Try before production</li>
+                    <li><strong>Follow leaders:</strong> Simon Willison, Karpathy</li>
+                </ul>
+                <pre><code>Red flags in outdated advice:
+- References to GPT-3.5/Claude 2
+- Token limits under 100K
+- No security considerations
+- "AI can't do X" (probably can now)</code></pre>
+            </section>
+
+            <section class="slide" data-index="16">
+                <h2 class="slide-title">Quick Reference</h2>
+                <pre><code>CONTEXT CHECKLIST:
+□ Fresh chat for feature
+□ Architecture documented
+□ Related files included
+□ Security requirements
+□ Performance targets
+
+PATTERNS TO USE:
+→ Architecture-first
+→ Test-driven specs
+→ Two-stage security
+→ Few-shot examples
+→ Role-based review
+
+ALWAYS VALIDATE:
+✓ Code runs
+✓ Security reviewed
+✓ Edge cases handled
+✓ No fake packages</code></pre>
+            </section>
+
+            <section class="slide" data-index="17">
+                <h2 class="slide-title">Your Assignment</h2>
+                <h3 style="color:var(--accent);margin-bottom:20px">Refactor your contact form</h3>
+                <ul>
+                    <li>Document full context (5 min)</li>
+                    <li>Write test cases (10 min)</li>
+                    <li>Generate with patterns (5 min)</li>
+                    <li>Security review (5 min)</li>
+                    <li>Compare before/after (5 min)</li>
+                </ul>
+                <div class="callout">Submit: Brief report on improvements and learnings</div>
+            </section>
+
+            <section class="slide" data-index="18">
+                <h2 class="slide-title">Key Takeaways</h2>
+                <ul>
+                    <li>Context engineering > Prompt engineering</li>
+                    <li>Security must be explicit, not assumed</li>
+                    <li>Examples dramatically improve output</li>
+                    <li>AI evolves weekly - stay curious</li>
+                    <li>You're the architect, AI is the builder</li>
+                </ul>
+                <div class="callout">Master context, and you're top 10% of AI developers</div>
+            </section>
+        </div>
+
+        <nav class="nav-bar" aria-label="Slide navigation">
+            <button class="nav-button" onclick="changeSlide(-1)" aria-label="Previous slide">Previous</button>
+            <div class="progress-dots" role="status" aria-live="polite">
+                <span class="active" aria-label="Slide 1 of 19"></span>
+                <span aria-label="Slide 2 of 19"></span>
+                <span aria-label="Slide 3 of 19"></span>
+                <span aria-label="Slide 4 of 19"></span>
+                <span aria-label="Slide 5 of 19"></span>
+                <span aria-label="Slide 6 of 19"></span>
+                <span aria-label="Slide 7 of 19"></span>
+                <span aria-label="Slide 8 of 19"></span>
+                <span aria-label="Slide 9 of 19"></span>
+                <span aria-label="Slide 10 of 19"></span>
+                <span aria-label="Slide 11 of 19"></span>
+                <span aria-label="Slide 12 of 19"></span>
+                <span aria-label="Slide 13 of 19"></span>
+                <span aria-label="Slide 14 of 19"></span>
+                <span aria-label="Slide 15 of 19"></span>
+                <span aria-label="Slide 16 of 19"></span>
+                <span aria-label="Slide 17 of 19"></span>
+                <span aria-label="Slide 18 of 19"></span>
+                <span aria-label="Slide 19 of 19"></span>
+            </div>
+            <button class="nav-button" onclick="changeSlide(1)" aria-label="Next slide">Next</button>
+        </nav>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.progress-dots span');
+
+        function showSlide(index) {
+            slides.forEach(s => s.classList.remove('active'));
+            dots.forEach(d => d.classList.remove('active'));
+
+            if (index < 0) index = slides.length - 1;
+            if (index >= slides.length) index = 0;
+
+            currentSlide = index;
+            slides[currentSlide].classList.add('active');
+            dots[currentSlide].classList.add('active');
+
+            // Update ARIA labels
+            dots.forEach((dot, i) => {
+                dot.setAttribute('aria-label', `Slide ${i + 1} of ${slides.length}`);
+            });
+        }
+
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+            if (e.key === 'Home') showSlide(0);
+            if (e.key === 'End') showSlide(slides.length - 1);
+        });
+
+        // Touch support for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            if (touchEndX < touchStartX - 50) changeSlide(1);
+            if (touchEndX > touchStartX + 50) changeSlide(-1);
+        });
+
+        // Click dots to navigate
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => showSlide(index));
+            dot.style.cursor = 'pointer';
+        });
+    </script>
+</body>
+</html>
