@@ -1,0 +1,87 @@
+package components
+
+import "github.com/gocodeschool/small-business-website/internal/models"
+
+// Nav renders the navigation bar
+templ Nav(config *models.Config) {
+	<nav class="bg-white shadow-sm sticky top-0 z-50">
+		<div class="container-custom">
+			<div class="flex justify-between items-center h-16">
+				<!-- Logo / Brand Name -->
+				<div class="flex-shrink-0">
+					<a href="/" class="text-2xl font-bold text-primary-600 hover:text-primary-700 transition-colors">
+						{ config.SiteName }
+					</a>
+				</div>
+
+				<!-- Desktop Navigation -->
+				<div class="hidden md:block">
+					<div class="flex items-center space-x-8">
+						<a href="/" class="text-gray-700 hover:text-primary-600 font-medium transition-colors">
+							Home
+						</a>
+						<a href="/about" class="text-gray-700 hover:text-primary-600 font-medium transition-colors">
+							About
+						</a>
+						<a href="/services" class="text-gray-700 hover:text-primary-600 font-medium transition-colors">
+							Services
+						</a>
+						<a href="/contact" class="btn-primary">
+							Contact Us
+						</a>
+					</div>
+				</div>
+
+				<!-- Mobile Menu Button -->
+				<div class="md:hidden">
+					<button
+						type="button"
+						onclick="toggleMobileMenu()"
+						class="text-gray-700 hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 p-2 rounded-lg"
+						aria-label="Toggle mobile menu"
+					>
+						<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+						</svg>
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- Mobile Navigation Menu -->
+		<div id="mobile-menu" class="hidden md:hidden border-t border-gray-200">
+			<div class="px-4 py-3 space-y-3">
+				<a href="/" class="block text-gray-700 hover:text-primary-600 font-medium py-2 transition-colors">
+					Home
+				</a>
+				<a href="/about" class="block text-gray-700 hover:text-primary-600 font-medium py-2 transition-colors">
+					About
+				</a>
+				<a href="/services" class="block text-gray-700 hover:text-primary-600 font-medium py-2 transition-colors">
+					Services
+				</a>
+				<a href="/contact" class="block text-center btn-primary w-full">
+					Contact Us
+				</a>
+			</div>
+		</div>
+	</nav>
+
+	<!-- Mobile Menu Toggle Script -->
+	<script>
+		function toggleMobileMenu() {
+			const menu = document.getElementById('mobile-menu');
+			menu.classList.toggle('hidden');
+		}
+
+		// Close mobile menu when clicking outside
+		document.addEventListener('click', function(event) {
+			const menu = document.getElementById('mobile-menu');
+			const button = event.target.closest('button[onclick="toggleMobileMenu()"]');
+
+			if (!menu.contains(event.target) && !button) {
+				menu.classList.add('hidden');
+			}
+		});
+	</script>
+}

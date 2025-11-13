@@ -1,0 +1,81 @@
+package layouts
+
+import (
+	"github.com/gocodeschool/small-business-website/internal/models"
+	"github.com/gocodeschool/small-business-website/views/components"
+)
+
+// Base is the main layout template with head, navigation, and footer
+templ Base(meta *models.PageMeta, config *models.Config) {
+	<!DOCTYPE html>
+	<html lang="en" class="scroll-smooth">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+			<!-- Primary Meta Tags -->
+			<title>{ meta.Title }</title>
+			<meta name="title" content={ meta.Title }/>
+			<meta name="description" content={ meta.Description }/>
+			if meta.Keywords != "" {
+				<meta name="keywords" content={ meta.Keywords }/>
+			}
+			if meta.Robots != "" {
+				<meta name="robots" content={ meta.Robots }/>
+			}
+
+			<!-- Canonical URL -->
+			if meta.CanonicalURL != "" {
+				<link rel="canonical" href={ templ.SafeURL(meta.CanonicalURL) }/>
+			}
+
+			<!-- Open Graph / Facebook -->
+			<meta property="og:type" content={ meta.OGType }/>
+			if meta.OGURL != "" {
+				<meta property="og:url" content={ meta.OGURL }/>
+			}
+			<meta property="og:title" content={ meta.OGTitle }/>
+			<meta property="og:description" content={ meta.OGDescription }/>
+			if meta.OGImage != "" {
+				<meta property="og:image" content={ meta.OGImage }/>
+			}
+
+			<!-- Twitter -->
+			<meta property="twitter:card" content={ meta.TwitterCard }/>
+			if meta.TwitterSite != "" {
+				<meta property="twitter:site" content={ meta.TwitterSite }/>
+			}
+			<meta property="twitter:title" content={ meta.OGTitle }/>
+			<meta property="twitter:description" content={ meta.OGDescription }/>
+			if meta.OGImage != "" {
+				<meta property="twitter:image" content={ meta.OGImage }/>
+			}
+
+			<!-- Favicon -->
+			<link rel="icon" type="image/x-icon" href="/static/images/favicon.ico"/>
+
+			<!-- Tailwind CSS -->
+			<link rel="stylesheet" href="/static/css/output.css"/>
+
+			<!-- HTMX -->
+			<script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+
+			<!-- Google reCAPTCHA v3 (for contact form) -->
+			if config.RecaptchaSiteKey != "" {
+				<script src={ "https://www.google.com/recaptcha/api.js?render=" + config.RecaptchaSiteKey }></script>
+			}
+		</head>
+		<body class="flex flex-col min-h-screen bg-white text-gray-900">
+			<!-- Navigation -->
+			@components.Nav(config)
+
+			<!-- Main Content -->
+			<main class="flex-grow">
+				{ children... }
+			</main>
+
+			<!-- Footer -->
+			@components.Footer(config)
+		</body>
+	</html>
+}

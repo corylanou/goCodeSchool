@@ -1,0 +1,42 @@
+# Go
+bin/
+tmp/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work
+
+# Templ generated files
+*_templ.go
+
+# Air
+build-errors.log
+
+# Node
+node_modules/
+package-lock.json
+
+# Tailwind output
+static/css/output.css
+
+# Environment variables
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Vercel
+.vercel

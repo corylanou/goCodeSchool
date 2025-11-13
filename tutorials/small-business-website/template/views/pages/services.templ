@@ -1,0 +1,267 @@
+package pages
+
+import (
+	"github.com/gocodeschool/small-business-website/internal/models"
+	"github.com/gocodeschool/small-business-website/views/layouts"
+)
+
+// Services renders the services page
+templ Services(meta *models.PageMeta, config *models.Config) {
+	@layouts.Base(meta, config) {
+		<!-- Page Header -->
+		<section class="section-padding bg-gradient-to-br from-primary-50 to-white">
+			<div class="container-custom">
+				<div class="max-w-3xl mx-auto text-center">
+					<h1 class="text-5xl font-bold text-gray-900 mb-6">Our Services</h1>
+					<p class="text-xl text-gray-600">
+						<!-- TODO: Replace with client's services overview -->
+						Comprehensive solutions tailored to meet your specific needs.
+					</p>
+				</div>
+			</div>
+		</section>
+
+		<!-- Services Grid -->
+		<section class="section-padding bg-white">
+			<div class="container-custom">
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+					<!-- Service 1 -->
+					<div class="bg-white border border-gray-200 rounded-lg p-8 hover:shadow-xl transition-shadow">
+						<div class="w-16 h-16 bg-primary-100 rounded-lg flex items-center justify-center mb-6">
+							<svg class="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+							</svg>
+						</div>
+						<!-- TODO: Replace with client's actual service 1 -->
+						<h3 class="text-2xl font-bold text-gray-900 mb-4">Service One</h3>
+						<p class="text-gray-600 mb-6">
+							Detailed description of your first service offering. Explain what it includes,
+							who it's for, and the benefits clients can expect to receive.
+						</p>
+						<ul class="space-y-2 mb-6">
+							<li class="flex items-start">
+								<svg class="w-6 h-6 text-primary-600 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+								</svg>
+								<span class="text-gray-700">Key feature or benefit one</span>
+							</li>
+							<li class="flex items-start">
+								<svg class="w-6 h-6 text-primary-600 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+								</svg>
+								<span class="text-gray-700">Key feature or benefit two</span>
+							</li>
+							<li class="flex items-start">
+								<svg class="w-6 h-6 text-primary-600 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+								</svg>
+								<span class="text-gray-700">Key feature or benefit three</span>
+							</li>
+						</ul>
+						<a href="/contact" class="btn-primary inline-block">
+							Learn More
+						</a>
+					</div>
+
+					<!-- Service 2 -->
+					<div class="bg-white border border-gray-200 rounded-lg p-8 hover:shadow-xl transition-shadow">
+						<div class="w-16 h-16 bg-primary-100 rounded-lg flex items-center justify-center mb-6">
+							<svg class="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+							</svg>
+						</div>
+						<!-- TODO: Replace with client's actual service 2 -->
+						<h3 class="text-2xl font-bold text-gray-900 mb-4">Service Two</h3>
+						<p class="text-gray-600 mb-6">
+							Detailed description of your second service offering. Explain what makes this
+							service unique and how it helps solve your clients' specific problems.
+						</p>
+						<ul class="space-y-2 mb-6">
+							<li class="flex items-start">
+								<svg class="w-6 h-6 text-primary-600 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+								</svg>
+								<span class="text-gray-700">Key feature or benefit one</span>
+							</li>
+							<li class="flex items-start">
+								<svg class="w-6 h-6 text-primary-600 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+								</svg>
+								<span class="text-gray-700">Key feature or benefit two</span>
+							</li>
+							<li class="flex items-start">
+								<svg class="w-6 h-6 text-primary-600 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+								</svg>
+								<span class="text-gray-700">Key feature or benefit three</span>
+							</li>
+						</ul>
+						<a href="/contact" class="btn-primary inline-block">
+							Learn More
+						</a>
+					</div>
+
+					<!-- Service 3 -->
+					<div class="bg-white border border-gray-200 rounded-lg p-8 hover:shadow-xl transition-shadow">
+						<div class="w-16 h-16 bg-primary-100 rounded-lg flex items-center justify-center mb-6">
+							<svg class="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+							</svg>
+						</div>
+						<!-- TODO: Replace with client's actual service 3 -->
+						<h3 class="text-2xl font-bold text-gray-900 mb-4">Service Three</h3>
+						<p class="text-gray-600 mb-6">
+							Detailed description of your third service offering. Highlight the expertise
+							and approach that sets you apart from competitors.
+						</p>
+						<ul class="space-y-2 mb-6">
+							<li class="flex items-start">
+								<svg class="w-6 h-6 text-primary-600 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+								</svg>
+								<span class="text-gray-700">Key feature or benefit one</span>
+							</li>
+							<li class="flex items-start">
+								<svg class="w-6 h-6 text-primary-600 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+								</svg>
+								<span class="text-gray-700">Key feature or benefit two</span>
+							</li>
+							<li class="flex items-start">
+								<svg class="w-6 h-6 text-primary-600 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+								</svg>
+								<span class="text-gray-700">Key feature or benefit three</span>
+							</li>
+						</ul>
+						<a href="/contact" class="btn-primary inline-block">
+							Learn More
+						</a>
+					</div>
+
+					<!-- Service 4 -->
+					<div class="bg-white border border-gray-200 rounded-lg p-8 hover:shadow-xl transition-shadow">
+						<div class="w-16 h-16 bg-primary-100 rounded-lg flex items-center justify-center mb-6">
+							<svg class="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+							</svg>
+						</div>
+						<!-- TODO: Replace with client's actual service 4 -->
+						<h3 class="text-2xl font-bold text-gray-900 mb-4">Service Four</h3>
+						<p class="text-gray-600 mb-6">
+							Detailed description of your fourth service offering. Explain how this service
+							complements your other offerings and provides additional value.
+						</p>
+						<ul class="space-y-2 mb-6">
+							<li class="flex items-start">
+								<svg class="w-6 h-6 text-primary-600 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+								</svg>
+								<span class="text-gray-700">Key feature or benefit one</span>
+							</li>
+							<li class="flex items-start">
+								<svg class="w-6 h-6 text-primary-600 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+								</svg>
+								<span class="text-gray-700">Key feature or benefit two</span>
+							</li>
+							<li class="flex items-start">
+								<svg class="w-6 h-6 text-primary-600 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+								</svg>
+								<span class="text-gray-700">Key feature or benefit three</span>
+							</li>
+						</ul>
+						<a href="/contact" class="btn-primary inline-block">
+							Learn More
+						</a>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Process Section -->
+		<section class="section-padding bg-gray-50">
+			<div class="container-custom">
+				<div class="text-center mb-12">
+					<h2 class="text-4xl font-bold text-gray-900 mb-4">Our Process</h2>
+					<p class="text-xl text-gray-600 max-w-2xl mx-auto">
+						<!-- TODO: Customize process description -->
+						A proven approach that delivers results every time.
+					</p>
+				</div>
+
+				<div class="max-w-4xl mx-auto">
+					<div class="space-y-8">
+						<!-- Step 1 -->
+						<div class="flex gap-6 items-start">
+							<div class="flex-shrink-0 w-12 h-12 bg-primary-600 text-white rounded-full flex items-center justify-center font-bold text-xl">
+								1
+							</div>
+							<div>
+								<h3 class="text-xl font-semibold mb-2">Consultation</h3>
+								<p class="text-gray-600">
+									We start by understanding your needs, goals, and challenges through an in-depth consultation.
+								</p>
+							</div>
+						</div>
+
+						<!-- Step 2 -->
+						<div class="flex gap-6 items-start">
+							<div class="flex-shrink-0 w-12 h-12 bg-primary-600 text-white rounded-full flex items-center justify-center font-bold text-xl">
+								2
+							</div>
+							<div>
+								<h3 class="text-xl font-semibold mb-2">Planning</h3>
+								<p class="text-gray-600">
+									Our team develops a customized strategy and action plan tailored to your specific requirements.
+								</p>
+							</div>
+						</div>
+
+						<!-- Step 3 -->
+						<div class="flex gap-6 items-start">
+							<div class="flex-shrink-0 w-12 h-12 bg-primary-600 text-white rounded-full flex items-center justify-center font-bold text-xl">
+								3
+							</div>
+							<div>
+								<h3 class="text-xl font-semibold mb-2">Execution</h3>
+								<p class="text-gray-600">
+									We implement the plan with precision, keeping you informed every step of the way.
+								</p>
+							</div>
+						</div>
+
+						<!-- Step 4 -->
+						<div class="flex gap-6 items-start">
+							<div class="flex-shrink-0 w-12 h-12 bg-primary-600 text-white rounded-full flex items-center justify-center font-bold text-xl">
+								4
+							</div>
+							<div>
+								<h3 class="text-xl font-semibold mb-2">Results & Support</h3>
+								<p class="text-gray-600">
+									We deliver results and provide ongoing support to ensure your continued success.
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- CTA Section -->
+		<section class="section-padding bg-primary-600 text-white">
+			<div class="container-custom">
+				<div class="max-w-3xl mx-auto text-center">
+					<h2 class="text-4xl font-bold mb-4">Ready to Get Started?</h2>
+					<p class="text-xl mb-8 text-primary-100">
+						Contact us today to discuss how our services can help you achieve your goals.
+					</p>
+					<a href="/contact" class="inline-block px-8 py-4 bg-white text-primary-600 font-semibold rounded-lg shadow-lg hover:bg-gray-100 transition-colors text-lg">
+						Request a Consultation
+					</a>
+				</div>
+			</div>
+		</section>
+	}
+}

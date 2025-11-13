@@ -1,0 +1,23 @@
+{
+  "name": "small-business-website",
+  "version": "1.0.0",
+  "description": "Modern small business website template with Go + Templ + HTMX + Tailwind",
+  "scripts": {
+    "dev": "make dev",
+    "build": "make build",
+    "tailwind:watch": "tailwindcss -i ./static/css/input.css -o ./static/css/output.css --watch",
+    "tailwind:build": "tailwindcss -i ./static/css/input.css -o ./static/css/output.css --minify"
+  },
+  "keywords": [
+    "go",
+    "echo",
+    "templ",
+    "htmx",
+    "tailwind"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  }
+}
