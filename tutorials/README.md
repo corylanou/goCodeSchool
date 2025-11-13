@@ -4,6 +4,7 @@ This section collects standalone lessons that pair written guides with accompany
 
 ## Concept Tutorials
 
+- Advanced AI Prompting — [Guide](advanced-ai-prompting.md) · [Slides](slides/advanced-ai-prompting.html)
 - API Design Concepts — [Guide](api-design-concepts.md) · [Slides](slides/api-design-concepts.html)
 - Debugging Mindset — [Guide](debugging-mindset.md) · [Slides](slides/debugging-mindset.html)
 - Dev Environment Flow — [Guide](dev-environment-flow.md) · [Slides](slides/dev-environment-flow.html)
