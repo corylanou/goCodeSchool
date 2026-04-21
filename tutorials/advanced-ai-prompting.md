@@ -1,14 +1,14 @@
 # Advanced AI Prompting: From Vibe Coding to Context Engineering
 
-Here's the reality in 2025: **25% of new tech companies have AI write 95% of their code.** But here's the problem: **48% of that code has security holes.**
+Here's the reality in 2025: **25% of new tech companies have AI write 95% of their code.** The difference between developers who get great results and those who struggle? **Understanding how to create effective prompts and manage context.**
 
-Today, you're going to learn how to be in the **safe 52%**—how to use AI to build code that actually works and doesn't have security problems.
+Today, you'll learn how to consistently get high-quality code from AI by mastering prompt engineering fundamentals—especially understanding context, tokens, and why your prompts sometimes fail.
 
 ## What You'll Learn
 
 - How to organize your thoughts BEFORE coding (the planning thing)
 - When to start fresh chats with AI and when not to
-- How to tell if AI made something insecure
+- How to craft prompts that get better results from AI
 - How to break big projects into small tasks
 - How to stay in the loop as AI tools change
 
@@ -19,8 +19,8 @@ graph TD
     Architecture --> Examples[Include Examples]
     Examples --> Constraints[Define Constraints]
     Constraints --> Generate[AI Generation]
-    Generate --> Review[Security Review]
-    Review --> Test[Test & Validate]
+    Generate --> Review[Review & Validate]
+    Review --> Test[Test & Verify]
     Test --> Iterate[Refine & Iterate]
     Iterate --> Deploy[Deploy Code]
 ```
@@ -28,11 +28,11 @@ graph TD
 ## The 2025 landscape: vibe coding reality check
 
 - **25% of Y Combinator Winter 2025 startups** have 95% AI-generated codebases
-- **48% of AI-generated code** contains security vulnerabilities
 - **Context windows** now reach 256K-1M tokens but remain finite
 - **Debugging AI code** takes 45% longer than expected for most developers
+- **Prompt quality** directly determines code quality and correctness
 
-The challenge isn't getting AI to write code—it's getting AI to write **good, secure, maintainable** code.
+The challenge isn't getting AI to write code—it's getting AI to write **good, maintainable, correct** code through effective prompting.
 
 ## Understanding tokens & context windows
 
@@ -295,7 +295,7 @@ Stack: Go 1.25, Echo framework, templ templates, SQLite, HTMX
 Structure: /handlers, /models, /views, /static
 Current feature: Adding user comments
 Related files: models/user.go, handlers/auth.go
-Security requirements: XSS protection, rate limiting
+Data validation: Input sanitization, proper encoding
 Performance target: Sub-200ms response time
 ```
 
@@ -331,37 +331,14 @@ Make sure you test edge cases like:
 - Passwords that are too short
 - Missing uppercase or lowercase letters
 - Missing numbers
-- Security issues like <script> tags that hackers use
+- Special characters and unicode handling
 
 Search the internet for best practices on password validation
 in Go. Then write the ValidatePassword function to pass all
-those tests and make it secure."
+those tests with proper input validation."
 ```
 
-### 3. Two-stage security prompting
-
-**Stage 1: Build the feature (in one chat)**
-```text
-"Help me build a comment system for my blog. I need:
-- A form where users can write comments
-- Save comments to the database
-- Display all comments on the page
-- Make sure the form validates the data
-
-Just get it working first. Don't worry about security yet."
-```
-
-**Stage 2: Security review (in a new chat)**
-```text
-"Now I want you to act like a security expert. Look at this
-comment code and find everywhere a hacker could break in.
-
-Check for: XSS attacks, SQL injection, CSRF, and any other
-security problems. Tell me exactly what could go wrong and how
-to fix it."
-```
-
-### 4. Few-shot example prompting
+### 3. Few-shot example prompting
 
 **Show AI examples of code you like, and it'll follow that style:**
 
@@ -375,7 +352,7 @@ validate, and how you return responses. I want my code to look
 consistent throughout my project."
 ```
 
-### 5. Chain-of-thought for complex problems
+### 4. Chain-of-thought for complex problems
 
 ```
 Let's optimize this database query step by step:
@@ -396,15 +373,15 @@ Table structure:
 Current performance: 800ms for 1000 records
 ```
 
-### 6. Role-based perspective prompting
+### 5. Role-based perspective prompting
 
 ```
-Review this authentication system from multiple perspectives:
+Review this user profile system from multiple perspectives:
 
-As a SECURITY ENGINEER:
-- Check for timing attacks
-- Verify password hashing (bcrypt/argon2)
-- Look for session fixation vulnerabilities
+As a DATABASE ENGINEER:
+- Check query efficiency and indexing
+- Verify data normalization
+- Look for N+1 query problems
 
 As a PERFORMANCE ENGINEER:
 - Identify bottlenecks
@@ -412,9 +389,9 @@ As a PERFORMANCE ENGINEER:
 - Review caching strategy
 
 As a FRONTEND DEVELOPER:
-- Verify CORS configuration
-- Check error message exposure
-- Review token storage approach
+- Verify API response structure
+- Check error handling and user feedback
+- Review data formatting and validation
 ```
 
 ## Common intermediate mistakes to avoid
@@ -435,41 +412,9 @@ As a FRONTEND DEVELOPER:
 **Bad:** Not specifying behavior for empty data
 **Good:** "Handle empty arrays, null values, special characters (emoji, RTL text)"
 
-### 5. Skipping security validation
-**Fact:** 86% of AI code fails XSS defense
-**Solution:** Always run Stage 2 security review
-
-### 6. Over-trusting hallucinated packages
+### 5. Over-trusting hallucinated packages
 **Problem:** 22% of AI suggestions include non-existent packages
 **Solution:** Verify all import statements and dependencies
-
-## Security-first prompting
-
-### The sobering statistics
-
-- **86%** of AI code vulnerable to XSS attacks
-- **88%** vulnerable to log injection
-- **70%** of Java code fails security tests
-- **37.6%** increase in critical vulnerabilities with unsupervised iteration
-
-### Security prompt template
-
-```
-Requirements:
-1. Validate all user input
-2. Sanitize output (HTML encoding for web display)
-3. Use parameterized queries (never string concatenation)
-4. Implement rate limiting
-5. Add appropriate logging (without sensitive data)
-6. Handle errors gracefully (no stack traces to users)
-
-After implementing, review for OWASP Top 10:
-- SQL Injection
-- XSS (stored and reflected)
-- CSRF
-- Insecure Direct Object References
-- Security Misconfiguration
-```
 
 ## GitHub Copilot power features (2025)
 
@@ -519,19 +464,10 @@ After implementing, review for OWASP Top 10:
 
 1. Write 10 test cases (valid, invalid, edge cases)
 2. Have AI implement function to pass tests
-3. Add security review pass
-4. Verify no regex DoS vulnerabilities
+3. Test edge cases thoroughly
+4. Verify performance with large inputs
 
-### Exercise 3: Security review simulation
-
-Take existing code from your portfolio:
-1. Ask AI to act as security researcher
-2. Request OWASP Top 10 analysis
-3. Get specific remediation steps
-4. Implement fixes
-5. Re-review to confirm resolution
-
-### Exercise 4: Performance optimization
+### Exercise 3: Performance optimization
 
 ```
 Current situation:
@@ -637,29 +573,29 @@ Help me identify the root cause and fix.
 □ Architecture documented
 □ Related files included
 □ Dependencies specified
-□ Security requirements clear
+□ Validation requirements clear
 □ Performance targets defined
 
 # PROMPT PATTERNS
 Architecture-first: Context → Task → Constraints
 Test-driven: Tests → Implementation → Validation
-Security-stage: Build → Review → Fix
 Few-shot: Examples → Pattern → New Implementation
 Chain-of-thought: Break down → Analyze → Solve
+Role-based: Multiple Perspectives → Comprehensive Review
 
 # VALIDATION REQUIRED
 ✓ Code runs without errors
-✓ Security review completed
 ✓ Edge cases handled
 ✓ Performance acceptable
 ✓ Tests pass
 ✓ No hallucinated packages
+✓ Error handling implemented
 
 # COMMON MISTAKES TO AVOID
 ✗ Context contamination
 ✗ Missing dependencies
 ✗ Vague requirements
-✗ No security review
+✗ Skipping validation
 ✗ Trusting blindly
 ✗ Not testing edge cases
 ```
@@ -683,14 +619,14 @@ Chain-of-thought: Break down → Analyze → Solve
    - Use test-driven prompting
    - Include few-shot examples
 
-4. **Security review** (5 min)
-   - Two-stage security prompt
-   - OWASP Top 10 check
+4. **Code review** (5 min)
+   - Review for edge cases
+   - Check error handling
 
 5. **Compare results** (5 min)
    - Original vs refactored
-   - Security improvements
-   - Code quality changes
+   - Code quality improvements
+   - Maintainability changes
 
 **Submit:** Brief report on what improved and what you learned
 
@@ -711,9 +647,83 @@ Chain-of-thought: Break down → Analyze → Solve
 - [r/LocalLLaMA](https://reddit.com/r/LocalLLaMA)
 - [Hacker News AI](https://news.ycombinator.com)
 
+Remember: AI is your pair programmer, not your replacement. The quality of AI output directly correlates with the quality of context and prompting you provide. Master context engineering, and you'll be in the top 10% of AI-assisted developers.
+
+---
+
+## Appendix: Security-Focused Prompting (Optional Advanced Topic)
+
+This appendix covers security-specific considerations when using AI to generate code. While important for production applications, these techniques are optional and build upon the core prompting fundamentals covered in the main tutorial.
+
+### Security statistics in AI-generated code
+
+- **86%** of AI code vulnerable to XSS attacks
+- **88%** vulnerable to log injection
+- **70%** of Java code fails security tests
+- **37.6%** increase in critical vulnerabilities with unsupervised iteration
+
+### Two-stage security prompting pattern
+
+**Stage 1: Build the feature (in one chat)**
+```text
+"Help me build a comment system for my blog. I need:
+- A form where users can write comments
+- Save comments to the database
+- Display all comments on the page
+- Make sure the form validates the data
+
+Just get it working first. Don't worry about security yet."
+```
+
+**Stage 2: Security review (in a new chat)**
+```text
+"Now I want you to act like a security expert. Look at this
+comment code and find everywhere a hacker could break in.
+
+Check for: XSS attacks, SQL injection, CSRF, and any other
+security problems. Tell me exactly what could go wrong and how
+to fix it."
+```
+
+### Security-first prompting template
+
+```
+Requirements:
+1. Validate all user input
+2. Sanitize output (HTML encoding for web display)
+3. Use parameterized queries (never string concatenation)
+4. Implement rate limiting
+5. Add appropriate logging (without sensitive data)
+6. Handle errors gracefully (no stack traces to users)
+
+After implementing, review for OWASP Top 10:
+- SQL Injection
+- XSS (stored and reflected)
+- CSRF
+- Insecure Direct Object References
+- Security Misconfiguration
+```
+
+### Exercise: Security review simulation
+
+Take existing code from your portfolio:
+1. Ask AI to act as security researcher
+2. Request OWASP Top 10 analysis
+3. Get specific remediation steps
+4. Implement fixes
+5. Re-review to confirm resolution
+
 ### Security resources
 - [OWASP Top 10](https://owasp.org/www-project-top-ten/)
 - [Semgrep Rules](https://semgrep.dev/r)
 - [Snyk Vulnerability DB](https://security.snyk.io)
 
-Remember: AI is your pair programmer, not your replacement. The quality of AI output directly correlates with the quality of context and prompting you provide. Master context engineering, and you'll be in the top 10% of AI-assisted developers.
+### When to apply security prompting
+
+Use these security-focused techniques when:
+- Building user-facing features that handle input
+- Working with authentication or authorization
+- Dealing with sensitive data
+- Preparing code for production deployment
+
+For learning exercises and prototypes, focus on the core prompting fundamentals in the main tutorial first.
